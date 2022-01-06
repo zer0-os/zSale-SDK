@@ -1,3 +1,5 @@
+import * as ethers from "ethers";
+
 /**
  * isEth - Mark if a sale for the domain is in ETH or in Token
  * contractAddress - The address of the sale contract in 0x... format
@@ -16,5 +18,23 @@ export enum SaleStatus {
 }
 
 export interface Instance {
-  // TODO
+  getSaleStartBlock(
+    signer: ethers.Signer
+  ): Promise<number>;
+  getSaleStatus(
+    signer: ethers.Signer
+  ): Promise<SaleStatus>;
+  getSaleWhiteListDuration(
+    signer: ethers.Signer
+  ): Promise<ethers.BigNumber>;
+  getTotalForSale(
+    signer: ethers.Signer
+  ): Promise<ethers.BigNumber>;
+  getNumberOfDomainsSold(
+    signer: ethers.Signer
+  ): Promise<ethers.BigNumber>
+  setPauseStatus: (
+    signer: ethers.Signer,
+    pauseStatus: boolean
+  ) => Promise<ethers.ContractTransaction>
 }

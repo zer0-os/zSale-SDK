@@ -1,2 +1,2 @@
-export * from "./getSaleStatus"
+export * from "./getSaleStatus";
 export * from "./setPauseStatus";
