@@ -17,10 +17,30 @@ export enum SaleStatus {
   Public
 }
 
+export interface Claim {
+  index: number;
+  amount: string;
+  revocable: boolean;
+  proof: string[]
+}
+
+export interface Claims {
+  [address: string]: Claim
+}
+
+export interface MerkleTree {
+  merkleRoot: string;
+  string: string;
+  claims: Claims;
+}
+
 export interface Instance {
+  getSalePrice(
+    signer: ethers.Signer
+  ): Promise<string>;
   getSaleStartBlock(
     signer: ethers.Signer
-  ): Promise<number>;
+  ): Promise<string>;
   getSaleStatus(
     signer: ethers.Signer
   ): Promise<SaleStatus>;
@@ -32,9 +52,13 @@ export interface Instance {
   ): Promise<ethers.BigNumber>;
   getNumberOfDomainsSold(
     signer: ethers.Signer
-  ): Promise<ethers.BigNumber>
-  setPauseStatus: (
-    signer: ethers.Signer,
-    pauseStatus: boolean
-  ) => Promise<ethers.ContractTransaction>
+  ): Promise<ethers.BigNumber>;
+  purchaseDomains(
+    count: ethers.BigNumber,
+    signer: ethers.Signer
+  ): Promise<ethers.ContractTransaction>;
+  setPauseStatus(
+    pauseStatus: boolean,
+    signer: ethers.Signer
+  ): Promise<ethers.ContractTransaction>;
 }
