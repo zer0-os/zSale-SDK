@@ -1,31 +1,59 @@
 import { ethers } from "ethers";
-import { getWhiteListSale } from "./contracts";
 
+import { getWhiteListSaleContract } from "./contracts";
+import * as actions from "./actions";
 import {
   Config,
-  Instance
+  Instance,
+  SaleStatus
 } from "./types"
 
 export const createInstance = (config: Config): Instance => {
 
   const instance: Instance = {
-    getSaleContract: async (signer: ethers.Signer) => {
-      const contract = await getWhiteListSale(signer, config.contractAddress);
-      return contract;
+    getSaleStartBlock: async (
+      signer: ethers.Signer
+    ): Promise<number> => {
+      const contract = await getWhiteListSaleContract(signer, config.contractAddress);
+      const startBlock = await contract.saleStartBlock();
+      return Number(startBlock);
+    },
+    getSaleStatus: async (
+      signer: ethers.Signer
+    ): Promise<SaleStatus> => {
+      const contract = await getWhiteListSaleContract(signer, config.contractAddress);
+      const status = await actions.getSaleStatus(contract);
+      return status;
+    },
+    getSaleWhiteListDuration: async (
+      signer: ethers.Signer
+    ): Promise<ethers.BigNumber> => {
+      const contract = await getWhiteListSaleContract(signer, config.contractAddress);
+      const duration = await contract.whitelistSaleDuration();
+      return duration;
+    },
+    getTotalForSale: async (
+      signer: ethers.Signer
+    ): Promise<ethers.BigNumber> => {
+      const contract = await getWhiteListSaleContract(signer, config.contractAddress);
+      const total = await contract.totalForSale();
+      return total;
+    },
+    getNumberOfDomainsSold: async (
+      signer: ethers.Signer
+    ): Promise<ethers.BigNumber> => {
+      const contract = await getWhiteListSaleContract(signer, config.contractAddress);
+      const domainsSold = await contract.domainsSold();
+      return domainsSold;
     },
     setPauseStatus: async (
       signer: ethers.Signer,
       pauseStatus: boolean
     ): Promise<ethers.ContractTransaction> => {
-      const contract = await getWhiteListSale(signer, config.contractAddress);
-
-      const currentStatus = await contract.paused();
-      if (pauseStatus === currentStatus)
-        throw Error("Execution would cause no state change");
-
-      const tx = await contract.setPauseStatus(pauseStatus);
+      const contract = await getWhiteListSaleContract(signer, config.contractAddress);
+      const tx = await actions.setPauseStatus(pauseStatus, contract);
       return tx;
-    }
+    },
   }
 
   return instance;
