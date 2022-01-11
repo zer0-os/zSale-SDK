@@ -33,8 +33,8 @@ export interface Instance {
   getNumberOfDomainsSold(
     signer: ethers.Signer
   ): Promise<ethers.BigNumber>
-  setPauseStatus: (
+  setPauseStatus(
     signer: ethers.Signer,
     pauseStatus: boolean
-  ) => Promise<ethers.ContractTransaction>
+  ): Promise<ethers.ContractTransaction>
 }
