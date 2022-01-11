@@ -1,4 +1,4 @@
 export * from "./getSaleStatus";
-export * from "./getWhitelistedUser";
+export * from "./getWhitelistedUserClaim";
 export * from "./purchaseDomains";
 export * from "./setPauseStatus";

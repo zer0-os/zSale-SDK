@@ -11,21 +11,26 @@ export interface Config {
   merkleTreeFileUrl: string;
 }
 
+export enum IPFSGatewayUri {
+  ipfs = "ipfs.io",
+  fleek = "ipfs.fleek.co",
+}
+
 export enum SaleStatus {
   NotStarted,
   WhiteListOnly,
-  Public
+  Public,
 }
 
 export interface Claim {
   index: number;
   amount: string;
   revocable: boolean;
-  proof: string[]
+  proof: string[];
 }
 
 export interface Claims {
-  [address: string]: Claim
+  [address: string]: Claim;
 }
 
 export interface MerkleTree {
@@ -35,24 +40,12 @@ export interface MerkleTree {
 }
 
 export interface Instance {
-  getSalePrice(
-    signer: ethers.Signer
-  ): Promise<string>;
-  getSaleStartBlock(
-    signer: ethers.Signer
-  ): Promise<string>;
-  getSaleStatus(
-    signer: ethers.Signer
-  ): Promise<SaleStatus>;
-  getSaleWhiteListDuration(
-    signer: ethers.Signer
-  ): Promise<ethers.BigNumber>;
-  getTotalForSale(
-    signer: ethers.Signer
-  ): Promise<ethers.BigNumber>;
-  getNumberOfDomainsSold(
-    signer: ethers.Signer
-  ): Promise<ethers.BigNumber>;
+  getSalePrice(signer: ethers.Signer): Promise<string>;
+  getSaleStartBlock(signer: ethers.Signer): Promise<string>;
+  getSaleStatus(signer: ethers.Signer): Promise<SaleStatus>;
+  getSaleWhiteListDuration(signer: ethers.Signer): Promise<ethers.BigNumber>;
+  getTotalForSale(signer: ethers.Signer): Promise<ethers.BigNumber>;
+  getNumberOfDomainsSold(signer: ethers.Signer): Promise<ethers.BigNumber>;
   purchaseDomains(
     count: ethers.BigNumber,
     signer: ethers.Signer
