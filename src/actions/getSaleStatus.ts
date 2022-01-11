@@ -1,10 +1,7 @@
-
 import * as ethers from "ethers";
 import { WhiteListSimpleSale } from "../contracts/types";
 
-import {
-  SaleStatus
-} from "../types";
+import { SaleStatus } from "../types";
 
 export const getSaleStatus = async (contract: WhiteListSimpleSale) => {
   const saleStarted = await contract.saleStarted();
@@ -20,4 +17,4 @@ export const getSaleStatus = async (contract: WhiteListSimpleSale) => {
   } else {
     return SaleStatus.WhiteListOnly;
   }
-}
+};

@@ -11,4 +11,4 @@ export const setPauseStatus = async (
 
   const tx = await saleContract.setPauseStatus(pauseStatus);
   return tx;
-}
+};

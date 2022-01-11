@@ -20,14 +20,17 @@ export const purchaseDomains = async (
     // `user` will be undefined if not found in whitelist
     const user = await getWhitelistedUser(address, merkleFilePath);
 
-    if (!user)
-      throw Error("User is not on the sale whitelist");
+    if (!user) throw Error("User is not on the sale whitelist");
 
-    const tx = await contract.purchaseDomainsWhitelisted(count, user.index, user.proof);
+    const tx = await contract.purchaseDomainsWhitelisted(
+      count,
+      user.index,
+      user.proof
+    );
     return tx;
   } else {
     // If sale is public, anyone is allowed to make a purchase
     const tx = await contract.purchaseDomains(count);
     return tx;
   }
-}
+};
