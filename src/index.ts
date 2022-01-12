@@ -5,8 +5,6 @@ import * as actions from "./actions";
 import { Config, Instance, SaleStatus } from "./types";
 
 export const createInstance = (config: Config): Instance => {
-  // To identify whitelisted users
-  const merkleFilePath = "../merkle/sampleMerkle.json";
 
   const instance: Instance = {
     getSalePrice: async (signer: ethers.Signer): Promise<string> => {
@@ -30,7 +28,7 @@ export const createInstance = (config: Config): Instance => {
         signer,
         config.contractAddress
       );
-      const status = await actions.getSaleStatus(contract);
+      const status: SaleStatus = await actions.getSaleStatus(contract);
       return status;
     },
     getSaleWhiteListDuration: async (
@@ -81,7 +79,6 @@ export const createInstance = (config: Config): Instance => {
         signer,
         config.contractAddress
       );
-
       const count = await contract.currentMaxPurchaseCount();
       return count.toString();
     },
@@ -96,7 +93,7 @@ export const createInstance = (config: Config): Instance => {
       const tx = await actions.purchaseDomains(
         count,
         signer,
-        merkleFilePath,
+        config.merkleTreeFileUri,
         contract
       );
       return tx;

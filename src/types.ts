@@ -8,7 +8,7 @@ import * as ethers from "ethers";
 export interface Config {
   isEth: boolean;
   contractAddress: string;
-  merkleTreeFileUrl: string;
+  merkleTreeFileUri: string;
 }
 
 export enum IPFSGatewayUri {
