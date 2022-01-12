@@ -24,8 +24,6 @@ export enum SaleStatus {
 
 export interface Claim {
   index: number;
-  amount: string;
-  revocable: boolean;
   proof: string[];
 }
 
