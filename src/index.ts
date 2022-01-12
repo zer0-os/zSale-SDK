@@ -63,6 +63,28 @@ export const createInstance = (config: Config): Instance => {
       const domainsSold = await contract.domainsSold();
       return domainsSold;
     },
+    getDomainsPurchasedByAccount: async (
+      signer: ethers.Signer
+    ): Promise<string> => {
+      const contract = await getWhiteListSaleContract(
+        signer,
+        config.contractAddress
+      );
+      const address = await signer.getAddress();
+      const domains = await contract.domainsPurchasedByAccount(address);
+      return domains.toString();
+    },
+    getCurrentMaxPurchaseCount: async (
+      signer: ethers.Signer
+    ): Promise<string> => {
+      const contract = await getWhiteListSaleContract(
+        signer,
+        config.contractAddress
+      );
+
+      const count = await contract.currentMaxPurchaseCount();
+      return count.toString();
+    },
     purchaseDomains: async (
       count: ethers.BigNumber,
       signer: ethers.Signer
@@ -71,10 +93,9 @@ export const createInstance = (config: Config): Instance => {
         signer,
         config.contractAddress
       );
-      const address = await signer.getAddress();
       const tx = await actions.purchaseDomains(
         count,
-        address,
+        signer,
         merkleFilePath,
         contract
       );
@@ -88,7 +109,7 @@ export const createInstance = (config: Config): Instance => {
         signer,
         config.contractAddress
       );
-      const tx = await actions.setPauseStatus(pauseStatus, contract);
+      const tx = await actions.setPauseStatus(pauseStatus, contract, signer);
       return tx;
     },
   };
