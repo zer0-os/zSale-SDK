@@ -1,10 +1,7 @@
-
 import * as ethers from "ethers";
 import { WhiteListSimpleSale } from "../contracts/types";
 
-import {
-  SaleStatus
-} from "../types";
+import { SaleStatus } from "../types";
 
 export const getSaleStatus = async (contract: WhiteListSimpleSale) => {
   const saleStarted = await contract.saleStarted();
@@ -17,6 +14,6 @@ export const getSaleStatus = async (contract: WhiteListSimpleSale) => {
 
   if (ethers.BigNumber.from(currentBlock).gt(startBlock.add(duration)))
     return SaleStatus.Public;
-  
+
   return SaleStatus.WhiteListOnly;
-}
+};

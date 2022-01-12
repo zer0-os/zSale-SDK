@@ -11,30 +11,45 @@ export interface Config {
   merkleTreeFileUrl: string;
 }
 
+export enum IPFSGatewayUri {
+  ipfs = "ipfs.io",
+  fleek = "ipfs.fleek.co",
+}
+
 export enum SaleStatus {
   NotStarted,
   WhiteListOnly,
-  Public
+  Public,
+}
+
+export interface Claim {
+  index: number;
+  proof: string[];
+}
+
+export interface Claims {
+  [address: string]: Claim;
+}
+
+export interface MerkleTree {
+  merkleRoot: string;
+  string: string;
+  claims: Claims;
 }
 
 export interface Instance {
-  getSaleStartBlock(
+  getSalePrice(signer: ethers.Signer): Promise<string>;
+  getSaleStartBlock(signer: ethers.Signer): Promise<string>;
+  getSaleStatus(signer: ethers.Signer): Promise<SaleStatus>;
+  getSaleWhiteListDuration(signer: ethers.Signer): Promise<ethers.BigNumber>;
+  getTotalForSale(signer: ethers.Signer): Promise<ethers.BigNumber>;
+  getNumberOfDomainsSold(signer: ethers.Signer): Promise<ethers.BigNumber>;
+  purchaseDomains(
+    count: ethers.BigNumber,
     signer: ethers.Signer
-  ): Promise<number>;
-  getSaleStatus(
-    signer: ethers.Signer
-  ): Promise<SaleStatus>;
-  getSaleWhiteListDuration(
-    signer: ethers.Signer
-  ): Promise<ethers.BigNumber>;
-  getTotalForSale(
-    signer: ethers.Signer
-  ): Promise<ethers.BigNumber>;
-  getNumberOfDomainsSold(
-    signer: ethers.Signer
-  ): Promise<ethers.BigNumber>
+  ): Promise<ethers.ContractTransaction>;
   setPauseStatus(
-    signer: ethers.Signer,
-    pauseStatus: boolean
-  ): Promise<ethers.ContractTransaction>
+    pauseStatus: boolean,
+    signer: ethers.Signer
+  ): Promise<ethers.ContractTransaction>;
 }
