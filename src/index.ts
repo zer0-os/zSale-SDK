@@ -63,24 +63,24 @@ export const createInstance = (config: Config): Instance => {
     },
     getDomainsPurchasedByAccount: async (
       signer: ethers.Signer
-    ): Promise<string> => {
+    ): Promise<number> => {
       const contract = await getWhiteListSaleContract(
         signer,
         config.contractAddress
       );
       const address = await signer.getAddress();
       const domains = await contract.domainsPurchasedByAccount(address);
-      return domains.toString();
+      return domains.toNumber();
     },
     getCurrentMaxPurchaseCount: async (
       signer: ethers.Signer
-    ): Promise<string> => {
+    ): Promise<number> => {
       const contract = await getWhiteListSaleContract(
         signer,
         config.contractAddress
       );
       const count = await contract.currentMaxPurchaseCount();
-      return count.toString();
+      return count.toNumber();
     },
     purchaseDomains: async (
       count: ethers.BigNumber,

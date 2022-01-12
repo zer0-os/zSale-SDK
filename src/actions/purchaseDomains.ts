@@ -28,6 +28,12 @@ export const purchaseDomains = async (
 
     if (!userClaim) throw Error("User is not on the sale whitelist");
 
+    const purchased = await contract.domainsPurchasedByAccount(address)
+    const maxPurchase = await contract.maxPurchasesPerAccount();
+
+    if ((purchased.add(ethers.BigNumber.from("1")).gt(maxPurchase)))
+      throw Error("User is unable to make any more purchases, they have already reached the limit");
+
     const tx = await contract
       .connect(signer)
       .purchaseDomainsWhitelisted(count, userClaim.index, userClaim.proof);

@@ -44,8 +44,8 @@ export interface Instance {
   getSaleWhiteListDuration(signer: ethers.Signer): Promise<ethers.BigNumber>;
   getTotalForSale(signer: ethers.Signer): Promise<ethers.BigNumber>;
   getNumberOfDomainsSold(signer: ethers.Signer): Promise<ethers.BigNumber>;
-  getDomainsPurchasedByAccount(signer: ethers.Signer): Promise<string>;
-  getCurrentMaxPurchaseCount(signer: ethers.Signer): Promise<string>;
+  getDomainsPurchasedByAccount(signer: ethers.Signer): Promise<number>;
+  getCurrentMaxPurchaseCount(signer: ethers.Signer): Promise<number>;
   purchaseDomains(
     count: ethers.BigNumber,
     signer: ethers.Signer
