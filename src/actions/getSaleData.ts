@@ -17,15 +17,15 @@ export const getSaleData = async (
     : await contract.saleToken();
 
   return {
-    amountSold: await (await contract.domainsSold()).toNumber(),
-    amountForSale: await (await contract.totalForSale()).toNumber(),
-    salePrice: ethers.utils.formatEther(await (await contract.salePrice())),
+    amountSold: (await contract.domainsSold()).toNumber(),
+    amountForSale: (await contract.totalForSale()).toNumber(),
+    salePrice: ethers.utils.formatEther(await contract.salePrice()),
     started: started,
-    whitelistDuration: await (await contract.whitelistSaleDuration()).toNumber(),
+    whitelistDuration: (await contract.whitelistSaleDuration()).toNumber(),
     paused: await contract.paused(),
-    currentMaxPurchases: await (await contract.currentMaxPurchaseCount()).toNumber(),
-    maxPurchasesDuringWhitelist: await (await contract.maxPurchasesPerAccount()).toNumber(),
-    maxPurchasesPostWhitelist: await (await contract.postWhitelistMaxPurchases()).toNumber(),
+    currentMaxPurchases: (await contract.currentMaxPurchaseCount()).toNumber(),
+    maxPurchasesDuringWhitelist: (await contract.maxPurchasesPerAccount()).toNumber(),
+    maxPurchasesPostWhitelist: (await contract.postWhitelistMaxPurchases()).toNumber(),
     isEth: isEth,
     startBlock: startBlock,
     saleToken: saleToken
