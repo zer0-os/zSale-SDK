@@ -33,17 +33,53 @@ export interface Claims {
 
 export interface MerkleTree {
   merkleRoot: string;
-  string: string;
+  tokenTotal: string;
   claims: Claims;
 }
 
+export interface Whitelist {
+  merkleRoot: string;
+  claims: Claims;
+}
+
+export interface SaleData {
+  amountSold: number;
+  amountForSale: number;
+  salePrice: string;
+  started: boolean;
+  whitelistDuration: number;
+  paused: boolean;
+  currentMaxPurchases: number;
+  maxPurchasesDuringWhitelist: number;
+  maxPurchasesPostWhitelist: number;
+  isEth: boolean;
+  startBlock?: number;
+  saleToken?: string;
+}
+
+export type Maybe<T> = T | undefined | null;
+
 export interface Instance {
   getSalePrice(signer: ethers.Signer): Promise<string>;
+  getSaleData(signer: ethers.Signer): Promise<SaleData>;
   getSaleStartBlock(signer: ethers.Signer): Promise<string>;
   getSaleStatus(signer: ethers.Signer): Promise<SaleStatus>;
+  getWhitelist(
+    gateway: IPFSGatewayUri,
+    cachedWhitelist: Maybe<Whitelist>
+  ): Promise<Whitelist>;
+  getWhiteListedUserClaim(
+    signer: ethers.Signer,
+    gateway: IPFSGatewayUri,
+    cachedWhitelist: Maybe<Whitelist>
+  ): Promise<Claim | undefined>;
   getSaleWhiteListDuration(signer: ethers.Signer): Promise<ethers.BigNumber>;
   getTotalForSale(signer: ethers.Signer): Promise<ethers.BigNumber>;
   getNumberOfDomainsSold(signer: ethers.Signer): Promise<ethers.BigNumber>;
+  isUserOnWhitelist(
+    signer: ethers.Signer,
+    gateway: IPFSGatewayUri
+  ): Promise<boolean>;
   purchaseDomains(
     count: ethers.BigNumber,
     signer: ethers.Signer

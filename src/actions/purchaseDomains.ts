@@ -1,13 +1,14 @@
 import * as ethers from "ethers";
 import { getSaleStatus, getWhiteListedUserClaim } from ".";
 import { WhiteListSimpleSale } from "../contracts/types";
-import { IPFSGatewayUri, SaleStatus } from "../types";
+import { IPFSGatewayUri, Maybe, SaleStatus, Whitelist } from "../types";
 
 export const purchaseDomains = async (
   count: ethers.BigNumber,
   address: string,
   merkleFileUrl: string,
-  contract: WhiteListSimpleSale
+  contract: WhiteListSimpleSale,
+  cachedWhitelist: Maybe<Whitelist>
 ): Promise<ethers.ContractTransaction> => {
   const status = await getSaleStatus(contract);
 
@@ -21,7 +22,8 @@ export const purchaseDomains = async (
     const user = await getWhiteListedUserClaim(
       address,
       merkleFileUrl,
-      IPFSGatewayUri.fleek
+      IPFSGatewayUri.fleek,
+      cachedWhitelist
     );
 
     if (!user) throw Error("User is not on the sale whitelist");
