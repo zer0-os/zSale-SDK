@@ -8,7 +8,7 @@ import * as ethers from "ethers";
 export interface Config {
   isEth: boolean;
   contractAddress: string;
-  merkleTreeFileUrl: string;
+  merkleTreeFileUri: string;
 }
 
 export enum IPFSGatewayUri {
@@ -76,10 +76,15 @@ export interface Instance {
   getSaleWhiteListDuration(signer: ethers.Signer): Promise<ethers.BigNumber>;
   getTotalForSale(signer: ethers.Signer): Promise<ethers.BigNumber>;
   getNumberOfDomainsSold(signer: ethers.Signer): Promise<ethers.BigNumber>;
+<<<<<<< HEAD
   isUserOnWhitelist(
     signer: ethers.Signer,
     gateway: IPFSGatewayUri
   ): Promise<boolean>;
+=======
+  getDomainsPurchasedByAccount(signer: ethers.Signer): Promise<number>;
+  getCurrentMaxPurchaseCount(signer: ethers.Signer): Promise<number>;
+>>>>>>> main
   purchaseDomains(
     count: ethers.BigNumber,
     signer: ethers.Signer

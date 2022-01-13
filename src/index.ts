@@ -12,7 +12,6 @@ import {
   SaleStatus,
   Whitelist
 } from "./types";
-import { ipfsToHttpUrl } from "./actions/helpers";
 
 export const createInstance = (config: Config): Instance => {
   let cachedWhitelist: Maybe<Whitelist>;
@@ -48,11 +47,11 @@ export const createInstance = (config: Config): Instance => {
         signer,
         config.contractAddress
       );
-      const status = await actions.getSaleStatus(contract);
+      const status: SaleStatus = await actions.getSaleStatus(contract);
       return status;
     },
     getWhitelist: async (gateway: IPFSGatewayUri): Promise<Whitelist> => {
-      const whitelist = await actions.getWhitelist(config.merkleTreeFileUrl, gateway, cachedWhitelist)
+      const whitelist = await actions.getWhitelist(config.merkleTreeFileUri, gateway, cachedWhitelist)
       return whitelist;
     },
     getWhiteListedUserClaim: async (
@@ -62,7 +61,7 @@ export const createInstance = (config: Config): Instance => {
       const address = await signer.getAddress();
       const claim = await actions.getWhiteListedUserClaim(
         address,
-        config.merkleTreeFileUrl,
+        config.merkleTreeFileUri,
         gateway,
         cachedWhitelist);
       return claim;
@@ -104,11 +103,32 @@ export const createInstance = (config: Config): Instance => {
       const address = await signer.getAddress();
       const isOnWhitelist = await actions.isUserOnWhitelist(
         address,
-        config.merkleTreeFileUrl,
+        config.merkleTreeFileUri,
         IPFSGatewayUri.fleek,
         cachedWhitelist
       );
       return isOnWhitelist;
+    },
+    getDomainsPurchasedByAccount: async (
+      signer: ethers.Signer
+    ): Promise<number> => {
+      const contract = await getWhiteListSaleContract(
+        signer,
+        config.contractAddress
+      );
+      const address = await signer.getAddress();
+      const domains = await contract.domainsPurchasedByAccount(address);
+      return domains.toNumber();
+    },
+    getCurrentMaxPurchaseCount: async (
+      signer: ethers.Signer
+    ): Promise<number> => {
+      const contract = await getWhiteListSaleContract(
+        signer,
+        config.contractAddress
+      );
+      const count = await contract.currentMaxPurchaseCount();
+      return count.toNumber();
     },
     purchaseDomains: async (
       count: ethers.BigNumber,
@@ -118,11 +138,11 @@ export const createInstance = (config: Config): Instance => {
         signer,
         config.contractAddress
       );
-      const address = await signer.getAddress();
+      // const address = await signer.getAddress();
       const tx = await actions.purchaseDomains(
         count,
-        address,
-        config.merkleTreeFileUrl,
+        signer,
+        config.merkleTreeFileUri,
         contract,
         cachedWhitelist
       );
@@ -136,7 +156,7 @@ export const createInstance = (config: Config): Instance => {
         signer,
         config.contractAddress
       );
-      const tx = await actions.setPauseStatus(pauseStatus, contract);
+      const tx = await actions.setPauseStatus(pauseStatus, contract, signer);
       return tx;
     },
   };
