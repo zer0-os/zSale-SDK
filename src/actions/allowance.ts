@@ -14,6 +14,7 @@ export const allowance = async (
 
   const signerAddress = await signer.getAddress();
 
+  // Owner, spender
   const allowance = await token.allowance(signerAddress, spenderAddress);
   return allowance;
 }

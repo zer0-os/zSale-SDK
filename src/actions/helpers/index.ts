@@ -18,6 +18,11 @@ export const getMerkleTree = async (
 ): Promise<MerkleTree> => {
   // Receive `ipfs://Qm...`
   const uri = ipfsToHttpUrl(merkleFileUri, gateway);
+  try {
+    const res = await fetch(uri, { method: "GET" });
+  } catch (e) {
+    console.log(e);
+  }
   const res = await fetch(uri, { method: "GET" });
   const merkleTree: MerkleTree = await res.json();
   return merkleTree;
