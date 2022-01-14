@@ -76,15 +76,12 @@ export interface Instance {
   getSaleWhiteListDuration(signer: ethers.Signer): Promise<ethers.BigNumber>;
   getTotalForSale(signer: ethers.Signer): Promise<ethers.BigNumber>;
   getNumberOfDomainsSold(signer: ethers.Signer): Promise<ethers.BigNumber>;
-<<<<<<< HEAD
   isUserOnWhitelist(
     signer: ethers.Signer,
     gateway: IPFSGatewayUri
   ): Promise<boolean>;
-=======
   getDomainsPurchasedByAccount(signer: ethers.Signer): Promise<number>;
   getCurrentMaxPurchaseCount(signer: ethers.Signer): Promise<number>;
->>>>>>> main
   purchaseDomains(
     count: ethers.BigNumber,
     signer: ethers.Signer
@@ -93,4 +90,17 @@ export interface Instance {
     pauseStatus: boolean,
     signer: ethers.Signer
   ): Promise<ethers.ContractTransaction>;
+  allowance(
+    saleTokenAddress: string,
+    signer: ethers.Signer
+  ): Promise<ethers.BigNumber>;
+  approve(
+    saleTokenAddress: string,
+    spender: string,
+    signer: ethers.Signer,
+  ): Promise<ethers.ContractTransaction>;
+  balanceOf(
+    saleTokenAddress: string,
+    signer: ethers.Signer
+  ): Promise<ethers.BigNumber>
 }

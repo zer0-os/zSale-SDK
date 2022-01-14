@@ -159,6 +159,39 @@ export const createInstance = (config: Config): Instance => {
       const tx = await actions.setPauseStatus(pauseStatus, contract, signer);
       return tx;
     },
+    allowance: async (
+      saleTokenAddress: string,
+      signer: ethers.Signer
+    ): Promise<ethers.BigNumber> => {
+      const allowance = await actions.allowance(
+        saleTokenAddress,
+        config.contractAddress,
+        signer
+      );
+      return allowance;
+    },
+    approve: async (
+      saleTokenAddress: string,
+      spender: string,
+      signer: ethers.Signer,
+    ): Promise<ethers.ContractTransaction> => {
+      if (config.isEth)
+        throw Error("Cannot call ERC20 'approve' when sale token is ETH");
+
+      const tx = await actions.approve(
+        saleTokenAddress,
+        spender,
+        signer
+      );
+      return tx;
+    },
+    balanceOf: async (
+      saleTokenAddress: string,
+      signer: ethers.Signer
+    ): Promise<ethers.BigNumber> => {
+      const balance = await actions.balanceOf(saleTokenAddress, signer);
+      return balance;
+    }
   };
 
   return instance;
