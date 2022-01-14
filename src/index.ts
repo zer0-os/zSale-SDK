@@ -96,6 +96,15 @@ export const createInstance = (config: Config): Instance => {
       const domainsSold = await contract.domainsSold();
       return domainsSold;
     },
+    getBlockNumber: async (): Promise<number> => {
+      const provider = ethers.providers.getDefaultProvider();
+      const blockNum = await provider.getBlockNumber();
+      return blockNum;
+    },
+    getEthBalance: async (signer: ethers.Signer): Promise<string> => {
+      const balance = await signer.getBalance();
+      return ethers.utils.formatEther(balance);
+    },
     isUserOnWhitelist: async (
       signer: ethers.Signer,
       gateway: IPFSGatewayUri
@@ -104,7 +113,7 @@ export const createInstance = (config: Config): Instance => {
       const isOnWhitelist = await actions.isUserOnWhitelist(
         address,
         config.merkleTreeFileUri,
-        IPFSGatewayUri.fleek,
+        gateway,
         cachedWhitelist
       );
       return isOnWhitelist;
@@ -138,11 +147,13 @@ export const createInstance = (config: Config): Instance => {
         signer,
         config.contractAddress
       );
+
       // const address = await signer.getAddress();
       const tx = await actions.purchaseDomains(
         count,
         signer,
         config.merkleTreeFileUri,
+        config.isEth,
         contract,
         cachedWhitelist
       );

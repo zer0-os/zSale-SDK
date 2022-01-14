@@ -1,5 +1,5 @@
 import * as ethers from "ethers";
-import { getSaleStatus, getWhiteListedUserClaim } from ".";
+import { balanceOf, getSaleStatus, getWhiteListedUserClaim } from ".";
 import { WhiteListSimpleSale } from "../contracts/types";
 import { Claim, IPFSGatewayUri, Maybe, SaleStatus, Whitelist } from "../types";
 
@@ -7,10 +7,27 @@ export const purchaseDomains = async (
   count: ethers.BigNumber,
   signer: ethers.Signer,
   merkleFileUri: string,
+  isEth: boolean,
   contract: WhiteListSimpleSale,
-  cachedWhitelist: Maybe<Whitelist>
+  cachedWhitelist: Maybe<Whitelist>,
+  saleToken?: string
 ): Promise<ethers.ContractTransaction> => {
   const status = await getSaleStatus(contract);
+  const price = await contract.salePrice();
+
+  if (isEth) {
+    const balance = await signer.getBalance();
+    const userHasFunds = balance.gte(price);
+    if (!userHasFunds)
+      throw Error("User ETH balance is not enough to purchase a domain");
+  } else {
+    if (!saleToken)
+      throw Error("If `isEth` is set to false a `saleToken` parameter is required");
+    const balance = await balanceOf(saleToken, signer);
+    const userHasFunds = balance.gte(price);
+    if (!userHasFunds)
+      throw Error("User token balance is not enough to purchase a domain");
+  }
 
   // If sale hasn't started nobody can make a purchase yet
   if (status === SaleStatus.NotStarted)

@@ -76,6 +76,8 @@ export interface Instance {
   getSaleWhiteListDuration(signer: ethers.Signer): Promise<ethers.BigNumber>;
   getTotalForSale(signer: ethers.Signer): Promise<ethers.BigNumber>;
   getNumberOfDomainsSold(signer: ethers.Signer): Promise<ethers.BigNumber>;
+  getBlockNumber(): Promise<number>;
+  getEthBalance(signer: ethers.Signer): Promise<string>
   isUserOnWhitelist(
     signer: ethers.Signer,
     gateway: IPFSGatewayUri

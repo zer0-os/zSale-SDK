@@ -1,4 +1,4 @@
-import { Claim, IPFSGatewayUri, Maybe, MerkleTree, Whitelist } from "../types";
+import { IPFSGatewayUri, Maybe, MerkleTree, Whitelist } from "../types";
 import { getMerkleTree } from "./helpers";
 
 export const isUserOnWhitelist = async (
