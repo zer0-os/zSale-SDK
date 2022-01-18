@@ -73,7 +73,8 @@ export interface Instance {
   getCurrentMaxPurchaseCount(signer: ethers.Signer): Promise<number>;
   purchaseDomains(
     count: ethers.BigNumber,
-    signer: ethers.Signer
+    signer: ethers.Signer,
+    saleToken?: string
   ): Promise<ethers.ContractTransaction>;
   setPauseStatus(
     pauseStatus: boolean,
