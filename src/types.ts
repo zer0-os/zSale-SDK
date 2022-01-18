@@ -33,7 +33,6 @@ export interface Claims {
 
 export interface Whitelist {
   merkleRoot: string;
-  tokenTotal: string;
   claims: Claims;
 }
 
