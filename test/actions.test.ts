@@ -33,23 +33,14 @@ describe("Test Custom SDK Logic", () => {
 
   describe("getWhitelistedUserClaim", () => {
     it("errors when address is not in merkle tree", async () => {
-      await expect(
-        actions.getWhiteListedUserClaim(
-          voidSignerAddress,
-          ipfsUrl,
-          IPFSGatewayUri.fleek
-        )
-      ).to.be.rejectedWith(
-        `No claim could be found for user ${voidSignerAddress}`
-      );
+      const whitelist = await getWhitelist(ipfsUrl, IPFSGatewayUri.fleek, undefined);
+      const userClaim: Claim = whitelist.claims[voidSignerAddress];
+      expect(userClaim).to.equal(undefined);
     });
     it("returns the account information when address is in the merkle tree", async () => {
-      const acct: Claim | undefined = await actions.getWhiteListedUserClaim(
-        addressFromFile,
-        ipfsUrl,
-        IPFSGatewayUri.fleek
-      );
-      expect(acct);
+      const whitelist = await getWhitelist(ipfsUrl, IPFSGatewayUri.fleek, undefined);
+      const userClaim: Claim = whitelist.claims[addressFromFile];
+      expect(userClaim);
     });
   });
   describe("getSaleStatus", () => {
@@ -64,7 +55,7 @@ describe("Test Custom SDK Logic", () => {
   });
   describe("getWhitelist", () => {
     it("runs", async () => {
-      const whitelist = await getWhitelist(ipfsUrl, IPFSGatewayUri.fleek);
+      const whitelist = await getWhitelist(ipfsUrl, IPFSGatewayUri.fleek, undefined);
       expect(whitelist);
     });
   });

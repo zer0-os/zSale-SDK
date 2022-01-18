@@ -14,6 +14,19 @@ import {
 } from "./types";
 
 export const createInstance = (config: Config): Instance => {
+  let cachedWhitelist: Maybe<Whitelist>;
+
+  const getWhitelist = async (
+    merkleFileUri: string,
+    gateway: IPFSGatewayUri
+  ) => {
+    const whitelist = await actions.getWhitelist(
+      merkleFileUri,
+      gateway,
+      cachedWhitelist
+    );
+    return whitelist;
+  };
   const instance: Instance = {
     getSalePrice: async (signer: ethers.Signer): Promise<string> => {
       const contract = await getWhiteListSaleContract(
@@ -52,23 +65,21 @@ export const createInstance = (config: Config): Instance => {
       return status;
     },
     getWhitelist: async (gateway: IPFSGatewayUri): Promise<Whitelist> => {
-      const whitelist = await actions.getWhitelist(
-        config.merkleTreeFileUri,
-        gateway
-      );
+      const whitelist = await getWhitelist(config.merkleTreeFileUri, gateway);
       return whitelist;
     },
     getWhiteListedUserClaim: async (
-      signer: ethers.Signer,
+      address: string,
       gateway: IPFSGatewayUri
     ): Promise<Claim> => {
-      const address = await signer.getAddress();
-      const claim = await actions.getWhiteListedUserClaim(
-        address,
-        config.merkleTreeFileUri,
-        gateway
-      );
-      return claim;
+      const whitelist = await getWhitelist(config.merkleTreeFileUri, gateway);
+      const userClaim: Claim = whitelist.claims[address];
+      if (!userClaim) {
+        throw Error(
+          `No claim could be found for user ${address} because they are not on the whitelist`
+        );
+      }
+      return userClaim;
     },
     getSaleWhiteListDuration: async (
       signer: ethers.Signer
@@ -110,15 +121,11 @@ export const createInstance = (config: Config): Instance => {
       return ethers.utils.formatEther(balance);
     },
     isUserOnWhitelist: async (
-      signer: ethers.Signer,
+      address: string,
       gateway: IPFSGatewayUri
     ): Promise<boolean> => {
-      const address = await signer.getAddress();
-      const isOnWhitelist = await actions.isUserOnWhitelist(
-        address,
-        config.merkleTreeFileUri,
-        gateway
-      );
+      const whitelist = await getWhitelist(config.merkleTreeFileUri, gateway);
+      const isOnWhitelist = whitelist.claims[address] ? true : false;
       return isOnWhitelist;
     },
     getDomainsPurchasedByAccount: async (
@@ -158,6 +165,7 @@ export const createInstance = (config: Config): Instance => {
         config.merkleTreeFileUri,
         config.isEth,
         contract,
+        getWhitelist,
         saleToken
       );
       return tx;
@@ -184,7 +192,9 @@ export const createInstance = (config: Config): Instance => {
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
       if (config.isEth) {
-        throw Error("Cannot call ERC20 'approve' when sale token is not an ERC20 token");
+        throw Error(
+          "Cannot call ERC20 'approve' when sale token is not an ERC20 token"
+        );
       }
       // User must call to approve the sale contract to spend their tokens
       const tx = await actions.approve(config, signer);

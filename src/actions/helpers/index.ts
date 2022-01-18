@@ -1,9 +1,8 @@
 import fetch from "cross-fetch";
-import { WhiteListSimpleSale } from "../../contracts/types";
+import { cachedDataVersionTag } from "v8";
 
 import { IPFSGatewayUri, Maybe, Whitelist } from "../../types";
 
-let cachedWhitelist: Maybe<Whitelist>;
 
 export const ipfsToHttpUrl = (
   ipfsHash: string,
@@ -28,7 +27,8 @@ export const getMerkleTree = async (
 
 export const getWhitelist = async (
   merkleFileUri: string,
-  gateway: IPFSGatewayUri
+  gateway: IPFSGatewayUri,
+  cachedWhitelist: Maybe<Whitelist>
 ) => {
   if (cachedWhitelist) {
     return cachedWhitelist;
