@@ -8,9 +8,9 @@ The zSale SDK acts as an interface with the zNS sale contract. This allows you t
 
 To use the SDK you must first create an `Instance` to work with. The `createInstance` function exported by the SDK takes a `Config` as an argument, which has three properties.
 
- - `isEth: string` - Indicates whether purchases for the sale of domains will be made with Ethereum or not. The alternative is an ERC20 token, e.g. `$WILD`. If this is set to `false`, it is expected that the contract provided in `contractAddress` below contains a valid value for `saleToken`, an address of an ERC20 contract.
+ - `isEth: boolean` - Indicates whether purchases for the sale of domains will be made with Ethereum or not. The alternative is an ERC20 token, e.g. `$WILD`. If this is set to `false`, it is expected that the contract provided in `contractAddress: string` below contains a valid value for `saleToken`, an address of an ERC20 contract.
  - contractAddress - The `WhitelistSimpleSale` contract implementation for this specific sale.
- - merkleTreeFileUri - The IPFS URL (`ipfs://Qm...`) where the merkle tree can be found. This file is used to derive information about a sale's whitelist.
+ - `merkleTreeFileUri: string` - The IPFS URL (`ipfs://Qm...`) where the merkle tree can be found. This file is used to derive information about a sale's whitelist.
 
 If your sale is using an ERC20 token than customers in the sale will additionally have to call `approve(spender, amount)` to give the smart contract permission to use their tokens. For this, the `amount` argument is optional and if it is not specified the SDK defaults to the maximum safe value in TypeScript.
 
