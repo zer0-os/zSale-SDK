@@ -10,12 +10,10 @@ import {
   Maybe,
   SaleData,
   SaleStatus,
-  Whitelist
+  Whitelist,
 } from "./types";
 
 export const createInstance = (config: Config): Instance => {
-  let cachedWhitelist: Maybe<Whitelist>;
-
   const instance: Instance = {
     getSalePrice: async (signer: ethers.Signer): Promise<string> => {
       const contract = await getWhiteListSaleContract(
@@ -31,7 +29,10 @@ export const createInstance = (config: Config): Instance => {
         config.contractAddress
       );
 
-      const saleData: SaleData = await actions.getSaleData(contract, config.isEth);
+      const saleData: SaleData = await actions.getSaleData(
+        contract,
+        config.isEth
+      );
       return saleData;
     },
     getSaleStartBlock: async (signer: ethers.Signer): Promise<string> => {
@@ -51,19 +52,22 @@ export const createInstance = (config: Config): Instance => {
       return status;
     },
     getWhitelist: async (gateway: IPFSGatewayUri): Promise<Whitelist> => {
-      const whitelist = await actions.getWhitelist(config.merkleTreeFileUri, gateway, cachedWhitelist)
+      const whitelist = await actions.getWhitelist(
+        config.merkleTreeFileUri,
+        gateway
+      );
       return whitelist;
     },
     getWhiteListedUserClaim: async (
       signer: ethers.Signer,
       gateway: IPFSGatewayUri
-    ): Promise<Claim | undefined> => {
+    ): Promise<Claim> => {
       const address = await signer.getAddress();
       const claim = await actions.getWhiteListedUserClaim(
         address,
         config.merkleTreeFileUri,
-        gateway,
-        cachedWhitelist);
+        gateway
+      );
       return claim;
     },
     getSaleWhiteListDuration: async (
@@ -113,8 +117,7 @@ export const createInstance = (config: Config): Instance => {
       const isOnWhitelist = await actions.isUserOnWhitelist(
         address,
         config.merkleTreeFileUri,
-        gateway,
-        cachedWhitelist
+        gateway
       );
       return isOnWhitelist;
     },
@@ -141,21 +144,21 @@ export const createInstance = (config: Config): Instance => {
     },
     purchaseDomains: async (
       count: ethers.BigNumber,
-      signer: ethers.Signer
+      signer: ethers.Signer,
+      saleToken?: string
     ): Promise<ethers.ContractTransaction> => {
       const contract = await getWhiteListSaleContract(
         signer,
         config.contractAddress
       );
 
-      // const address = await signer.getAddress();
       const tx = await actions.purchaseDomains(
         count,
         signer,
         config.merkleTreeFileUri,
         config.isEth,
         contract,
-        cachedWhitelist
+        saleToken
       );
       return tx;
     },
@@ -171,38 +174,34 @@ export const createInstance = (config: Config): Instance => {
       return tx;
     },
     allowance: async (
-      saleTokenAddress: string,
-      signer: ethers.Signer
+      userAddress: string,
+      provider: ethers.providers.Provider
     ): Promise<ethers.BigNumber> => {
-      const allowance = await actions.allowance(
-        saleTokenAddress,
-        config.contractAddress,
-        signer
-      );
+      const allowance = await actions.allowance(config, userAddress, provider);
       return allowance;
     },
     approve: async (
-      saleTokenAddress: string,
-      spender: string,
-      signer: ethers.Signer,
+      signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      if (config.isEth)
-        throw Error("Cannot call ERC20 'approve' when sale token is ETH");
-
-      const tx = await actions.approve(
-        saleTokenAddress,
-        spender,
-        signer
-      );
+      if (config.isEth) {
+        throw Error("Cannot call ERC20 'approve' when sale token is not an ERC20 token");
+      }
+      // User must call to approve the sale contract to spend their tokens
+      const tx = await actions.approve(config, signer);
       return tx;
     },
     balanceOf: async (
       saleTokenAddress: string,
-      signer: ethers.Signer
+      userAddress: string,
+      provider: ethers.providers.Provider
     ): Promise<ethers.BigNumber> => {
-      const balance = await actions.balanceOf(saleTokenAddress, signer);
+      const balance = await actions.balanceOf(
+        saleTokenAddress,
+        userAddress,
+        provider
+      );
       return balance;
-    }
+    },
   };
 
   return instance;

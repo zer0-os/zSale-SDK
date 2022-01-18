@@ -9,29 +9,37 @@ export const purchaseDomains = async (
   merkleFileUri: string,
   isEth: boolean,
   contract: WhiteListSimpleSale,
-  cachedWhitelist: Maybe<Whitelist>,
   saleToken?: string
 ): Promise<ethers.ContractTransaction> => {
   const status = await getSaleStatus(contract);
   const price = await contract.salePrice();
 
+  // When a sale is created, a user has the option to set the sale token if they want to
+  // If this is not set, then the sale token is Ethereum.
   if (isEth) {
     const balance = await signer.getBalance();
     const userHasFunds = balance.gte(price);
-    if (!userHasFunds)
-      throw Error("User ETH balance is not enough to purchase a domain");
+    if (!userHasFunds) {
+      throw Error("Not enough ETH to purchase a domain");
+    }
   } else {
-    if (!saleToken)
-      throw Error("If `isEth` is set to false a `saleToken` parameter is required");
-    const balance = await balanceOf(saleToken, signer);
+    if (!saleToken) {
+      throw Error(
+        "SDK Configuration Error: SDK Config is set to do sale with ERC20 tokens but smart contract does not support it"
+      );
+    }
+    const address = await signer.getAddress();
+    const balance = await balanceOf(saleToken, address, signer);
     const userHasFunds = balance.gte(price);
-    if (!userHasFunds)
-      throw Error("User token balance is not enough to purchase a domain");
+    if (!userHasFunds) {
+      throw Error("Not enough of sale token to purchase a domain");
+    }
   }
 
   // If sale hasn't started nobody can make a purchase yet
-  if (status === SaleStatus.NotStarted)
+  if (status === SaleStatus.NotStarted) {
     throw Error("Cannot call to purchaseDomains when sale has not begun");
+  }
 
   const address = await signer.getAddress();
 
@@ -40,17 +48,21 @@ export const purchaseDomains = async (
     const userClaim: Claim | undefined = await getWhiteListedUserClaim(
       address,
       merkleFileUri,
-      IPFSGatewayUri.fleek,
-      cachedWhitelist
+      IPFSGatewayUri.fleek
     );
 
-    if (!userClaim) throw Error("User is not on the sale whitelist");
+    if (!userClaim) {
+      throw Error("User is not on the sale whitelist");
+    }
 
-    const purchased = await contract.domainsPurchasedByAccount(address)
+    const purchased = await contract.domainsPurchasedByAccount(address);
     const maxPurchase = await contract.maxPurchasesPerAccount();
 
-    if ((purchased.add(ethers.BigNumber.from("1")).gt(maxPurchase)))
-      throw Error("User is unable to make any more purchases, they have already reached the limit");
+    if (purchased.add(ethers.BigNumber.from("1")).gt(maxPurchase)) {
+      throw Error(
+        "User is unable to make any more purchases, they have already reached the limit"
+      );
+    }
 
     const tx = await contract
       .connect(signer)

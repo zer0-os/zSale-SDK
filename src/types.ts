@@ -31,14 +31,9 @@ export interface Claims {
   [address: string]: Claim;
 }
 
-export interface MerkleTree {
-  merkleRoot: string;
-  tokenTotal: string;
-  claims: Claims;
-}
-
 export interface Whitelist {
   merkleRoot: string;
+  tokenTotal: string;
   claims: Claims;
 }
 
@@ -70,14 +65,13 @@ export interface Instance {
   ): Promise<Whitelist>;
   getWhiteListedUserClaim(
     signer: ethers.Signer,
-    gateway: IPFSGatewayUri,
-    cachedWhitelist: Maybe<Whitelist>
-  ): Promise<Claim | undefined>;
+    gateway: IPFSGatewayUri
+  ): Promise<Claim>
   getSaleWhiteListDuration(signer: ethers.Signer): Promise<ethers.BigNumber>;
   getTotalForSale(signer: ethers.Signer): Promise<ethers.BigNumber>;
   getNumberOfDomainsSold(signer: ethers.Signer): Promise<ethers.BigNumber>;
   getBlockNumber(): Promise<number>;
-  getEthBalance(signer: ethers.Signer): Promise<string>
+  getEthBalance(signer: ethers.Signer): Promise<string>;
   isUserOnWhitelist(
     signer: ethers.Signer,
     gateway: IPFSGatewayUri
@@ -93,16 +87,15 @@ export interface Instance {
     signer: ethers.Signer
   ): Promise<ethers.ContractTransaction>;
   allowance(
-    saleTokenAddress: string,
-    signer: ethers.Signer
-  ): Promise<ethers.BigNumber>;
+    userAddress: string,
+    provider: ethers.providers.Provider
+  ): Promise<ethers.BigNumber>
   approve(
-    saleTokenAddress: string,
-    spender: string,
-    signer: ethers.Signer,
-  ): Promise<ethers.ContractTransaction>;
+    signer: ethers.Signer
+  ): Promise<ethers.ContractTransaction>
   balanceOf(
     saleTokenAddress: string,
-    signer: ethers.Signer
-  ): Promise<ethers.BigNumber>
+    userAddress: string,
+    provider: ethers.providers.Provider
+  ): Promise<ethers.BigNumber>;
 }

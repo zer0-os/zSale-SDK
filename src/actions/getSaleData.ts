@@ -9,12 +9,19 @@ export const getSaleData = async (
   const started = await contract.saleStarted();
 
   const startBlock = started
-    ? await (await contract.saleStartBlock()).toNumber()
+    ? (await contract.saleStartBlock()).toNumber()
     : undefined;
 
-  const saleToken = isEth
-    ? undefined
-    : await contract.saleToken();
+  let saleToken;
+
+  try {
+    // It is possible the user misconfigures the SDK upon creation
+    // and as a result the `saleToken()` function may not exist on
+    // the smart contract, even if `isEth` is false
+    saleToken = isEth ? undefined : await contract.saleToken();
+  } catch (e) {
+    console.log(e);
+  }
 
   return {
     amountSold: (await contract.domainsSold()).toNumber(),
@@ -24,10 +31,14 @@ export const getSaleData = async (
     whitelistDuration: (await contract.whitelistSaleDuration()).toNumber(),
     paused: await contract.paused(),
     currentMaxPurchases: (await contract.currentMaxPurchaseCount()).toNumber(),
-    maxPurchasesDuringWhitelist: (await contract.maxPurchasesPerAccount()).toNumber(),
-    maxPurchasesPostWhitelist: (await contract.postWhitelistMaxPurchases()).toNumber(),
+    maxPurchasesDuringWhitelist: (
+      await contract.maxPurchasesPerAccount()
+    ).toNumber(),
+    maxPurchasesPostWhitelist: (
+      await contract.postWhitelistMaxPurchases()
+    ).toNumber(),
     isEth: isEth,
     startBlock: startBlock,
-    saleToken: saleToken
-  } as SaleData
-}
+    saleToken: saleToken,
+  } as SaleData;
+};

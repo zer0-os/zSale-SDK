@@ -1,4 +1,9 @@
 import { ethers } from "ethers";
+import * as dotenv from "dotenv";
+import { getWhiteListSaleContract } from "../contracts";
+import { Config } from "../types";
+
+dotenv.config();
 
 const erc20Abi = [
   "function allowance(address owner, address spender) external",
@@ -6,15 +11,21 @@ const erc20Abi = [
 
 // Check the allowance of the spender to use tokens on behalf of the signer
 export const allowance = async (
-  saleTokenAddress: string, // e.g. an ERC20 such as wETH or WILD
-  spenderAddress: string, // The sale contract
-  signer: ethers.Signer
+  config: Config, // The sale contract
+  userAddress: string,
+  signerOrProvider: ethers.Signer | ethers.providers.Provider,
 ): Promise<ethers.BigNumber> => {
-  const token = new ethers.Contract(saleTokenAddress, erc20Abi, signer);
+  if (config.isEth) {
+    throw Error(
+      "The SDK is configured to do sales in Ethereum, not an ERC20 token, so you cannot call to `allowance`"
+    );
+  }
 
-  const signerAddress = await signer.getAddress();
+  const contract = await getWhiteListSaleContract(signerOrProvider, config.contractAddress)
+  const tokenAddress = await contract.saleToken();
+  const token = new ethers.Contract(tokenAddress, erc20Abi, signerOrProvider);
 
   // Owner, spender
-  const allowance = await token.allowance(signerAddress, spenderAddress);
+  const allowance = await token.allowance(userAddress, config);
   return allowance;
-}
+};
