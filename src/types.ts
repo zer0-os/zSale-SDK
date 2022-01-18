@@ -31,19 +31,47 @@ export interface Claims {
   [address: string]: Claim;
 }
 
-export interface MerkleTree {
+export interface Whitelist {
   merkleRoot: string;
-  string: string;
   claims: Claims;
 }
 
+export interface SaleData {
+  amountSold: number;
+  amountForSale: number;
+  salePrice: string;
+  started: boolean;
+  whitelistDuration: number;
+  paused: boolean;
+  currentMaxPurchases: number;
+  maxPurchasesDuringWhitelist: number;
+  maxPurchasesPostWhitelist: number;
+  isEth: boolean;
+  startBlock?: number;
+  saleToken?: string;
+}
+
+export type Maybe<T> = T | undefined | null;
+
 export interface Instance {
   getSalePrice(signer: ethers.Signer): Promise<string>;
+  getSaleData(signer: ethers.Signer): Promise<SaleData>;
   getSaleStartBlock(signer: ethers.Signer): Promise<string>;
   getSaleStatus(signer: ethers.Signer): Promise<SaleStatus>;
+  getWhitelist(
+    gateway: IPFSGatewayUri,
+    cachedWhitelist: Maybe<Whitelist>
+  ): Promise<Whitelist>;
+  getWhiteListedUserClaim(
+    address: string,
+    gateway: IPFSGatewayUri
+  ): Promise<Claim>;
   getSaleWhiteListDuration(signer: ethers.Signer): Promise<ethers.BigNumber>;
   getTotalForSale(signer: ethers.Signer): Promise<ethers.BigNumber>;
   getNumberOfDomainsSold(signer: ethers.Signer): Promise<ethers.BigNumber>;
+  getBlockNumber(): Promise<number>;
+  getEthBalance(signer: ethers.Signer): Promise<string>;
+  isUserOnWhitelist(address: string, gateway: IPFSGatewayUri): Promise<boolean>;
   getDomainsPurchasedByAccount(signer: ethers.Signer): Promise<number>;
   getCurrentMaxPurchaseCount(signer: ethers.Signer): Promise<number>;
   purchaseDomains(
@@ -54,4 +82,14 @@ export interface Instance {
     pauseStatus: boolean,
     signer: ethers.Signer
   ): Promise<ethers.ContractTransaction>;
+  allowance(
+    userAddress: string,
+    provider: ethers.providers.Provider
+  ): Promise<ethers.BigNumber>;
+  approve(signer: ethers.Signer): Promise<ethers.ContractTransaction>;
+  balanceOf(
+    saleTokenAddress: string,
+    userAddress: string,
+    provider: ethers.providers.Provider
+  ): Promise<ethers.BigNumber>;
 }

@@ -12,8 +12,9 @@ export const getSaleStatus = async (contract: WhiteListSimpleSale) => {
   const startBlock = await contract.saleStartBlock();
   const duration = await contract.whitelistSaleDuration();
 
-  if (ethers.BigNumber.from(currentBlock).gt(startBlock.add(duration)))
+  if (ethers.BigNumber.from(currentBlock).gt(startBlock.add(duration))) {
     return SaleStatus.Public;
+  }
 
   return SaleStatus.WhiteListOnly;
 };
