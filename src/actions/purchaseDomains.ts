@@ -61,7 +61,8 @@ export const purchaseDomains = async (
 
     if (purchased.add(count).gt(maxPurchase)) {
       throw Error(
-        "User is unable to make any more purchases, they have already reached the limit"
+        `Buying ${count} more domains would go over the maximum purchase amount of domains per account.
+        Try reducing the purchase amount.`
       );
     }
 
