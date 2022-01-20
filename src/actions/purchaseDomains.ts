@@ -22,7 +22,7 @@ export const purchaseDomains = async (
   // If this is not set, then the sale token is Ethereum.
   if (isEth) {
     const balance = await signer.getBalance();
-    const userHasFunds = balance.gte(price);
+    const userHasFunds = balance.gte(price.mul(count));
     if (!userHasFunds) {
       throw Error("Not enough ETH to purchase a domain");
     }
@@ -59,9 +59,10 @@ export const purchaseDomains = async (
     const purchased = await contract.domainsPurchasedByAccount(address);
     const maxPurchase = await contract.maxPurchasesPerAccount();
 
-    if (purchased.add(ethers.BigNumber.from("1")).gt(maxPurchase)) {
+    if (purchased.add(count).gt(maxPurchase)) {
       throw Error(
-        "User is unable to make any more purchases, they have already reached the limit"
+        `Buying ${count} more domains would go over the maximum purchase amount of domains per account.
+        Try reducing the purchase amount.`
       );
     }
 

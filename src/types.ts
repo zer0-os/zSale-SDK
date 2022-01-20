@@ -58,10 +58,7 @@ export interface Instance {
   getSaleData(signer: ethers.Signer): Promise<SaleData>;
   getSaleStartBlock(signer: ethers.Signer): Promise<string>;
   getSaleStatus(signer: ethers.Signer): Promise<SaleStatus>;
-  getWhitelist(
-    gateway: IPFSGatewayUri,
-    cachedWhitelist: Maybe<Whitelist>
-  ): Promise<Whitelist>;
+  getWhitelist(gateway: IPFSGatewayUri): Promise<Whitelist>;
   getWhiteListedUserClaim(
     address: string,
     gateway: IPFSGatewayUri
@@ -76,7 +73,8 @@ export interface Instance {
   getCurrentMaxPurchaseCount(signer: ethers.Signer): Promise<number>;
   purchaseDomains(
     count: ethers.BigNumber,
-    signer: ethers.Signer
+    signer: ethers.Signer,
+    saleToken?: string
   ): Promise<ethers.ContractTransaction>;
   setPauseStatus(
     pauseStatus: boolean,
