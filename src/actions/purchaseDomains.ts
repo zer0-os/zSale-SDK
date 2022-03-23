@@ -1,84 +1,82 @@
 import * as ethers from "ethers";
-import { balanceOf, getSaleStatus } from ".";
-import { WhiteListSimpleSale } from "../contracts/types";
-import { Claim, IPFSGatewayUri, Maybe, SaleStatus, Whitelist } from "../types";
+import { getSaleStatus } from ".";
+import { MintlistSimpleFolderIndexSale } from "../contracts/types";
+import { Claim, IPFSGatewayUri, SaleStatus, Mintlist, Maybe } from "../types";
+
+export const errorCheck = async (condition: boolean, errorMessage: string) => {
+  if (condition) {
+    throw errorMessage;
+  }
+};
 
 export const purchaseDomains = async (
   count: ethers.BigNumber,
   signer: ethers.Signer,
   merkleFileUri: string,
-  isEth: boolean,
-  contract: WhiteListSimpleSale,
-  getWhitelist: (
+  contract: MintlistSimpleFolderIndexSale,
+  cachedMintlist: Maybe<Mintlist>,
+  getMintlist: (
     merkleFileUri: string,
-    gateway: IPFSGatewayUri
-  ) => Promise<Whitelist>,
-  saleToken?: string
+    gateway: IPFSGatewayUri,
+    cachedMintlist: Maybe<Mintlist>
+  ) => Promise<Mintlist>
 ): Promise<ethers.ContractTransaction> => {
   const status = await getSaleStatus(contract);
-  const price = await contract.salePrice();
 
-  let txParams;
+  errorCheck(
+    status === SaleStatus.NotStarted,
+    "Cannot purchase a domain when sale has not started or has ended"
+  );
+  errorCheck(
+    status === SaleStatus.Ended,
+    "Cannot purchase a domain once the sale has ended"
+  );
+  errorCheck(count.eq("0"), "Cannot purchase 0 domains");
 
-  // When a sale is created, a user has the option to set the sale token if they want to
-  // If this is not set, then the sale token is Ethereum.
-  if (isEth) {
-    const balance = await signer.getBalance();
-    const userHasFunds = balance.gte(price.mul(count));
-    if (!userHasFunds) {
-      throw Error("Not enough ETH to purchase a domain");
-    }
-    txParams = {
-      value: price.mul(count)
-    }
-  } else {
-    if (!saleToken) {
-      throw Error(
-        "SDK Configuration Error: SDK Config is set to do sale with ERC20 tokens but smart contract does not support it"
-      );
-      txParams = {};
-    }
-    const address = await signer.getAddress();
-    const balance = await balanceOf(saleToken, address, signer);
-    const userHasFunds = balance.gte(price);
-    if (!userHasFunds) {
-      throw Error("Not enough of sale token to purchase a domain");
-    }
-  }
+  const paused = await contract.paused();
 
-  // If sale hasn't started nobody can make a purchase yet
-  if (status === SaleStatus.NotStarted) {
-    throw Error("Cannot call to purchaseDomains when sale has not begun");
-  }
+  errorCheck(paused, "Sale contract is paused");
+
+  const domainsSold = await contract.domainsSold();
+  const totalForSale = await contract.totalForSale();
+
+  errorCheck(
+    domainsSold == totalForSale,
+    "There are no more domains left in the sale"
+  );
 
   const address = await signer.getAddress();
+  const mintlist = await getMintlist(merkleFileUri, IPFSGatewayUri.fleek, cachedMintlist);
+  const userClaim: Claim = mintlist.claims[address];
 
-  // If sale is in whitelist phase only addresses found on the whitelist can purchase
-  if (status === SaleStatus.WhiteListOnly) {
-    const whitelist = await getWhitelist(merkleFileUri, IPFSGatewayUri.fleek);
-    const userClaim: Claim = whitelist.claims[address];
+  errorCheck(userClaim === undefined, "User is not on the mintlist");
 
-    if (!userClaim) {
-      throw Error("User is not on the sale whitelist");
-    }
+  const purchased = await contract.domainsPurchasedByAccount(address);
 
-    const purchased = await contract.domainsPurchasedByAccount(address);
-    const maxPurchase = await contract.maxPurchasesPerAccount();
+  errorCheck(
+    purchased.add(count).gte(userClaim.quantity),
+    `Buying ${count} more domains would go over the maximum purchase amount of domains
+    for this user. Try reducing the purchase amount.`
+  );
 
-    if (purchased.add(count).gt(maxPurchase)) {
-      throw Error(
-        `Buying ${count} more domains would go over the maximum purchase amount of domains per account.
-        Try reducing the purchase amount.`
-      );
-    }
+  const price = await contract.salePrice();
+  const balance = await signer.getBalance();
 
-    const tx = await contract
-      .connect(signer)
-      .purchaseDomainsWhitelisted(count, userClaim.index, userClaim.proof, txParams);
-    return tx;
-  } else {
-    // If sale is public, anyone is allowed to make a purchase
-    const tx = await contract.connect(signer).purchaseDomains(count, txParams);
-    return tx;
-  }
+  errorCheck(
+    balance.lt(price.mul(count)),
+    `Not enough funds given for purchase of ${count} domains`
+  );
+
+  const tx = await contract
+    .connect(signer)
+    .purchaseDomains(
+      count,
+      userClaim.index,
+      userClaim.quantity,
+      userClaim.proof,
+      {
+        value: price.mul(count),
+      }
+    );
+  return tx;
 };

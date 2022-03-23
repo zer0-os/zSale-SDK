@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 
-import { getWhiteListSaleContract } from "./contracts";
+import { getMintlistFolderIndexSaleContract } from "./contracts";
 import * as actions from "./actions";
 import {
   Claim,
@@ -10,26 +10,27 @@ import {
   Maybe,
   SaleData,
   SaleStatus,
-  Whitelist,
+  Mintlist,
 } from "./types";
+import { getMintlist } from "./actions";
 
 export const createInstance = (config: Config): Instance => {
-  let cachedWhitelist: Maybe<Whitelist>;
+  let cachedMintlist: Maybe<Mintlist>;
 
   const getWhitelist = async (
     merkleFileUri: string,
     gateway: IPFSGatewayUri
   ) => {
-    const whitelist = await actions.getWhitelist(
+    const Mintlist = await actions.getMintlist(
       merkleFileUri,
       gateway,
-      cachedWhitelist
+      cachedMintlist
     );
-    return whitelist;
+    return Mintlist;
   };
   const instance: Instance = {
     getSalePrice: async (signer: ethers.Signer): Promise<string> => {
-      const contract = await getWhiteListSaleContract(
+      const contract = await getMintlistFolderIndexSaleContract(
         signer,
         config.contractAddress
       );
@@ -37,7 +38,7 @@ export const createInstance = (config: Config): Instance => {
       return ethers.utils.formatEther(price).toString();
     },
     getSaleData: async (signer: ethers.Signer): Promise<SaleData> => {
-      const contract = await getWhiteListSaleContract(
+      const contract = await getMintlistFolderIndexSaleContract(
         signer,
         config.contractAddress
       );
@@ -49,7 +50,7 @@ export const createInstance = (config: Config): Instance => {
       return saleData;
     },
     getSaleStartBlock: async (signer: ethers.Signer): Promise<string> => {
-      const contract = await getWhiteListSaleContract(
+      const contract = await getMintlistFolderIndexSaleContract(
         signer,
         config.contractAddress
       );
@@ -57,23 +58,27 @@ export const createInstance = (config: Config): Instance => {
       return startBlock.toString();
     },
     getSaleStatus: async (signer: ethers.Signer): Promise<SaleStatus> => {
-      const contract = await getWhiteListSaleContract(
+      const contract = await getMintlistFolderIndexSaleContract(
         signer,
         config.contractAddress
       );
       const status: SaleStatus = await actions.getSaleStatus(contract);
       return status;
     },
-    getWhitelist: async (gateway: IPFSGatewayUri): Promise<Whitelist> => {
-      const whitelist = await getWhitelist(config.merkleTreeFileUri, gateway);
+    getMintlist: async (gateway: IPFSGatewayUri): Promise<Mintlist> => {
+      const whitelist = await actions.getMintlist(
+        config.merkleTreeFileUri,
+        gateway,
+        cachedMintlist
+      );
       return whitelist;
     },
-    getWhiteListedUserClaim: async (
+    getMintlistedUserClaim: async (
       address: string,
       gateway: IPFSGatewayUri
     ): Promise<Claim> => {
-      const whitelist = await getWhitelist(config.merkleTreeFileUri, gateway);
-      const userClaim: Claim = whitelist.claims[address];
+      const mintlist = await getWhitelist(config.merkleTreeFileUri, gateway);
+      const userClaim: Claim = mintlist.claims[address];
       if (!userClaim) {
         throw Error(
           `No claim could be found for user ${address} because they are not on the whitelist`
@@ -81,20 +86,20 @@ export const createInstance = (config: Config): Instance => {
       }
       return userClaim;
     },
-    getSaleWhiteListDuration: async (
+    getSaleMintlistDuration: async (
       signer: ethers.Signer
     ): Promise<ethers.BigNumber> => {
-      const contract = await getWhiteListSaleContract(
+      const contract = await getMintlistFolderIndexSaleContract(
         signer,
         config.contractAddress
       );
-      const duration = await contract.whitelistSaleDuration();
+      const duration = await contract.mintlistSaleDuration();
       return duration;
     },
     getTotalForSale: async (
       signer: ethers.Signer
     ): Promise<ethers.BigNumber> => {
-      const contract = await getWhiteListSaleContract(
+      const contract = await getMintlistFolderIndexSaleContract(
         signer,
         config.contractAddress
       );
@@ -104,7 +109,7 @@ export const createInstance = (config: Config): Instance => {
     getNumberOfDomainsSold: async (
       signer: ethers.Signer
     ): Promise<ethers.BigNumber> => {
-      const contract = await getWhiteListSaleContract(
+      const contract = await getMintlistFolderIndexSaleContract(
         signer,
         config.contractAddress
       );
@@ -120,18 +125,22 @@ export const createInstance = (config: Config): Instance => {
       const balance = await signer.getBalance();
       return ethers.utils.formatEther(balance);
     },
-    isUserOnWhitelist: async (
+    isUserOnMintlist: async (
       address: string,
       gateway: IPFSGatewayUri
     ): Promise<boolean> => {
-      const whitelist = await getWhitelist(config.merkleTreeFileUri, gateway);
-      const isOnWhitelist = whitelist.claims[address] ? true : false;
+      const mintlist = await actions.getMintlist(
+        config.merkleTreeFileUri,
+        gateway,
+        cachedMintlist
+      );
+      const isOnWhitelist = mintlist.claims[address] ? true : false;
       return isOnWhitelist;
     },
     getDomainsPurchasedByAccount: async (
       signer: ethers.Signer
     ): Promise<number> => {
-      const contract = await getWhiteListSaleContract(
+      const contract = await getMintlistFolderIndexSaleContract(
         signer,
         config.contractAddress
       );
@@ -139,22 +148,12 @@ export const createInstance = (config: Config): Instance => {
       const domains = await contract.domainsPurchasedByAccount(address);
       return domains.toNumber();
     },
-    getCurrentMaxPurchaseCount: async (
-      signer: ethers.Signer
-    ): Promise<number> => {
-      const contract = await getWhiteListSaleContract(
-        signer,
-        config.contractAddress
-      );
-      const count = await contract.currentMaxPurchaseCount();
-      return count.toNumber();
-    },
     purchaseDomains: async (
       count: ethers.BigNumber,
       signer: ethers.Signer,
       saleToken?: string
     ): Promise<ethers.ContractTransaction> => {
-      const contract = await getWhiteListSaleContract(
+      const contract = await getMintlistFolderIndexSaleContract(
         signer,
         config.contractAddress
       );
@@ -163,10 +162,9 @@ export const createInstance = (config: Config): Instance => {
         count,
         signer,
         config.merkleTreeFileUri,
-        config.isEth,
         contract,
-        getWhitelist,
-        saleToken
+        cachedMintlist,
+        getMintlist,
       );
       return tx;
     },
@@ -174,43 +172,12 @@ export const createInstance = (config: Config): Instance => {
       pauseStatus: boolean,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      const contract = await getWhiteListSaleContract(
+      const contract = await getMintlistFolderIndexSaleContract(
         signer,
         config.contractAddress
       );
       const tx = await actions.setPauseStatus(pauseStatus, contract, signer);
       return tx;
-    },
-    allowance: async (
-      userAddress: string,
-      provider: ethers.providers.Provider
-    ): Promise<ethers.BigNumber> => {
-      const allowance = await actions.allowance(config, userAddress, provider);
-      return allowance;
-    },
-    approve: async (
-      signer: ethers.Signer
-    ): Promise<ethers.ContractTransaction> => {
-      if (config.isEth) {
-        throw Error(
-          "Cannot call ERC20 'approve' when sale token is not an ERC20 token"
-        );
-      }
-      // User must call to approve the sale contract to spend their tokens
-      const tx = await actions.approve(config, signer);
-      return tx;
-    },
-    balanceOf: async (
-      saleTokenAddress: string,
-      userAddress: string,
-      provider: ethers.providers.Provider
-    ): Promise<ethers.BigNumber> => {
-      const balance = await actions.balanceOf(
-        saleTokenAddress,
-        userAddress,
-        provider
-      );
-      return balance;
     },
   };
 

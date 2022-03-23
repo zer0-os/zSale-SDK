@@ -1,7 +1,6 @@
 import fetch from "cross-fetch";
-import { cachedDataVersionTag } from "v8";
 
-import { IPFSGatewayUri, Maybe, Whitelist } from "../../types";
+import { IPFSGatewayUri, Maybe, Mintlist } from "../../types";
 
 
 export const ipfsToHttpUrl = (
@@ -17,32 +16,32 @@ export const ipfsToHttpUrl = (
 export const getMerkleTree = async (
   merkleFileUri: string,
   gateway: IPFSGatewayUri
-): Promise<Whitelist> => {
+): Promise<Mintlist> => {
   // Receive `ipfs://Qm...`
   const uri = ipfsToHttpUrl(merkleFileUri, gateway);
   const res = await fetch(uri, { method: "GET" });
-  const merkleTree: Whitelist = await res.json();
+  const merkleTree: Mintlist = await res.json();
   return merkleTree;
 };
 
-export const getWhitelist = async (
+export const getMintlist = async (
   merkleFileUri: string,
   gateway: IPFSGatewayUri,
-  cachedWhitelist: Maybe<Whitelist>
+  cachedWhitelist: Maybe<Mintlist>
 ) => {
   if (cachedWhitelist) {
     return cachedWhitelist;
   }
   
-  const merkleTree: Whitelist = await getMerkleTree(merkleFileUri, gateway);
+  const merkleTree: Mintlist = await getMerkleTree(merkleFileUri, gateway);
   
   cachedWhitelist = {
     merkleRoot: merkleTree.merkleRoot,
     claims: merkleTree.claims
-  } as Whitelist;
+  } as Mintlist;
 
   return {
     merkleRoot: merkleTree.merkleRoot,
     claims: merkleTree.claims
-  } as Whitelist;
+  } as Mintlist;
 };
