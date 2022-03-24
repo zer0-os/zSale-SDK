@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  node: cimg/node@4.7.0
+  node: circleci/node@4.7.0
 
 defaults: &defaults
   working_directory: ~/repo
@@ -15,7 +15,6 @@ jobs:
       - checkout
       - node/install-packages:
           pkg-manager: yarn
-      - run: yarn typechain
       - run: yarn build
       - persist_to_workspace:
           root: ~/repo
