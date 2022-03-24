@@ -1,12 +1,11 @@
-import { Web3Provider } from "@ethersproject/providers";
 import { ethers } from "ethers";
 
-import { WhiteListSimpleSale, WhiteListSimpleSale__factory } from "./types";
+import { MintlistSimpleFolderIndexSale, MintlistSimpleFolderIndexSale__factory } from "./types";
 
-export const getWhiteListSaleContract = async (
+export const getMintlistFolderIndexSaleContract = async (
   provider: ethers.providers.Provider | ethers.Signer,
   address: string
-): Promise<WhiteListSimpleSale> => {
-  const contract = WhiteListSimpleSale__factory.connect(address, provider);
+): Promise<MintlistSimpleFolderIndexSale> => {
+  const contract = MintlistSimpleFolderIndexSale__factory.connect(address, provider);
   return contract;
 };

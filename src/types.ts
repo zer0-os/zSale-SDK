@@ -3,7 +3,7 @@ import * as ethers from "ethers";
 /**
  * isEth - Mark if a sale for the domain is in ETH or in Token
  * contractAddress - The address of the sale contract in 0x... format
- * merkleTreeFileUrl - A file path to the merkle tree for identifying whitelisted users
+ * merkleTreeFileUrl - A file path to the merkle tree for identifying Mintlisted users
  */
 export interface Config {
   isEth: boolean;
@@ -18,20 +18,21 @@ export enum IPFSGatewayUri {
 
 export enum SaleStatus {
   NotStarted,
-  WhiteListOnly,
-  Public,
+  MintlistOnly,
+  Ended
 }
 
 export interface Claim {
   index: number;
   proof: string[];
+  quantity: number;
 }
 
 export interface Claims {
   [address: string]: Claim;
 }
 
-export interface Whitelist {
+export interface Mintlist {
   merkleRoot: string;
   claims: Claims;
 }
@@ -41,14 +42,9 @@ export interface SaleData {
   amountForSale: number;
   salePrice: string;
   started: boolean;
-  whitelistDuration: number;
+  mintlistDuration: number;
   paused: boolean;
-  currentMaxPurchases: number;
-  maxPurchasesDuringWhitelist: number;
-  maxPurchasesPostWhitelist: number;
-  isEth: boolean;
   startBlock?: number;
-  saleToken?: string;
 }
 
 export type Maybe<T> = T | undefined | null;
@@ -58,19 +54,18 @@ export interface Instance {
   getSaleData(signer: ethers.Signer): Promise<SaleData>;
   getSaleStartBlock(signer: ethers.Signer): Promise<string>;
   getSaleStatus(signer: ethers.Signer): Promise<SaleStatus>;
-  getWhitelist(gateway: IPFSGatewayUri): Promise<Whitelist>;
-  getWhiteListedUserClaim(
+  getMintlist(gateway: IPFSGatewayUri): Promise<Mintlist>;
+  getMintlistedUserClaim(
     address: string,
     gateway: IPFSGatewayUri
   ): Promise<Claim>;
-  getSaleWhiteListDuration(signer: ethers.Signer): Promise<ethers.BigNumber>;
+  getSaleMintlistDuration(signer: ethers.Signer): Promise<ethers.BigNumber>;
   getTotalForSale(signer: ethers.Signer): Promise<ethers.BigNumber>;
   getNumberOfDomainsSold(signer: ethers.Signer): Promise<ethers.BigNumber>;
   getBlockNumber(): Promise<number>;
   getEthBalance(signer: ethers.Signer): Promise<string>;
-  isUserOnWhitelist(address: string, gateway: IPFSGatewayUri): Promise<boolean>;
+  isUserOnMintlist(address: string, gateway: IPFSGatewayUri): Promise<boolean>;
   getDomainsPurchasedByAccount(signer: ethers.Signer): Promise<number>;
-  getCurrentMaxPurchaseCount(signer: ethers.Signer): Promise<number>;
   purchaseDomains(
     count: ethers.BigNumber,
     signer: ethers.Signer,
@@ -80,14 +75,4 @@ export interface Instance {
     pauseStatus: boolean,
     signer: ethers.Signer
   ): Promise<ethers.ContractTransaction>;
-  allowance(
-    userAddress: string,
-    provider: ethers.providers.Provider
-  ): Promise<ethers.BigNumber>;
-  approve(signer: ethers.Signer): Promise<ethers.ContractTransaction>;
-  balanceOf(
-    saleTokenAddress: string,
-    userAddress: string,
-    provider: ethers.providers.Provider
-  ): Promise<ethers.BigNumber>;
 }

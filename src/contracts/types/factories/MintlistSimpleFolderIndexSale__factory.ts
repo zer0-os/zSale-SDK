@@ -4,9 +4,31 @@
 
 import { Contract, Signer, utils } from "ethers";
 import { Provider } from "@ethersproject/providers";
-import type { SimpleSale, SimpleSaleInterface } from "../SimpleSale";
+import type {
+  MintlistSimpleFolderIndexSale,
+  MintlistSimpleFolderIndexSaleInterface,
+} from "../MintlistSimpleFolderIndexSale";
 
 const _abi = [
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "buyer",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "domainId",
+        type: "uint256",
+      },
+    ],
+    name: "DomainPurchased",
+    type: "event",
+  },
   {
     anonymous: false,
     inputs: [
@@ -27,6 +49,38 @@ const _abi = [
     type: "event",
   },
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "buyer",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "RefundedEther",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "block",
+        type: "uint256",
+      },
+    ],
+    name: "SaleStarted",
+    type: "event",
+  },
+  {
     inputs: [
       {
         internalType: "contract IBasicController",
@@ -40,12 +94,7 @@ const _abi = [
       },
       {
         internalType: "uint256",
-        name: "price",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "maxPurchasesPerAccount_",
+        name: "price_",
         type: "uint256",
       },
       {
@@ -60,16 +109,26 @@ const _abi = [
       },
       {
         internalType: "uint256",
-        name: "startIndex_",
+        name: "mintlistSaleDuration_",
         type: "uint256",
       },
       {
-        internalType: "address",
-        name: "saleToken_",
-        type: "address",
+        internalType: "bytes32",
+        name: "merkleRoot_",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint256",
+        name: "startingMetadataIndex_",
+        type: "uint256",
+      },
+      {
+        internalType: "string",
+        name: "baseFolderHashWithoutQm_",
+        type: "string",
       },
     ],
-    name: "__SimpleSale_init",
+    name: "__MintlistSimpleFolderIndexSale_init",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -88,21 +147,16 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [
+    inputs: [],
+    name: "baseFolderHashWithoutQm",
+    outputs: [
       {
-        internalType: "bytes12[]",
-        name: "chunk1",
-        type: "bytes12[]",
-      },
-      {
-        internalType: "bytes32[]",
-        name: "chunk2",
-        type: "bytes32[]",
+        internalType: "string",
+        name: "",
+        type: "string",
       },
     ],
-    name: "addDomainsToSellOptimized",
-    outputs: [],
-    stateMutability: "nonpayable",
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -126,11 +180,11 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "domainsForSale",
+    name: "domainMetadataUris",
     outputs: [
       {
         internalType: "string",
-        name: "metadataUri",
+        name: "",
         type: "string",
       },
     ],
@@ -170,8 +224,40 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "index",
+        type: "uint256",
+      },
+    ],
+    name: "getNftByIndex",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
-    name: "maxPurchasesPerAccount",
+    name: "mintlistMerkleRoot",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "mintlistSaleDuration",
     outputs: [
       {
         internalType: "uint256",
@@ -180,40 +266,6 @@ const _abi = [
       },
     ],
     stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-      {
-        internalType: "bytes",
-        name: "",
-        type: "bytes",
-      },
-    ],
-    name: "onERC721Received",
-    outputs: [
-      {
-        internalType: "bytes4",
-        name: "",
-        type: "bytes4",
-      },
-    ],
-    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -243,16 +295,64 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "paused",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "prefix",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "uint8",
         name: "count",
         type: "uint8",
       },
+      {
+        internalType: "uint256",
+        name: "index",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "purchaseLimit",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "merkleProof",
+        type: "bytes32[]",
+      },
     ],
     name: "purchaseDomains",
     outputs: [],
     stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "releaseDomain",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -277,12 +377,25 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "saleToken",
+    name: "saleStartBlock",
     outputs: [
       {
-        internalType: "contract IERC20Upgradeable",
+        internalType: "uint256",
         name: "",
-        type: "address",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "saleStarted",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
       },
     ],
     stateMutability: "view",
@@ -304,12 +417,25 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "contract IBasicController",
-        name: "controller_",
-        type: "address",
+        internalType: "string",
+        name: "folderHashWithoutQm",
+        type: "string",
       },
     ],
-    name: "setController",
+    name: "setBaseFolderHash",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "root",
+        type: "bytes32",
+      },
+    ],
+    name: "setMerkleRoot",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -323,6 +449,45 @@ const _abi = [
       },
     ],
     name: "setParentDomainId",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bool",
+        name: "pauseStatus",
+        type: "bool",
+      },
+    ],
+    name: "setPauseStatus",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "durationInBlocks",
+        type: "uint256",
+      },
+    ],
+    name: "setSaleDuration",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "price",
+        type: "uint256",
+      },
+    ],
+    name: "setSalePrice",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -355,7 +520,14 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "startIndex",
+    name: "startSale",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "startingMetadataIndex",
     outputs: [
       {
         internalType: "uint256",
@@ -364,6 +536,13 @@ const _abi = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "stopSale",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -407,15 +586,19 @@ const _abi = [
   },
 ];
 
-export class SimpleSale__factory {
+export class MintlistSimpleFolderIndexSale__factory {
   static readonly abi = _abi;
-  static createInterface(): SimpleSaleInterface {
-    return new utils.Interface(_abi) as SimpleSaleInterface;
+  static createInterface(): MintlistSimpleFolderIndexSaleInterface {
+    return new utils.Interface(_abi) as MintlistSimpleFolderIndexSaleInterface;
   }
   static connect(
     address: string,
     signerOrProvider: Signer | Provider
-  ): SimpleSale {
-    return new Contract(address, _abi, signerOrProvider) as SimpleSale;
+  ): MintlistSimpleFolderIndexSale {
+    return new Contract(
+      address,
+      _abi,
+      signerOrProvider
+    ) as MintlistSimpleFolderIndexSale;
   }
 }
