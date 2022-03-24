@@ -1,4 +1,3 @@
-import { Web3Provider } from "@ethersproject/providers";
 import { ethers } from "ethers";
 
 import { MintlistSimpleFolderIndexSale, MintlistSimpleFolderIndexSale__factory } from "./types";
