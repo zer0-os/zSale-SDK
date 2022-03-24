@@ -17,7 +17,7 @@ import { getMintlist } from "./actions";
 export const createInstance = (config: Config): Instance => {
   let cachedMintlist: Maybe<Mintlist>;
 
-  const getWhitelist = async (
+  const getMintlist = async (
     merkleFileUri: string,
     gateway: IPFSGatewayUri
   ) => {
@@ -77,7 +77,7 @@ export const createInstance = (config: Config): Instance => {
       address: string,
       gateway: IPFSGatewayUri
     ): Promise<Claim> => {
-      const mintlist = await getWhitelist(config.merkleTreeFileUri, gateway);
+      const mintlist = await getMintlist(config.merkleTreeFileUri, gateway);
       const userClaim: Claim = mintlist.claims[address];
       if (!userClaim) {
         throw Error(
@@ -151,7 +151,6 @@ export const createInstance = (config: Config): Instance => {
     purchaseDomains: async (
       count: ethers.BigNumber,
       signer: ethers.Signer,
-      saleToken?: string
     ): Promise<ethers.ContractTransaction> => {
       const contract = await getMintlistFolderIndexSaleContract(
         signer,
