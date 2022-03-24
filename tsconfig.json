@@ -9,6 +9,7 @@
     "strict": true,
     "target": "ES2018",
     "sourceMap": true,
+    "composite": true,
     "esModuleInterop": true,
     "skipLibCheck": true
   },
