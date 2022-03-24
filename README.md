@@ -43,11 +43,9 @@ Below is a list of all functions exposed through the zSale SDK.
   
   `getSaleStatus(signer: ethers.Signer): Promise<SaleStatus>;`
   
-  `getSaleWhiteListDuration(signer: ethers.Signer): Promise<ethers.BigNumber>;`
+  `getSaleMintlistDuration(signer: ethers.Signer): Promise<ethers.BigNumber>;`
 
   `getTotalForSale(signer: ethers.Signer): Promise<ethers.BigNumber>;`
-
-  `getCurrentMaxPurchaseCount(signer: ethers.Signer): Promise<number>;`
 
 ### Aggregate Data
 
@@ -55,22 +53,17 @@ Below is a list of all functions exposed through the zSale SDK.
 
   `getDomainsPurchasedByAccount(signer: ethers.Signer): Promise<number>;`
 
-
-  `getWhitelist(gateway: IPFSGatewayUri): Promise<Whitelist>;`
+  `getMintlist(merkleFileUri: string, gateway: IPFSGatewayUri): Promise<Whitelist>;`
  
-  `getWhiteListedUserClaim(address: string, gateway: IPFSGatewayUri: Promise<Claim>;`
+  `getMintlistedUserClaim(address: string, gateway: IPFSGatewayUri: Promise<Claim>;`
   
 ### Helpers
   
   `getBlockNumber(): Promise<number>;`
   
   `getEthBalance(signer: ethers.Signer): Promise<string>;`
-
-  `balanceOf(saleTokenAddress: string, userAddress: string, provider: ethers.providers.Provider): Promise<ethers.BigNumber>;`
   
-  `isUserOnWhitelist(address: string, gateway: IPFSGatewayUri): Promise<boolean>;`
-  
-  `allowance(userAddress: string,provider: ethers.providers.Provider): Promise<ethers.BigNumber>;`
+  `isUserOnMintlist(address: string, gateway: IPFSGatewayUri): Promise<boolean>;`
   
  
 ### Utility
@@ -78,5 +71,3 @@ Below is a list of all functions exposed through the zSale SDK.
   `purchaseDomains(count: ethers.BigNumber, signer: ethers.Signer): Promise<ethers.ContractTransaction>;`
   
   `setPauseStatus(pauseStatus: boolean, signer: ethers.Signer): Promise<ethers.ContractTransaction>;`
-  
-  `approve(signer: ethers.Signer): Promise<ethers.ContractTransaction>;`
