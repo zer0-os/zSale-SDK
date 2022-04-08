@@ -20,75 +20,52 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface MintlistSimpleFolderIndexSaleInterface
-  extends ethers.utils.Interface {
+interface WolfSaleInterface extends ethers.utils.Interface {
   functions: {
-    "__MintlistSimpleFolderIndexSale_init(address,uint256,uint256,address,address,uint256,bytes32,uint256,string)": FunctionFragment;
-    "addDomainsToSell(string[])": FunctionFragment;
-    "baseFolderHashWithoutQm()": FunctionFragment;
-    "controller()": FunctionFragment;
-    "domainMetadataUris(uint256)": FunctionFragment;
+    "__WolfSale_init(uint256,address,address,uint256,uint256,uint256,bytes32,address)": FunctionFragment;
     "domainsPurchasedByAccount(address)": FunctionFragment;
     "domainsSold()": FunctionFragment;
-    "getNftByIndex(uint256)": FunctionFragment;
-    "mintlistMerkleRoot()": FunctionFragment;
-    "mintlistSaleDuration()": FunctionFragment;
+    "getIDByIndex(uint256)": FunctionFragment;
+    "holderWallet()": FunctionFragment;
+    "numberForSaleForCurrentPhase()": FunctionFragment;
     "owner()": FunctionFragment;
-    "parentDomainId()": FunctionFragment;
     "paused()": FunctionFragment;
-    "prefix()": FunctionFragment;
+    "privateSaleDuration()": FunctionFragment;
+    "privateSaleMerkleRoot()": FunctionFragment;
+    "privateSaleQuantity()": FunctionFragment;
+    "publicSaleQuantity()": FunctionFragment;
     "purchaseDomains(uint8,uint256,uint256,bytes32[])": FunctionFragment;
-    "releaseDomain()": FunctionFragment;
+    "purchaseDomainsPublicSale(uint8)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "salePrice()": FunctionFragment;
     "saleStartBlock()": FunctionFragment;
     "saleStarted()": FunctionFragment;
     "sellerWallet()": FunctionFragment;
-    "setBaseFolderHash(string)": FunctionFragment;
+    "setHolderWallet(address)": FunctionFragment;
     "setMerkleRoot(bytes32)": FunctionFragment;
-    "setParentDomainId(uint256)": FunctionFragment;
     "setPauseStatus(bool)": FunctionFragment;
     "setSaleDuration(uint256)": FunctionFragment;
     "setSalePrice(uint256)": FunctionFragment;
+    "setSaleQuantities(uint256,uint256)": FunctionFragment;
     "setSellerWallet(address)": FunctionFragment;
-    "setStartIndex(uint256)": FunctionFragment;
     "startSale()": FunctionFragment;
-    "startingMetadataIndex()": FunctionFragment;
     "stopSale()": FunctionFragment;
-    "totalForSale()": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
     "zNSRegistrar()": FunctionFragment;
   };
 
   encodeFunctionData(
-    functionFragment: "__MintlistSimpleFolderIndexSale_init",
+    functionFragment: "__WolfSale_init",
     values: [
-      string,
-      BigNumberish,
       BigNumberish,
       string,
       string,
+      BigNumberish,
+      BigNumberish,
       BigNumberish,
       BytesLike,
-      BigNumberish,
       string
     ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "addDomainsToSell",
-    values: [string[]]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "baseFolderHashWithoutQm",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "controller",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "domainMetadataUris",
-    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "domainsPurchasedByAccount",
@@ -99,31 +76,42 @@ interface MintlistSimpleFolderIndexSaleInterface
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "getNftByIndex",
+    functionFragment: "getIDByIndex",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "mintlistMerkleRoot",
+    functionFragment: "holderWallet",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "mintlistSaleDuration",
+    functionFragment: "numberForSaleForCurrentPhase",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(functionFragment: "paused", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "parentDomainId",
+    functionFragment: "privateSaleDuration",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "paused", values?: undefined): string;
-  encodeFunctionData(functionFragment: "prefix", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "privateSaleMerkleRoot",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "privateSaleQuantity",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "publicSaleQuantity",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "purchaseDomains",
     values: [BigNumberish, BigNumberish, BigNumberish, BytesLike[]]
   ): string;
   encodeFunctionData(
-    functionFragment: "releaseDomain",
-    values?: undefined
+    functionFragment: "purchaseDomainsPublicSale",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
@@ -143,16 +131,12 @@ interface MintlistSimpleFolderIndexSaleInterface
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "setBaseFolderHash",
+    functionFragment: "setHolderWallet",
     values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "setMerkleRoot",
     values: [BytesLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setParentDomainId",
-    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setPauseStatus",
@@ -167,23 +151,15 @@ interface MintlistSimpleFolderIndexSaleInterface
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "setSaleQuantities",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setSellerWallet",
     values: [string]
   ): string;
-  encodeFunctionData(
-    functionFragment: "setStartIndex",
-    values: [BigNumberish]
-  ): string;
   encodeFunctionData(functionFragment: "startSale", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "startingMetadataIndex",
-    values?: undefined
-  ): string;
   encodeFunctionData(functionFragment: "stopSale", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "totalForSale",
-    values?: undefined
-  ): string;
   encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [string]
@@ -194,20 +170,7 @@ interface MintlistSimpleFolderIndexSaleInterface
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "__MintlistSimpleFolderIndexSale_init",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "addDomainsToSell",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "baseFolderHashWithoutQm",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "controller", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "domainMetadataUris",
+    functionFragment: "__WolfSale_init",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -219,30 +182,41 @@ interface MintlistSimpleFolderIndexSaleInterface
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getNftByIndex",
+    functionFragment: "getIDByIndex",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "mintlistMerkleRoot",
+    functionFragment: "holderWallet",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "mintlistSaleDuration",
+    functionFragment: "numberForSaleForCurrentPhase",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "parentDomainId",
+    functionFragment: "privateSaleDuration",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "prefix", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "privateSaleMerkleRoot",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "privateSaleQuantity",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "publicSaleQuantity",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "purchaseDomains",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "releaseDomain",
+    functionFragment: "purchaseDomainsPublicSale",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -263,15 +237,11 @@ interface MintlistSimpleFolderIndexSaleInterface
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setBaseFolderHash",
+    functionFragment: "setHolderWallet",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "setMerkleRoot",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setParentDomainId",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -287,23 +257,15 @@ interface MintlistSimpleFolderIndexSaleInterface
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setSaleQuantities",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setSellerWallet",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "setStartIndex",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "startSale", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "startingMetadataIndex",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "stopSale", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "totalForSale",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "transferOwnership",
     data: BytesLike
@@ -314,19 +276,17 @@ interface MintlistSimpleFolderIndexSaleInterface
   ): Result;
 
   events: {
-    "DomainPurchased(address,uint256)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "RefundedEther(address,uint256)": EventFragment;
     "SaleStarted(uint256)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "DomainPurchased"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RefundedEther"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SaleStarted"): EventFragment;
 }
 
-export class MintlistSimpleFolderIndexSale extends BaseContract {
+export class WolfSale extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -367,35 +327,20 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: MintlistSimpleFolderIndexSaleInterface;
+  interface: WolfSaleInterface;
 
   functions: {
-    __MintlistSimpleFolderIndexSale_init(
-      controller_: string,
-      parentDomainId_: BigNumberish,
+    __WolfSale_init(
       price_: BigNumberish,
       zNSRegistrar_: string,
       sellerWallet_: string,
-      mintlistSaleDuration_: BigNumberish,
+      privateSaleDuration_: BigNumberish,
+      privateSaleQuantity_: BigNumberish,
+      publicSaleQuantity_: BigNumberish,
       merkleRoot_: BytesLike,
-      startingMetadataIndex_: BigNumberish,
-      baseFolderHashWithoutQm_: string,
+      holderWallet_: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    addDomainsToSell(
-      metadataUris: string[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    baseFolderHashWithoutQm(overrides?: CallOverrides): Promise<[string]>;
-
-    controller(overrides?: CallOverrides): Promise<[string]>;
-
-    domainMetadataUris(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[string]>;
 
     domainsPurchasedByAccount(
       arg0: string,
@@ -404,22 +349,28 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
 
     domainsSold(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    getNftByIndex(
+    getIDByIndex(
       index: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[string]>;
+    ): Promise<[BigNumber]>;
 
-    mintlistMerkleRoot(overrides?: CallOverrides): Promise<[string]>;
+    holderWallet(overrides?: CallOverrides): Promise<[string]>;
 
-    mintlistSaleDuration(overrides?: CallOverrides): Promise<[BigNumber]>;
+    numberForSaleForCurrentPhase(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
-    parentDomainId(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     paused(overrides?: CallOverrides): Promise<[boolean]>;
 
-    prefix(overrides?: CallOverrides): Promise<[string]>;
+    privateSaleDuration(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    privateSaleMerkleRoot(overrides?: CallOverrides): Promise<[string]>;
+
+    privateSaleQuantity(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    publicSaleQuantity(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     purchaseDomains(
       count: BigNumberish,
@@ -429,8 +380,9 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    releaseDomain(
-      overrides?: Overrides & { from?: string | Promise<string> }
+    purchaseDomainsPublicSale(
+      count: BigNumberish,
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     renounceOwnership(
@@ -445,18 +397,13 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
 
     sellerWallet(overrides?: CallOverrides): Promise<[string]>;
 
-    setBaseFolderHash(
-      folderHashWithoutQm: string,
+    setHolderWallet(
+      wallet: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     setMerkleRoot(
       root: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setParentDomainId(
-      parentId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -475,13 +422,14 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setSellerWallet(
-      wallet: string,
+    setSaleQuantities(
+      privateSale: BigNumberish,
+      publicSale: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setStartIndex(
-      index: BigNumberish,
+    setSellerWallet(
+      wallet: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -489,13 +437,9 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    startingMetadataIndex(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     stopSale(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    totalForSale(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     transferOwnership(
       newOwner: string,
@@ -505,32 +449,17 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
     zNSRegistrar(overrides?: CallOverrides): Promise<[string]>;
   };
 
-  __MintlistSimpleFolderIndexSale_init(
-    controller_: string,
-    parentDomainId_: BigNumberish,
+  __WolfSale_init(
     price_: BigNumberish,
     zNSRegistrar_: string,
     sellerWallet_: string,
-    mintlistSaleDuration_: BigNumberish,
+    privateSaleDuration_: BigNumberish,
+    privateSaleQuantity_: BigNumberish,
+    publicSaleQuantity_: BigNumberish,
     merkleRoot_: BytesLike,
-    startingMetadataIndex_: BigNumberish,
-    baseFolderHashWithoutQm_: string,
+    holderWallet_: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  addDomainsToSell(
-    metadataUris: string[],
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  baseFolderHashWithoutQm(overrides?: CallOverrides): Promise<string>;
-
-  controller(overrides?: CallOverrides): Promise<string>;
-
-  domainMetadataUris(
-    arg0: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<string>;
 
   domainsPurchasedByAccount(
     arg0: string,
@@ -539,22 +468,26 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
 
   domainsSold(overrides?: CallOverrides): Promise<BigNumber>;
 
-  getNftByIndex(
+  getIDByIndex(
     index: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<string>;
+  ): Promise<BigNumber>;
 
-  mintlistMerkleRoot(overrides?: CallOverrides): Promise<string>;
+  holderWallet(overrides?: CallOverrides): Promise<string>;
 
-  mintlistSaleDuration(overrides?: CallOverrides): Promise<BigNumber>;
+  numberForSaleForCurrentPhase(overrides?: CallOverrides): Promise<BigNumber>;
 
   owner(overrides?: CallOverrides): Promise<string>;
 
-  parentDomainId(overrides?: CallOverrides): Promise<BigNumber>;
-
   paused(overrides?: CallOverrides): Promise<boolean>;
 
-  prefix(overrides?: CallOverrides): Promise<string>;
+  privateSaleDuration(overrides?: CallOverrides): Promise<BigNumber>;
+
+  privateSaleMerkleRoot(overrides?: CallOverrides): Promise<string>;
+
+  privateSaleQuantity(overrides?: CallOverrides): Promise<BigNumber>;
+
+  publicSaleQuantity(overrides?: CallOverrides): Promise<BigNumber>;
 
   purchaseDomains(
     count: BigNumberish,
@@ -564,8 +497,9 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  releaseDomain(
-    overrides?: Overrides & { from?: string | Promise<string> }
+  purchaseDomainsPublicSale(
+    count: BigNumberish,
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   renounceOwnership(
@@ -580,18 +514,13 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
 
   sellerWallet(overrides?: CallOverrides): Promise<string>;
 
-  setBaseFolderHash(
-    folderHashWithoutQm: string,
+  setHolderWallet(
+    wallet: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   setMerkleRoot(
     root: BytesLike,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setParentDomainId(
-    parentId: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -610,13 +539,14 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setSellerWallet(
-    wallet: string,
+  setSaleQuantities(
+    privateSale: BigNumberish,
+    publicSale: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setStartIndex(
-    index: BigNumberish,
+  setSellerWallet(
+    wallet: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -624,13 +554,9 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  startingMetadataIndex(overrides?: CallOverrides): Promise<BigNumber>;
-
   stopSale(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  totalForSale(overrides?: CallOverrides): Promise<BigNumber>;
 
   transferOwnership(
     newOwner: string,
@@ -640,32 +566,17 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
   zNSRegistrar(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
-    __MintlistSimpleFolderIndexSale_init(
-      controller_: string,
-      parentDomainId_: BigNumberish,
+    __WolfSale_init(
       price_: BigNumberish,
       zNSRegistrar_: string,
       sellerWallet_: string,
-      mintlistSaleDuration_: BigNumberish,
+      privateSaleDuration_: BigNumberish,
+      privateSaleQuantity_: BigNumberish,
+      publicSaleQuantity_: BigNumberish,
       merkleRoot_: BytesLike,
-      startingMetadataIndex_: BigNumberish,
-      baseFolderHashWithoutQm_: string,
+      holderWallet_: string,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    addDomainsToSell(
-      metadataUris: string[],
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    baseFolderHashWithoutQm(overrides?: CallOverrides): Promise<string>;
-
-    controller(overrides?: CallOverrides): Promise<string>;
-
-    domainMetadataUris(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<string>;
 
     domainsPurchasedByAccount(
       arg0: string,
@@ -674,22 +585,26 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
 
     domainsSold(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getNftByIndex(
+    getIDByIndex(
       index: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<string>;
+    ): Promise<BigNumber>;
 
-    mintlistMerkleRoot(overrides?: CallOverrides): Promise<string>;
+    holderWallet(overrides?: CallOverrides): Promise<string>;
 
-    mintlistSaleDuration(overrides?: CallOverrides): Promise<BigNumber>;
+    numberForSaleForCurrentPhase(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
-    parentDomainId(overrides?: CallOverrides): Promise<BigNumber>;
-
     paused(overrides?: CallOverrides): Promise<boolean>;
 
-    prefix(overrides?: CallOverrides): Promise<string>;
+    privateSaleDuration(overrides?: CallOverrides): Promise<BigNumber>;
+
+    privateSaleMerkleRoot(overrides?: CallOverrides): Promise<string>;
+
+    privateSaleQuantity(overrides?: CallOverrides): Promise<BigNumber>;
+
+    publicSaleQuantity(overrides?: CallOverrides): Promise<BigNumber>;
 
     purchaseDomains(
       count: BigNumberish,
@@ -699,7 +614,10 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    releaseDomain(overrides?: CallOverrides): Promise<void>;
+    purchaseDomainsPublicSale(
+      count: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
@@ -711,17 +629,9 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
 
     sellerWallet(overrides?: CallOverrides): Promise<string>;
 
-    setBaseFolderHash(
-      folderHashWithoutQm: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    setHolderWallet(wallet: string, overrides?: CallOverrides): Promise<void>;
 
     setMerkleRoot(root: BytesLike, overrides?: CallOverrides): Promise<void>;
-
-    setParentDomainId(
-      parentId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     setPauseStatus(
       pauseStatus: boolean,
@@ -735,20 +645,17 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
 
     setSalePrice(price: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
-    setSellerWallet(wallet: string, overrides?: CallOverrides): Promise<void>;
-
-    setStartIndex(
-      index: BigNumberish,
+    setSaleQuantities(
+      privateSale: BigNumberish,
+      publicSale: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setSellerWallet(wallet: string, overrides?: CallOverrides): Promise<void>;
+
     startSale(overrides?: CallOverrides): Promise<void>;
 
-    startingMetadataIndex(overrides?: CallOverrides): Promise<BigNumber>;
-
     stopSale(overrides?: CallOverrides): Promise<void>;
-
-    totalForSale(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferOwnership(
       newOwner: string,
@@ -759,14 +666,6 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
   };
 
   filters: {
-    DomainPurchased(
-      buyer?: null,
-      domainId?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { buyer: string; domainId: BigNumber }
-    >;
-
     OwnershipTransferred(
       previousOwner?: string | null,
       newOwner?: string | null
@@ -789,31 +688,16 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
   };
 
   estimateGas: {
-    __MintlistSimpleFolderIndexSale_init(
-      controller_: string,
-      parentDomainId_: BigNumberish,
+    __WolfSale_init(
       price_: BigNumberish,
       zNSRegistrar_: string,
       sellerWallet_: string,
-      mintlistSaleDuration_: BigNumberish,
+      privateSaleDuration_: BigNumberish,
+      privateSaleQuantity_: BigNumberish,
+      publicSaleQuantity_: BigNumberish,
       merkleRoot_: BytesLike,
-      startingMetadataIndex_: BigNumberish,
-      baseFolderHashWithoutQm_: string,
+      holderWallet_: string,
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    addDomainsToSell(
-      metadataUris: string[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    baseFolderHashWithoutQm(overrides?: CallOverrides): Promise<BigNumber>;
-
-    controller(overrides?: CallOverrides): Promise<BigNumber>;
-
-    domainMetadataUris(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     domainsPurchasedByAccount(
@@ -823,22 +707,26 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
 
     domainsSold(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getNftByIndex(
+    getIDByIndex(
       index: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    mintlistMerkleRoot(overrides?: CallOverrides): Promise<BigNumber>;
+    holderWallet(overrides?: CallOverrides): Promise<BigNumber>;
 
-    mintlistSaleDuration(overrides?: CallOverrides): Promise<BigNumber>;
+    numberForSaleForCurrentPhase(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
-    parentDomainId(overrides?: CallOverrides): Promise<BigNumber>;
-
     paused(overrides?: CallOverrides): Promise<BigNumber>;
 
-    prefix(overrides?: CallOverrides): Promise<BigNumber>;
+    privateSaleDuration(overrides?: CallOverrides): Promise<BigNumber>;
+
+    privateSaleMerkleRoot(overrides?: CallOverrides): Promise<BigNumber>;
+
+    privateSaleQuantity(overrides?: CallOverrides): Promise<BigNumber>;
+
+    publicSaleQuantity(overrides?: CallOverrides): Promise<BigNumber>;
 
     purchaseDomains(
       count: BigNumberish,
@@ -848,8 +736,9 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    releaseDomain(
-      overrides?: Overrides & { from?: string | Promise<string> }
+    purchaseDomainsPublicSale(
+      count: BigNumberish,
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     renounceOwnership(
@@ -864,18 +753,13 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
 
     sellerWallet(overrides?: CallOverrides): Promise<BigNumber>;
 
-    setBaseFolderHash(
-      folderHashWithoutQm: string,
+    setHolderWallet(
+      wallet: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     setMerkleRoot(
       root: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setParentDomainId(
-      parentId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -894,13 +778,14 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setSellerWallet(
-      wallet: string,
+    setSaleQuantities(
+      privateSale: BigNumberish,
+      publicSale: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setStartIndex(
-      index: BigNumberish,
+    setSellerWallet(
+      wallet: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -908,13 +793,9 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    startingMetadataIndex(overrides?: CallOverrides): Promise<BigNumber>;
-
     stopSale(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    totalForSale(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferOwnership(
       newOwner: string,
@@ -925,33 +806,16 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
   };
 
   populateTransaction: {
-    __MintlistSimpleFolderIndexSale_init(
-      controller_: string,
-      parentDomainId_: BigNumberish,
+    __WolfSale_init(
       price_: BigNumberish,
       zNSRegistrar_: string,
       sellerWallet_: string,
-      mintlistSaleDuration_: BigNumberish,
+      privateSaleDuration_: BigNumberish,
+      privateSaleQuantity_: BigNumberish,
+      publicSaleQuantity_: BigNumberish,
       merkleRoot_: BytesLike,
-      startingMetadataIndex_: BigNumberish,
-      baseFolderHashWithoutQm_: string,
+      holderWallet_: string,
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    addDomainsToSell(
-      metadataUris: string[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    baseFolderHashWithoutQm(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    controller(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    domainMetadataUris(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     domainsPurchasedByAccount(
@@ -961,26 +825,36 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
 
     domainsSold(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    getNftByIndex(
+    getIDByIndex(
       index: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    mintlistMerkleRoot(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    holderWallet(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    mintlistSaleDuration(
+    numberForSaleForCurrentPhase(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    parentDomainId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    prefix(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    privateSaleDuration(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    privateSaleMerkleRoot(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    privateSaleQuantity(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    publicSaleQuantity(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     purchaseDomains(
       count: BigNumberish,
@@ -990,8 +864,9 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    releaseDomain(
-      overrides?: Overrides & { from?: string | Promise<string> }
+    purchaseDomainsPublicSale(
+      count: BigNumberish,
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     renounceOwnership(
@@ -1006,18 +881,13 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
 
     sellerWallet(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    setBaseFolderHash(
-      folderHashWithoutQm: string,
+    setHolderWallet(
+      wallet: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     setMerkleRoot(
       root: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setParentDomainId(
-      parentId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1036,13 +906,14 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setSellerWallet(
-      wallet: string,
+    setSaleQuantities(
+      privateSale: BigNumberish,
+      publicSale: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setStartIndex(
-      index: BigNumberish,
+    setSellerWallet(
+      wallet: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1050,15 +921,9 @@ export class MintlistSimpleFolderIndexSale extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    startingMetadataIndex(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     stopSale(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    totalForSale(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transferOwnership(
       newOwner: string,

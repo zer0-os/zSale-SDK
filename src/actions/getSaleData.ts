@@ -1,9 +1,9 @@
 import { ethers } from "ethers";
-import { MintlistSimpleFolderIndexSale } from "../contracts/types";
+import { WolfSale } from "../contracts/types";
 import { SaleData } from "../types";
 
 export const getSaleData = async (
-  contract: MintlistSimpleFolderIndexSale,
+  contract: WolfSale,
   isEth: boolean
 ): Promise<SaleData> => {
   const started = await contract.saleStarted();
@@ -14,10 +14,11 @@ export const getSaleData = async (
 
   return {
     amountSold: (await contract.domainsSold()).toNumber(),
-    amountForSale: (await contract.totalForSale()).toNumber(),
+    amountForSale: (await contract.publicSaleQuantity()).toNumber(),
+    amountForSalePrivate: (await contract.privateSaleQuantity()).toNumber(),
     salePrice: ethers.utils.formatEther(await contract.salePrice()),
     started: started,
-    mintlistDuration: (await contract.mintlistSaleDuration()).toNumber(),
+    mintlistDuration: (await contract.privateSaleDuration()).toNumber(),
     paused: await contract.paused(),
     startBlock: startBlock,
   } as SaleData;

@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 
-import { getMintlistFolderIndexSaleContract } from "./contracts";
+import { getWolfSaleContract } from "./contracts";
 import * as actions from "./actions";
 import {
   Claim,
@@ -12,7 +12,6 @@ import {
   SaleStatus,
   Mintlist,
 } from "./types";
-import { getMintlist } from "./actions";
 
 export const createInstance = (config: Config): Instance => {
   let cachedMintlist: Maybe<Mintlist>;
@@ -30,7 +29,7 @@ export const createInstance = (config: Config): Instance => {
   };
   const instance: Instance = {
     getSalePrice: async (signer: ethers.Signer): Promise<string> => {
-      const contract = await getMintlistFolderIndexSaleContract(
+      const contract = await getWolfSaleContract(
         signer,
         config.contractAddress
       );
@@ -38,7 +37,7 @@ export const createInstance = (config: Config): Instance => {
       return ethers.utils.formatEther(price).toString();
     },
     getSaleData: async (signer: ethers.Signer): Promise<SaleData> => {
-      const contract = await getMintlistFolderIndexSaleContract(
+      const contract = await getWolfSaleContract(
         signer,
         config.contractAddress
       );
@@ -50,7 +49,7 @@ export const createInstance = (config: Config): Instance => {
       return saleData;
     },
     getSaleStartBlock: async (signer: ethers.Signer): Promise<string> => {
-      const contract = await getMintlistFolderIndexSaleContract(
+      const contract = await getWolfSaleContract(
         signer,
         config.contractAddress
       );
@@ -58,7 +57,7 @@ export const createInstance = (config: Config): Instance => {
       return startBlock.toString();
     },
     getSaleStatus: async (signer: ethers.Signer): Promise<SaleStatus> => {
-      const contract = await getMintlistFolderIndexSaleContract(
+      const contract = await getWolfSaleContract(
         signer,
         config.contractAddress
       );
@@ -89,27 +88,27 @@ export const createInstance = (config: Config): Instance => {
     getSaleMintlistDuration: async (
       signer: ethers.Signer
     ): Promise<ethers.BigNumber> => {
-      const contract = await getMintlistFolderIndexSaleContract(
+      const contract = await getWolfSaleContract(
         signer,
         config.contractAddress
       );
-      const duration = await contract.mintlistSaleDuration();
+      const duration = await contract.privateSaleDuration();
       return duration;
     },
     getTotalForSale: async (
       signer: ethers.Signer
     ): Promise<ethers.BigNumber> => {
-      const contract = await getMintlistFolderIndexSaleContract(
+      const contract = await getWolfSaleContract(
         signer,
         config.contractAddress
       );
-      const total = await contract.totalForSale();
+      const total = await contract.publicSaleQuantity();
       return total;
     },
     getNumberOfDomainsSold: async (
       signer: ethers.Signer
     ): Promise<ethers.BigNumber> => {
-      const contract = await getMintlistFolderIndexSaleContract(
+      const contract = await getWolfSaleContract(
         signer,
         config.contractAddress
       );
@@ -140,7 +139,7 @@ export const createInstance = (config: Config): Instance => {
     getDomainsPurchasedByAccount: async (
       signer: ethers.Signer
     ): Promise<number> => {
-      const contract = await getMintlistFolderIndexSaleContract(
+      const contract = await getWolfSaleContract(
         signer,
         config.contractAddress
       );
@@ -152,7 +151,7 @@ export const createInstance = (config: Config): Instance => {
       count: ethers.BigNumber,
       signer: ethers.Signer,
     ): Promise<ethers.ContractTransaction> => {
-      const contract = await getMintlistFolderIndexSaleContract(
+      const contract = await getWolfSaleContract(
         signer,
         config.contractAddress
       );
@@ -171,7 +170,7 @@ export const createInstance = (config: Config): Instance => {
       pauseStatus: boolean,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      const contract = await getMintlistFolderIndexSaleContract(
+      const contract = await getWolfSaleContract(
         signer,
         config.contractAddress
       );

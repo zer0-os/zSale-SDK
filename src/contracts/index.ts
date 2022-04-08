@@ -1,11 +1,11 @@
 import { ethers } from "ethers";
 
-import { MintlistSimpleFolderIndexSale, MintlistSimpleFolderIndexSale__factory } from "./types";
+import { WolfSale, WolfSale__factory } from "./types";
 
-export const getMintlistFolderIndexSaleContract = async (
+export const getWolfSaleContract = async (
   provider: ethers.providers.Provider | ethers.Signer,
   address: string
-): Promise<MintlistSimpleFolderIndexSale> => {
-  const contract = MintlistSimpleFolderIndexSale__factory.connect(address, provider);
+): Promise<WolfSale> => {
+  const contract = WolfSale__factory.connect(address, provider);
   return contract;
 };
