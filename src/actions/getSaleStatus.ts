@@ -1,20 +1,23 @@
 import * as ethers from "ethers";
-import { MintlistSimpleFolderIndexSale } from "../contracts/types";
+import { WolfSale } from "../contracts/types";
 
 import { SaleStatus } from "../types";
 
-export const getSaleStatus = async (contract: MintlistSimpleFolderIndexSale) => {
+export const getSaleStatus = async (contract: WolfSale) => {
   const saleStarted = await contract.saleStarted();
 
   if (!saleStarted) return SaleStatus.NotStarted;
 
   const currentBlock = await contract.provider.getBlockNumber();
   const startBlock = await contract.saleStartBlock();
-  const duration = await contract.mintlistSaleDuration();
+  const duration = await contract.privateSaleDuration();
 
   if (ethers.BigNumber.from(currentBlock).gt(startBlock.add(duration))) {
-    return SaleStatus.Ended
+    if (saleStarted) {
+      return SaleStatus.PublicSale;
+    }
+    return SaleStatus.Ended;
   }
 
-  return SaleStatus.MintlistOnly;
+  return SaleStatus.PrivateSale;
 };

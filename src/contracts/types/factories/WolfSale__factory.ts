@@ -4,31 +4,9 @@
 
 import { Contract, Signer, utils } from "ethers";
 import { Provider } from "@ethersproject/providers";
-import type {
-  MintlistSimpleFolderIndexSale,
-  MintlistSimpleFolderIndexSaleInterface,
-} from "../MintlistSimpleFolderIndexSale";
+import type { WolfSale, WolfSaleInterface } from "../WolfSale";
 
 const _abi = [
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "address",
-        name: "buyer",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "domainId",
-        type: "uint256",
-      },
-    ],
-    name: "DomainPurchased",
-    type: "event",
-  },
   {
     anonymous: false,
     inputs: [
@@ -83,22 +61,12 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "contract IBasicController",
-        name: "controller_",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "parentDomainId_",
-        type: "uint256",
-      },
-      {
         internalType: "uint256",
         name: "price_",
         type: "uint256",
       },
       {
-        internalType: "contract IERC721Upgradeable",
+        internalType: "contract IRegistrar",
         name: "zNSRegistrar_",
         type: "address",
       },
@@ -109,7 +77,17 @@ const _abi = [
       },
       {
         internalType: "uint256",
-        name: "mintlistSaleDuration_",
+        name: "privateSaleDuration_",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "privateSaleQuantity_",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "publicSaleQuantity_",
         type: "uint256",
       },
       {
@@ -118,77 +96,14 @@ const _abi = [
         type: "bytes32",
       },
       {
-        internalType: "uint256",
-        name: "startingMetadataIndex_",
-        type: "uint256",
-      },
-      {
-        internalType: "string",
-        name: "baseFolderHashWithoutQm_",
-        type: "string",
-      },
-    ],
-    name: "__MintlistSimpleFolderIndexSale_init",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "string[]",
-        name: "metadataUris",
-        type: "string[]",
-      },
-    ],
-    name: "addDomainsToSell",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "baseFolderHashWithoutQm",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "controller",
-    outputs: [
-      {
-        internalType: "contract IBasicController",
-        name: "",
+        internalType: "address",
+        name: "holderWallet_",
         type: "address",
       },
     ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    name: "domainMetadataUris",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
-    ],
-    stateMutability: "view",
+    name: "__WolfSale_init",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -231,12 +146,12 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "getNftByIndex",
+    name: "getIDByIndex",
     outputs: [
       {
-        internalType: "string",
+        internalType: "uint256",
         name: "",
-        type: "string",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -244,12 +159,12 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "mintlistMerkleRoot",
+    name: "holderWallet",
     outputs: [
       {
-        internalType: "bytes32",
+        internalType: "address",
         name: "",
-        type: "bytes32",
+        type: "address",
       },
     ],
     stateMutability: "view",
@@ -257,7 +172,7 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "mintlistSaleDuration",
+    name: "numberForSaleForCurrentPhase",
     outputs: [
       {
         internalType: "uint256",
@@ -283,19 +198,6 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "parentDomainId",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "paused",
     outputs: [
       {
@@ -309,12 +211,51 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "prefix",
+    name: "privateSaleDuration",
     outputs: [
       {
-        internalType: "string",
+        internalType: "uint256",
         name: "",
-        type: "string",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "privateSaleMerkleRoot",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "privateSaleQuantity",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "publicSaleQuantity",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -349,10 +290,16 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "releaseDomain",
+    inputs: [
+      {
+        internalType: "uint8",
+        name: "count",
+        type: "uint8",
+      },
+    ],
+    name: "purchaseDomainsPublicSale",
     outputs: [],
-    stateMutability: "nonpayable",
+    stateMutability: "payable",
     type: "function",
   },
   {
@@ -417,12 +364,12 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "string",
-        name: "folderHashWithoutQm",
-        type: "string",
+        internalType: "address",
+        name: "wallet",
+        type: "address",
       },
     ],
-    name: "setBaseFolderHash",
+    name: "setHolderWallet",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -436,19 +383,6 @@ const _abi = [
       },
     ],
     name: "setMerkleRoot",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "parentId",
-        type: "uint256",
-      },
-    ],
-    name: "setParentDomainId",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -495,12 +429,17 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "wallet",
-        type: "address",
+        internalType: "uint256",
+        name: "privateSale",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "publicSale",
+        type: "uint256",
       },
     ],
-    name: "setSellerWallet",
+    name: "setSaleQuantities",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -508,12 +447,12 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "uint256",
-        name: "index",
-        type: "uint256",
+        internalType: "address",
+        name: "wallet",
+        type: "address",
       },
     ],
-    name: "setStartIndex",
+    name: "setSellerWallet",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -527,35 +466,9 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "startingMetadataIndex",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "stopSale",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "totalForSale",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
   },
   {
@@ -576,7 +489,7 @@ const _abi = [
     name: "zNSRegistrar",
     outputs: [
       {
-        internalType: "contract IERC721Upgradeable",
+        internalType: "contract IRegistrar",
         name: "",
         type: "address",
       },
@@ -586,19 +499,15 @@ const _abi = [
   },
 ];
 
-export class MintlistSimpleFolderIndexSale__factory {
+export class WolfSale__factory {
   static readonly abi = _abi;
-  static createInterface(): MintlistSimpleFolderIndexSaleInterface {
-    return new utils.Interface(_abi) as MintlistSimpleFolderIndexSaleInterface;
+  static createInterface(): WolfSaleInterface {
+    return new utils.Interface(_abi) as WolfSaleInterface;
   }
   static connect(
     address: string,
     signerOrProvider: Signer | Provider
-  ): MintlistSimpleFolderIndexSale {
-    return new Contract(
-      address,
-      _abi,
-      signerOrProvider
-    ) as MintlistSimpleFolderIndexSale;
+  ): WolfSale {
+    return new Contract(address, _abi, signerOrProvider) as WolfSale;
   }
 }

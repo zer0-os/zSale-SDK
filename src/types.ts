@@ -18,7 +18,8 @@ export enum IPFSGatewayUri {
 
 export enum SaleStatus {
   NotStarted,
-  MintlistOnly,
+  PrivateSale,
+  PublicSale,
   Ended
 }
 
@@ -40,6 +41,7 @@ export interface Mintlist {
 export interface SaleData {
   amountSold: number;
   amountForSale: number;
+  amountForSalePrivate: number;
   salePrice: string;
   started: boolean;
   mintlistDuration: number;
