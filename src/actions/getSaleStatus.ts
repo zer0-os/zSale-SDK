@@ -16,7 +16,6 @@ export const getSaleStatus = async (contract: WolfSale) => {
     if (saleStarted) {
       return SaleStatus.PublicSale;
     }
-    return SaleStatus.Ended;
   }
 
   return SaleStatus.PrivateSale;

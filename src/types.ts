@@ -20,7 +20,6 @@ export enum SaleStatus {
   NotStarted,
   PrivateSale,
   PublicSale,
-  Ended
 }
 
 export interface Claim {

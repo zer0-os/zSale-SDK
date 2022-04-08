@@ -28,10 +28,7 @@ export const purchaseDomains = async (
     status === SaleStatus.NotStarted,
     "Cannot purchase a domain when sale has not started or has ended"
   );
-  errorCheck(
-    status === SaleStatus.Ended,
-    "Cannot purchase a domain once the sale has ended"
-  );
+
   errorCheck(count.eq("0"), "Cannot purchase 0 domains");
 
   const paused = await contract.paused();
