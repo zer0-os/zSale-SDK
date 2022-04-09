@@ -12,6 +12,8 @@ import {
   Mintlist,
 } from "./types";
 
+export * from "./types";
+
 const defaultPublicSalePurchaseLimit = 100;
 
 export const createInstance = (config: Config): Instance => {

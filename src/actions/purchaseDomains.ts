@@ -48,7 +48,9 @@ export const purchaseDomains = async (
   );
 
   if (SaleStatus.PublicSale) {
-    const tx = await contract.purchaseDomainsPublicSale(count);
+    const tx = await contract.purchaseDomainsPublicSale(count, {
+      value: price.mul(count),
+    });
     return tx;
   }
 
