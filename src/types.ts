@@ -1,19 +1,25 @@
 import * as ethers from "ethers";
 
-/**
- * isEth - Mark if a sale for the domain is in ETH or in Token
- * contractAddress - The address of the sale contract in 0x... format
- * merkleTreeFileUri - A file path to the merkle tree for identifying Mintlisted users
- * publicSalePurchaseLimit - What to return as the purchase limit during public sale (since it is technically unlimited)
- */
+export type Maybe<T> = T | undefined | null;
+
 export interface Config {
-  isEth: boolean;
+  // address of the sale contract
   contractAddress: string;
+
+  // url to the merkle tree file
   merkleTreeFileUri: string;
+
+  // web3 provider to access blockchain with (on read operations)
+  web3Provider: ethers.providers.Provider;
+
+  // amount the SDK should return for the public sale purchase limit (in theory this is infinite)
   publicSalePurchaseLimit?: number;
+
+  // advanced settings / properties
   advanced?: {
     // IPFS Hash of the merkle tree
     merkleTreeFileIPFSHash?: string;
+
     // IPFS Gateway to use (should be fully formed, ie: https://ipfs.fleek.co/ipfs)
     ipfsGateway?: string;
   };
@@ -33,7 +39,7 @@ export interface Claim {
 }
 
 export interface Claims {
-  [address: string]: Claim | undefined;
+  [address: string]: Maybe<Claim>;
 }
 
 export interface Mintlist {
@@ -42,34 +48,42 @@ export interface Mintlist {
 }
 
 export interface SaleData {
+  // how many have been sold
   amountSold: number;
   // How many are for sale given the current phase (private or public sale)
   amountForSale: number;
+  // the sale price
   salePrice: string;
+  // has the sale started
   started: boolean;
-  mintlistDuration: number;
+  // how long the private sale will last
+  privateSaleDuration: number;
+  // is the sale paused
   paused: boolean;
+  // when did the sale start
   startBlock?: number;
+
   advanced: {
+    // how many are for sale during the private sale
     amountForSalePrivate: number;
+
+    // how many are for sale during the public sale
     amountForSalePublic: number;
   };
 }
 
-export type Maybe<T> = T | undefined | null;
-
 export interface Instance {
   // Get the price of the sale
-  getSalePrice(signer: ethers.Signer): Promise<string>;
+  getSalePrice(): Promise<string>;
 
   // Get data about the current sale
-  getSaleData(signer: ethers.Signer): Promise<SaleData>;
+  getSaleData(): Promise<SaleData>;
 
   // Get the block that the sale started on
-  getSaleStartBlock(signer: ethers.Signer): Promise<string>;
+  getSaleStartBlock(): Promise<string>;
 
   // Get the current status of the sale
-  getSaleStatus(signer: ethers.Signer): Promise<SaleStatus>;
+  getSaleStatus(): Promise<SaleStatus>;
 
   // Get the mint list
   getMintlist(): Promise<Mintlist>;
@@ -78,25 +92,25 @@ export interface Instance {
   getMintlistedUserClaim(address: string): Promise<Claim>;
 
   // Get how long the private sale lasts for
-  getSaleMintlistDuration(signer: ethers.Signer): Promise<ethers.BigNumber>;
+  getSaleMintlistDuration(): Promise<ethers.BigNumber>;
 
   // Get how many domains for for sale (in the current phase)
-  getTotalForSale(signer: ethers.Signer): Promise<ethers.BigNumber>;
+  getTotalForSale(): Promise<ethers.BigNumber>;
 
   // Get the number of domains that have been sold
-  getNumberOfDomainsSold(signer: ethers.Signer): Promise<ethers.BigNumber>;
+  getNumberOfDomainsSold(): Promise<ethers.BigNumber>;
 
   // Get the current block number
   getBlockNumber(): Promise<number>;
 
   // Get the eth balance of a user
-  getEthBalance(signer: ethers.Signer): Promise<string>;
+  getEthBalance(address: string): Promise<string>;
 
   // Check if a user is on the mint list
   isUserOnMintlist(address: string): Promise<boolean>;
 
   // Get the number of domains purchase by a user
-  getDomainsPurchasedByAccount(signer: ethers.Signer): Promise<number>;
+  getDomainsPurchasedByAccount(address: string): Promise<number>;
 
   // Purchase domains
   purchaseDomains(
@@ -112,5 +126,5 @@ export interface Instance {
   ): Promise<ethers.ContractTransaction>;
 
   // Get the amount a user could purchase
-  numberPurchasableByAccount(signer: ethers.Signer): Promise<number>;
+  numberPurchasableByAccount(address: string): Promise<number>;
 }
