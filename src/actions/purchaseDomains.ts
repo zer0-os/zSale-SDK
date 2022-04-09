@@ -2,9 +2,9 @@ import { CloudflareProvider } from "@ethersproject/providers";
 import * as ethers from "ethers";
 import { getSaleStatus } from ".";
 import { WolfSale } from "../contracts/types";
-import { Claim, IPFSGatewayUri, SaleStatus, Mintlist, Maybe } from "../types";
+import { Claim, SaleStatus, Mintlist, Maybe } from "../types";
 
-export const errorCheck = async (condition: boolean, errorMessage: string) => {
+const errorCheck = async (condition: boolean, errorMessage: string) => {
   if (condition) {
     throw errorMessage;
   }
@@ -13,14 +13,8 @@ export const errorCheck = async (condition: boolean, errorMessage: string) => {
 export const purchaseDomains = async (
   count: ethers.BigNumber,
   signer: ethers.Signer,
-  merkleFileUri: string,
   contract: WolfSale,
-  cachedMintlist: Maybe<Mintlist>,
-  getMintlist: (
-    merkleFileUri: string,
-    gateway: IPFSGatewayUri,
-    cachedMintlist: Maybe<Mintlist>
-  ) => Promise<Mintlist>
+  mintlist: Mintlist
 ): Promise<ethers.ContractTransaction> => {
   const status = await getSaleStatus(contract);
 
@@ -60,15 +54,11 @@ export const purchaseDomains = async (
 
   const purchased = await contract.domainsPurchasedByAccount(address);
 
-  const mintlist = await getMintlist(
-    merkleFileUri,
-    IPFSGatewayUri.fleek,
-    cachedMintlist
-  );
-  const userClaim: Claim = mintlist.claims[address];
+  let userClaim: Maybe<Claim> = mintlist.claims[address];
 
   // To purchase in private sale a user must be on the mintlist
   errorCheck(userClaim === undefined, "User is not part of private sale");
+  userClaim = userClaim!;
 
   // Sale is in private sale
   errorCheck(

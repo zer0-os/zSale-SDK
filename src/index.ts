@@ -6,7 +6,6 @@ import {
   Claim,
   Config,
   Instance,
-  IPFSGatewayUri,
   Maybe,
   SaleData,
   SaleStatus,
@@ -16,17 +15,16 @@ import {
 export const createInstance = (config: Config): Instance => {
   let cachedMintlist: Maybe<Mintlist>;
 
-  const getMintlist = async (
-    merkleFileUri: string,
-    gateway: IPFSGatewayUri
-  ) => {
-    const Mintlist = await actions.getMintlist(
-      merkleFileUri,
-      gateway,
-      cachedMintlist
-    );
-    return Mintlist;
+  const getMintlist = async () => {
+    if (cachedMintlist) {
+      return cachedMintlist;
+    }
+    const mintlist = await actions.getMintlist(config);
+    cachedMintlist = mintlist;
+
+    return mintlist;
   };
+
   const instance: Instance = {
     getSalePrice: async (signer: ethers.Signer): Promise<string> => {
       const contract = await getWolfSaleContract(
@@ -64,20 +62,13 @@ export const createInstance = (config: Config): Instance => {
       const status: SaleStatus = await actions.getSaleStatus(contract);
       return status;
     },
-    getMintlist: async (gateway: IPFSGatewayUri): Promise<Mintlist> => {
-      const whitelist = await actions.getMintlist(
-        config.merkleTreeFileUri,
-        gateway,
-        cachedMintlist
-      );
+    getMintlist: async (): Promise<Mintlist> => {
+      const whitelist = await getMintlist();
       return whitelist;
     },
-    getMintlistedUserClaim: async (
-      address: string,
-      gateway: IPFSGatewayUri
-    ): Promise<Claim> => {
-      const mintlist = await getMintlist(config.merkleTreeFileUri, gateway);
-      const userClaim: Claim = mintlist.claims[address];
+    getMintlistedUserClaim: async (address: string): Promise<Claim> => {
+      const mintlist = await getMintlist();
+      const userClaim: Maybe<Claim> = mintlist.claims[address];
       if (!userClaim) {
         throw Error(
           `No claim could be found for user ${address} because they are not on the whitelist`
@@ -102,7 +93,13 @@ export const createInstance = (config: Config): Instance => {
         signer,
         config.contractAddress
       );
-      const total = await contract.publicSaleQuantity();
+      const total = await contract.numberForSaleForCurrentPhase();
+      const numSold = await contract.domainsSold();
+
+      if (numSold.gt(total)) {
+        return numSold;
+      }
+
       return total;
     },
     getNumberOfDomainsSold: async (
@@ -124,15 +121,8 @@ export const createInstance = (config: Config): Instance => {
       const balance = await signer.getBalance();
       return ethers.utils.formatEther(balance);
     },
-    isUserOnMintlist: async (
-      address: string,
-      gateway: IPFSGatewayUri
-    ): Promise<boolean> => {
-      const mintlist = await actions.getMintlist(
-        config.merkleTreeFileUri,
-        gateway,
-        cachedMintlist
-      );
+    isUserOnMintlist: async (address: string): Promise<boolean> => {
+      const mintlist = await getMintlist();
       const isOnWhitelist = mintlist.claims[address] ? true : false;
       return isOnWhitelist;
     },
@@ -149,20 +139,20 @@ export const createInstance = (config: Config): Instance => {
     },
     purchaseDomains: async (
       count: ethers.BigNumber,
-      signer: ethers.Signer,
+      signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
       const contract = await getWolfSaleContract(
         signer,
         config.contractAddress
       );
 
+      const mintlist = await getMintlist();
+
       const tx = await actions.purchaseDomains(
         count,
         signer,
-        config.merkleTreeFileUri,
         contract,
-        cachedMintlist,
-        getMintlist,
+        mintlist
       );
       return tx;
     },
@@ -176,6 +166,26 @@ export const createInstance = (config: Config): Instance => {
       );
       const tx = await actions.setPauseStatus(pauseStatus, contract, signer);
       return tx;
+    },
+    numberPurchasableByAccount: async (
+      signer: ethers.Signer
+    ): Promise<number> => {
+      const mintlist = await getMintlist();
+      const contract = await getWolfSaleContract(
+        signer,
+        config.contractAddress
+      );
+
+      const account = await signer.getAddress();
+
+      const amount = await actions.numberPurchasableByAccount(
+        mintlist,
+        contract,
+        account,
+        config.publicSalePurchaseLimit ?? 100
+      );
+
+      return amount;
     },
   };
 
