@@ -20,6 +20,7 @@ export enum SaleStatus {
   NotStarted,
   PrivateSale,
   PublicSale,
+  Ended,
 }
 
 export interface Claim {
@@ -39,13 +40,17 @@ export interface Mintlist {
 
 export interface SaleData {
   amountSold: number;
+  // How many are for sale given the current phase (private or public sale)
   amountForSale: number;
-  amountForSalePrivate: number;
   salePrice: string;
   started: boolean;
   mintlistDuration: number;
   paused: boolean;
   startBlock?: number;
+  advanced: {
+    amountForSalePrivate: number;
+    amountForSalePublic: number;
+  };
 }
 
 export type Maybe<T> = T | undefined | null;

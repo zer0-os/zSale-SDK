@@ -13,9 +13,14 @@ export const getSaleStatus = async (contract: WolfSale) => {
   const duration = await contract.privateSaleDuration();
 
   if (ethers.BigNumber.from(currentBlock).gt(startBlock.add(duration))) {
-    if (saleStarted) {
-      return SaleStatus.PublicSale;
+    const numberSold = await contract.domainsSold();
+    const forSaleInPhase = await contract.numberForSaleForCurrentPhase();
+
+    if (numberSold.gte(forSaleInPhase)) {
+      return SaleStatus.Ended;
     }
+
+    return SaleStatus.PublicSale;
   }
 
   return SaleStatus.PrivateSale;
