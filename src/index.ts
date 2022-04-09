@@ -6,78 +6,69 @@ import {
   Claim,
   Config,
   Instance,
-  IPFSGatewayUri,
   Maybe,
   SaleData,
   SaleStatus,
   Mintlist,
 } from "./types";
 
+const defaultPublicSalePurchaseLimit = 100;
+
 export const createInstance = (config: Config): Instance => {
   let cachedMintlist: Maybe<Mintlist>;
 
-  const getMintlist = async (
-    merkleFileUri: string,
-    gateway: IPFSGatewayUri
-  ) => {
-    const Mintlist = await actions.getMintlist(
-      merkleFileUri,
-      gateway,
-      cachedMintlist
-    );
-    return Mintlist;
+  const getMintlist = async () => {
+    if (cachedMintlist) {
+      return cachedMintlist;
+    }
+    const mintlist = await actions.getMintlist(config);
+    cachedMintlist = mintlist;
+
+    return mintlist;
   };
+
   const instance: Instance = {
-    getSalePrice: async (signer: ethers.Signer): Promise<string> => {
+    getSalePrice: async (): Promise<string> => {
       const contract = await getWolfSaleContract(
-        signer,
+        config.web3Provider,
         config.contractAddress
       );
       const price = await contract.salePrice();
       return ethers.utils.formatEther(price).toString();
     },
-    getSaleData: async (signer: ethers.Signer): Promise<SaleData> => {
+    getSaleData: async (): Promise<SaleData> => {
       const contract = await getWolfSaleContract(
-        signer,
+        config.web3Provider,
         config.contractAddress
       );
 
-      const saleData: SaleData = await actions.getSaleData(
-        contract,
-        config.isEth
-      );
+      // always eth sales currently
+      const saleData: SaleData = await actions.getSaleData(contract, true);
       return saleData;
     },
-    getSaleStartBlock: async (signer: ethers.Signer): Promise<string> => {
+    getSaleStartBlock: async (): Promise<string> => {
       const contract = await getWolfSaleContract(
-        signer,
+        config.web3Provider,
         config.contractAddress
       );
       const startBlock = await contract.saleStartBlock();
       return startBlock.toString();
     },
-    getSaleStatus: async (signer: ethers.Signer): Promise<SaleStatus> => {
+    getSaleStatus: async (): Promise<SaleStatus> => {
       const contract = await getWolfSaleContract(
-        signer,
+        config.web3Provider,
         config.contractAddress
       );
       const status: SaleStatus = await actions.getSaleStatus(contract);
       return status;
     },
-    getMintlist: async (gateway: IPFSGatewayUri): Promise<Mintlist> => {
-      const whitelist = await actions.getMintlist(
-        config.merkleTreeFileUri,
-        gateway,
-        cachedMintlist
-      );
+    getMintlist: async (): Promise<Mintlist> => {
+      const whitelist = await getMintlist();
       return whitelist;
     },
-    getMintlistedUserClaim: async (
-      address: string,
-      gateway: IPFSGatewayUri
-    ): Promise<Claim> => {
-      const mintlist = await getMintlist(config.merkleTreeFileUri, gateway);
-      const userClaim: Claim = mintlist.claims[address];
+    getMintlistedUserClaim: async (address: string): Promise<Claim> => {
+      const mintlist = await getMintlist();
+      const userClaim: Maybe<Claim> = mintlist.claims[address];
       if (!userClaim) {
         throw Error(
           `No claim could be found for user ${address} because they are not on the whitelist`
@@ -85,31 +76,31 @@ export const createInstance = (config: Config): Instance => {
       }
       return userClaim;
     },
-    getSaleMintlistDuration: async (
-      signer: ethers.Signer
-    ): Promise<ethers.BigNumber> => {
+    getSaleMintlistDuration: async (): Promise<ethers.BigNumber> => {
       const contract = await getWolfSaleContract(
-        signer,
+        config.web3Provider,
         config.contractAddress
       );
       const duration = await contract.privateSaleDuration();
       return duration;
     },
-    getTotalForSale: async (
-      signer: ethers.Signer
-    ): Promise<ethers.BigNumber> => {
+    getTotalForSale: async (): Promise<ethers.BigNumber> => {
       const contract = await getWolfSaleContract(
-        signer,
+        config.web3Provider,
         config.contractAddress
       );
-      const total = await contract.publicSaleQuantity();
+      const total = await contract.numberForSaleForCurrentPhase();
+      const numSold = await contract.domainsSold();
+
+      if (numSold.gt(total)) {
+        return numSold;
+      }
+
       return total;
     },
-    getNumberOfDomainsSold: async (
-      signer: ethers.Signer
-    ): Promise<ethers.BigNumber> => {
+    getNumberOfDomainsSold: async (): Promise<ethers.BigNumber> => {
       const contract = await getWolfSaleContract(
-        signer,
+        config.web3Provider,
         config.contractAddress
       );
       const domainsSold = await contract.domainsSold();
@@ -120,49 +111,39 @@ export const createInstance = (config: Config): Instance => {
       const blockNum = await provider.getBlockNumber();
       return blockNum;
     },
-    getEthBalance: async (signer: ethers.Signer): Promise<string> => {
-      const balance = await signer.getBalance();
+    getEthBalance: async (address: string): Promise<string> => {
+      const balance = await config.web3Provider.getBalance(address);
       return ethers.utils.formatEther(balance);
     },
-    isUserOnMintlist: async (
-      address: string,
-      gateway: IPFSGatewayUri
-    ): Promise<boolean> => {
-      const mintlist = await actions.getMintlist(
-        config.merkleTreeFileUri,
-        gateway,
-        cachedMintlist
-      );
+    isUserOnMintlist: async (address: string): Promise<boolean> => {
+      const mintlist = await getMintlist();
       const isOnWhitelist = mintlist.claims[address] ? true : false;
       return isOnWhitelist;
     },
-    getDomainsPurchasedByAccount: async (
-      signer: ethers.Signer
-    ): Promise<number> => {
+    getDomainsPurchasedByAccount: async (address: string): Promise<number> => {
       const contract = await getWolfSaleContract(
-        signer,
+        config.web3Provider,
         config.contractAddress
       );
-      const address = await signer.getAddress();
       const domains = await contract.domainsPurchasedByAccount(address);
       return domains.toNumber();
     },
     purchaseDomains: async (
       count: ethers.BigNumber,
-      signer: ethers.Signer,
+      signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
       const contract = await getWolfSaleContract(
         signer,
         config.contractAddress
       );
 
+      const mintlist = await getMintlist();
+
       const tx = await actions.purchaseDomains(
         count,
         signer,
-        config.merkleTreeFileUri,
         contract,
-        cachedMintlist,
-        getMintlist,
+        mintlist
       );
       return tx;
     },
@@ -176,6 +157,22 @@ export const createInstance = (config: Config): Instance => {
       );
       const tx = await actions.setPauseStatus(pauseStatus, contract, signer);
       return tx;
+    },
+    numberPurchasableByAccount: async (address: string): Promise<number> => {
+      const mintlist = await getMintlist();
+      const contract = await getWolfSaleContract(
+        config.web3Provider,
+        config.contractAddress
+      );
+
+      const amount = await actions.numberPurchasableByAccount(
+        mintlist,
+        contract,
+        address,
+        config.publicSalePurchaseLimit ?? defaultPublicSalePurchaseLimit
+      );
+
+      return amount;
     },
   };
 

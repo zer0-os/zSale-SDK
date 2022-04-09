@@ -1,19 +1,28 @@
 import * as ethers from "ethers";
 
-/**
- * isEth - Mark if a sale for the domain is in ETH or in Token
- * contractAddress - The address of the sale contract in 0x... format
- * merkleTreeFileUrl - A file path to the merkle tree for identifying Mintlisted users
- */
-export interface Config {
-  isEth: boolean;
-  contractAddress: string;
-  merkleTreeFileUri: string;
-}
+export type Maybe<T> = T | undefined | null;
 
-export enum IPFSGatewayUri {
-  ipfs = "ipfs.io",
-  fleek = "ipfs.fleek.co",
+export interface Config {
+  // address of the sale contract
+  contractAddress: string;
+
+  // url to the merkle tree file
+  merkleTreeFileUri: string;
+
+  // web3 provider to access blockchain with (on read operations)
+  web3Provider: ethers.providers.Provider;
+
+  // amount the SDK should return for the public sale purchase limit (in theory this is infinite)
+  publicSalePurchaseLimit?: number;
+
+  // advanced settings / properties
+  advanced?: {
+    // IPFS Hash of the merkle tree
+    merkleTreeFileIPFSHash?: string;
+
+    // IPFS Gateway to use (should be fully formed, ie: https://ipfs.fleek.co/ipfs)
+    ipfsGateway?: string;
+  };
 }
 
 export enum SaleStatus {
@@ -30,7 +39,7 @@ export interface Claim {
 }
 
 export interface Claims {
-  [address: string]: Claim;
+  [address: string]: Maybe<Claim>;
 }
 
 export interface Mintlist {
@@ -39,46 +48,83 @@ export interface Mintlist {
 }
 
 export interface SaleData {
+  // how many have been sold
   amountSold: number;
   // How many are for sale given the current phase (private or public sale)
   amountForSale: number;
+  // the sale price
   salePrice: string;
+  // has the sale started
   started: boolean;
-  mintlistDuration: number;
+  // how long the private sale will last
+  privateSaleDuration: number;
+  // is the sale paused
   paused: boolean;
+  // when did the sale start
   startBlock?: number;
+
   advanced: {
+    // how many are for sale during the private sale
     amountForSalePrivate: number;
+
+    // how many are for sale during the public sale
     amountForSalePublic: number;
   };
 }
 
-export type Maybe<T> = T | undefined | null;
-
 export interface Instance {
-  getSalePrice(signer: ethers.Signer): Promise<string>;
-  getSaleData(signer: ethers.Signer): Promise<SaleData>;
-  getSaleStartBlock(signer: ethers.Signer): Promise<string>;
-  getSaleStatus(signer: ethers.Signer): Promise<SaleStatus>;
-  getMintlist(gateway: IPFSGatewayUri): Promise<Mintlist>;
-  getMintlistedUserClaim(
-    address: string,
-    gateway: IPFSGatewayUri
-  ): Promise<Claim>;
-  getSaleMintlistDuration(signer: ethers.Signer): Promise<ethers.BigNumber>;
-  getTotalForSale(signer: ethers.Signer): Promise<ethers.BigNumber>;
-  getNumberOfDomainsSold(signer: ethers.Signer): Promise<ethers.BigNumber>;
+  // Get the price of the sale
+  getSalePrice(): Promise<string>;
+
+  // Get data about the current sale
+  getSaleData(): Promise<SaleData>;
+
+  // Get the block that the sale started on
+  getSaleStartBlock(): Promise<string>;
+
+  // Get the current status of the sale
+  getSaleStatus(): Promise<SaleStatus>;
+
+  // Get the mint list
+  getMintlist(): Promise<Mintlist>;
+
+  // Get a users claim from the mintlist
+  getMintlistedUserClaim(address: string): Promise<Claim>;
+
+  // Get how long the private sale lasts for
+  getSaleMintlistDuration(): Promise<ethers.BigNumber>;
+
+  // Get how many domains for for sale (in the current phase)
+  getTotalForSale(): Promise<ethers.BigNumber>;
+
+  // Get the number of domains that have been sold
+  getNumberOfDomainsSold(): Promise<ethers.BigNumber>;
+
+  // Get the current block number
   getBlockNumber(): Promise<number>;
-  getEthBalance(signer: ethers.Signer): Promise<string>;
-  isUserOnMintlist(address: string, gateway: IPFSGatewayUri): Promise<boolean>;
-  getDomainsPurchasedByAccount(signer: ethers.Signer): Promise<number>;
+
+  // Get the eth balance of a user
+  getEthBalance(address: string): Promise<string>;
+
+  // Check if a user is on the mint list
+  isUserOnMintlist(address: string): Promise<boolean>;
+
+  // Get the number of domains purchase by a user
+  getDomainsPurchasedByAccount(address: string): Promise<number>;
+
+  // Purchase domains
   purchaseDomains(
     count: ethers.BigNumber,
     signer: ethers.Signer,
     saleToken?: string
   ): Promise<ethers.ContractTransaction>;
+
+  // Admin helper to pause the sale
   setPauseStatus(
     pauseStatus: boolean,
     signer: ethers.Signer
   ): Promise<ethers.ContractTransaction>;
+
+  // Get the amount a user could purchase
+  numberPurchasableByAccount(address: string): Promise<number>;
 }

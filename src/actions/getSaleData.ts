@@ -17,7 +17,7 @@ export const getSaleData = async (
     amountForSale: (await contract.numberForSaleForCurrentPhase()).toNumber(),
     salePrice: ethers.utils.formatEther(await contract.salePrice()),
     started: started,
-    mintlistDuration: (await contract.privateSaleDuration()).toNumber(),
+    privateSaleDuration: (await contract.privateSaleDuration()).toNumber(),
     paused: await contract.paused(),
     startBlock: startBlock,
     advanced: {
