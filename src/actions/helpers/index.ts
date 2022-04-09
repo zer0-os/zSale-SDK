@@ -2,7 +2,6 @@ import fetch from "cross-fetch";
 
 import { IPFSGatewayUri, Maybe, Mintlist } from "../../types";
 
-
 export const ipfsToHttpUrl = (
   ipfsHash: string,
   ipfsGatewayUri: IPFSGatewayUri
@@ -17,8 +16,12 @@ export const getMerkleTree = async (
   merkleFileUri: string,
   gateway: IPFSGatewayUri
 ): Promise<Mintlist> => {
+  let uri = merkleFileUri;
   // Receive `ipfs://Qm...`
-  const uri = ipfsToHttpUrl(merkleFileUri, gateway);
+  if (merkleFileUri.includes("ipfs://")) {
+    uri = ipfsToHttpUrl(merkleFileUri, gateway);
+  }
+
   const res = await fetch(uri, { method: "GET" });
   const merkleTree: Mintlist = await res.json();
   return merkleTree;
@@ -32,16 +35,16 @@ export const getMintlist = async (
   if (cachedWhitelist) {
     return cachedWhitelist;
   }
-  
+
   const merkleTree: Mintlist = await getMerkleTree(merkleFileUri, gateway);
-  
+
   cachedWhitelist = {
     merkleRoot: merkleTree.merkleRoot,
-    claims: merkleTree.claims
+    claims: merkleTree.claims,
   } as Mintlist;
 
   return {
     merkleRoot: merkleTree.merkleRoot,
-    claims: merkleTree.claims
+    claims: merkleTree.claims,
   } as Mintlist;
 };

@@ -29,28 +29,20 @@ export const purchaseDomains = async (
     "Cannot purchase a domain when sale has not started or has ended"
   );
 
+  errorCheck(status === SaleStatus.Ended, "Sale has already ended");
+
   errorCheck(count.eq("0"), "Cannot purchase 0 domains");
 
   const paused = await contract.paused();
-
   errorCheck(paused, "Sale contract is paused");
 
-  // Track domains that have sold
   const domainsSold = await contract.domainsSold();
-  const publicQuantity = await contract.publicSaleQuantity();
-  const privateQuantity = await contract.privateSaleQuantity();
+  const numberForSale = await contract.numberForSaleForCurrentPhase();
 
-  // The public sale occurs after the private sale. There is only
-  // one variable to track domains sold. To offset having just done
-  // the private sale, we have to add that quantity here when checking.
-  // e.g. It is the private sale, we sell 3000 domains, now the `domainsSold`
-  // variable is 3000. We move to the public sale and we have 3000 more domains
-  // to sell, but because the `domainsSold` variable is already 3000 this would
-  // error unless we offset the quantity from the private sale as well. 
   errorCheck(
-    domainsSold === (publicQuantity.add(privateQuantity)),
+    domainsSold.gte(numberForSale),
     "There are no domains left for purchase in the sale"
-  )
+  );
 
   const address = await signer.getAddress();
   const balance = await signer.getBalance();
@@ -60,7 +52,7 @@ export const purchaseDomains = async (
     balance.lt(price.mul(count)),
     `Not enough funds given for purchase of ${count} domains`
   );
-  // There is no limit to purchases in the public sale
+
   if (SaleStatus.PublicSale) {
     const tx = await contract.purchaseDomainsPublicSale(count);
     return tx;
@@ -68,16 +60,15 @@ export const purchaseDomains = async (
 
   const purchased = await contract.domainsPurchasedByAccount(address);
 
-  errorCheck(
-    domainsSold === privateQuantity,
-    "There are no domains left for purchase in the sale"
-  )
-
-  const mintlist = await getMintlist(merkleFileUri, IPFSGatewayUri.fleek, cachedMintlist);
+  const mintlist = await getMintlist(
+    merkleFileUri,
+    IPFSGatewayUri.fleek,
+    cachedMintlist
+  );
   const userClaim: Claim = mintlist.claims[address];
 
   // To purchase in private sale a user must be on the mintlist
-  errorCheck(userClaim === undefined, "User is not on the mintlist");
+  errorCheck(userClaim === undefined, "User is not part of private sale");
 
   // Sale is in private sale
   errorCheck(
