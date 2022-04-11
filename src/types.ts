@@ -2,25 +2,44 @@ import * as ethers from "ethers";
 
 export type Maybe<T> = T | undefined | null;
 
+/**
+ * Configuration Object
+ */
 export interface Config {
-  // address of the sale contract
+  /**
+   * Address of the sale contract
+   */
   contractAddress: string;
 
-  // url to the merkle tree file
+  /**
+   * Url to the merkle tree file
+   */
   merkleTreeFileUri: string;
 
-  // web3 provider to access blockchain with (on read operations)
+  /**
+   * web3 provider to access blockchain with (on read operations)
+   */
   web3Provider: ethers.providers.Provider;
 
-  // amount the SDK should return for the public sale purchase limit (in theory this is infinite)
+  /**
+   * amount the SDK should return for the public sale purchase limit
+   * (in theory this is infinite)
+   */
   publicSalePurchaseLimit?: number;
 
-  // advanced settings / properties
+  /**
+   * Advanced settings / properties
+   */
   advanced?: {
-    // IPFS Hash of the merkle tree
+    /**
+     * IPFS Hash of the merkle tree, used as a fallback if the `merkleTreeFileUri` is not an IPFS url
+     */
     merkleTreeFileIPFSHash?: string;
 
-    // IPFS Gateway to use (should be fully formed, ie: https://ipfs.fleek.co/ipfs)
+    /**
+     * IPFS Gateway to use
+     * (Should be fully formed, ie: https://ipfs.fleek.co/ipfs)
+     */
     ipfsGateway?: string;
   };
 }
@@ -48,28 +67,48 @@ export interface Mintlist {
 }
 
 export interface SaleData {
-  // how many have been sold
+  /**
+   * how many have been sold
+   */
   amountSold: number;
-  // How many are for sale given the current phase (private or public sale)
+  /**
+   * How many are for sale given the current phase (private or public sale)
+   */
   amountForSale: number;
-  // the sale price
+  /**
+   * the sale price
+   */
   salePrice: string;
-  // has the sale started
+  /**
+   * has the sale started
+   */
   started: boolean;
-  // how long the private sale will last
+  /**
+   * how long the private sale will last
+   */
   privateSaleDuration: number;
-  // is the sale paused
+  /**
+   * is the sale paused
+   */
   paused: boolean;
-  // when did the sale start (only defined if the sale started)
+  /**
+   * when did the sale start (only defined if the sale started)
+   */
   startBlock?: number;
-  // when will the public sale start (only defined if the sale started)
+  /**
+   * when will the public sale start (only defined if the sale started)
+   */
   publicSaleStartBlock?: number;
 
   advanced: {
-    // how many are for sale during the private sale
+    /**
+     * how many are for sale during the private sale
+     */
     amountForSalePrivate: number;
 
-    // how many are for sale during the public sale
+    /**
+     * how many are for sale during the public sale
+     */
     amountForSalePublic: number;
   };
 }
