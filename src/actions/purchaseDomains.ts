@@ -47,7 +47,7 @@ export const purchaseDomains = async (
     `Not enough funds given for purchase of ${count} domains`
   );
 
-  if (SaleStatus.PublicSale) {
+  if (status === SaleStatus.PublicSale) {
     const tx = await contract.purchaseDomainsPublicSale(count, {
       value: price.mul(count),
     });
