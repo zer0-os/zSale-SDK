@@ -109,8 +109,7 @@ export const createInstance = (config: Config): Instance => {
       return domainsSold;
     },
     getBlockNumber: async (): Promise<number> => {
-      const provider = ethers.providers.getDefaultProvider();
-      const blockNum = await provider.getBlockNumber();
+      const blockNum = await config.web3Provider.getBlockNumber();
       return blockNum;
     },
     getEthBalance: async (address: string): Promise<string> => {
