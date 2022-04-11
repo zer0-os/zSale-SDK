@@ -12,14 +12,20 @@ export const getSaleData = async (
     ? (await contract.saleStartBlock()).toNumber()
     : undefined;
 
+  const privateSaleDuration = (await contract.privateSaleDuration()).toNumber();
+
+  const publicSaleStartBlock =
+    started && startBlock ? startBlock + privateSaleDuration : undefined;
+
   const saleData: SaleData = {
     amountSold: (await contract.domainsSold()).toNumber(),
     amountForSale: (await contract.numberForSaleForCurrentPhase()).toNumber(),
     salePrice: ethers.utils.formatEther(await contract.salePrice()),
     started: started,
-    privateSaleDuration: (await contract.privateSaleDuration()).toNumber(),
+    privateSaleDuration,
     paused: await contract.paused(),
     startBlock: startBlock,
+    publicSaleStartBlock,
     advanced: {
       amountForSalePrivate: (await contract.privateSaleQuantity()).toNumber(),
       amountForSalePublic: (await contract.publicSaleQuantity()).toNumber(),

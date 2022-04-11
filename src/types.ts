@@ -60,8 +60,10 @@ export interface SaleData {
   privateSaleDuration: number;
   // is the sale paused
   paused: boolean;
-  // when did the sale start
+  // when did the sale start (only defined if the sale started)
   startBlock?: number;
+  // when will the public sale start (only defined if the sale started)
+  publicSaleStartBlock?: number;
 
   advanced: {
     // how many are for sale during the private sale
@@ -79,7 +81,7 @@ export interface Instance {
   // Get data about the current sale
   getSaleData(): Promise<SaleData>;
 
-  // Get the block that the sale started on
+  // Get the block that the sale started on (will be zero unless the sale already started)
   getSaleStartBlock(): Promise<string>;
 
   // Get the current status of the sale
