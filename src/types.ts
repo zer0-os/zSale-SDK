@@ -114,58 +114,58 @@ export interface SaleData {
 }
 
 export interface Instance {
-  // Get the price of the sale
+  /** Get the price of the sale */
   getSalePrice(): Promise<string>;
 
-  // Get data about the current sale
+  /** Get data about the current sale */
   getSaleData(): Promise<SaleData>;
 
-  // Get the block that the sale started on (will be zero unless the sale already started)
+  /** Get the block that the sale started on (will be zero unless the sale already started) */
   getSaleStartBlock(): Promise<string>;
 
-  // Get the current status of the sale
+  /** Get the current status of the sale */
   getSaleStatus(): Promise<SaleStatus>;
 
-  // Get the mint list
+  /** Get the mint list */
   getMintlist(): Promise<Mintlist>;
 
-  // Get a users claim from the mintlist
+  /** Get a users claim from the mintlist */
   getMintlistedUserClaim(address: string): Promise<Claim>;
 
-  // Get how long the private sale lasts for
+  /** Get how long the private sale lasts for */
   getSaleMintlistDuration(): Promise<ethers.BigNumber>;
 
-  // Get how many domains for for sale (in the current phase)
+  /** Get how many domains for for sale (in the current phase) */
   getTotalForSale(): Promise<ethers.BigNumber>;
 
-  // Get the number of domains that have been sold
+  /** Get the number of domains that have been sold */
   getNumberOfDomainsSold(): Promise<ethers.BigNumber>;
 
-  // Get the current block number
+  /** Get the current block number */
   getBlockNumber(): Promise<number>;
 
-  // Get the eth balance of a user
+  /** Get the eth balance of a user */
   getEthBalance(address: string): Promise<string>;
 
-  // Check if a user is on the mint list
+  /** Check if a user is on the mint list */
   isUserOnMintlist(address: string): Promise<boolean>;
 
-  // Get the number of domains purchase by a user
+  /** Get the number of domains purchase by a user */
   getDomainsPurchasedByAccount(address: string): Promise<number>;
 
-  // Purchase domains
+  /** Purchase domains */
   purchaseDomains(
     count: ethers.BigNumber,
     signer: ethers.Signer,
     saleToken?: string
   ): Promise<ethers.ContractTransaction>;
 
-  // Admin helper to pause the sale
+  /** Admin helper to pause the sale */
   setPauseStatus(
     pauseStatus: boolean,
     signer: ethers.Signer
   ): Promise<ethers.ContractTransaction>;
 
-  // Get the amount a user could purchase
+  /** Get the amount a user could purchase */
   numberPurchasableByAccount(address: string): Promise<number>;
 }
