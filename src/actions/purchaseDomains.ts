@@ -1,4 +1,3 @@
-import { CloudflareProvider } from "@ethersproject/providers";
 import * as ethers from "ethers";
 import { getSaleStatus } from ".";
 import { WolfSale } from "../contracts/types";
@@ -9,6 +8,31 @@ const errorCheck = async (condition: boolean, errorMessage: string) => {
     throw errorMessage;
   }
 };
+
+const generateAccessList = (
+  userAddress: string,
+  gnosisSafeProxyAddress: string,
+  gnosisSafeImplAddress: string
+) => {
+  return [
+    {
+      address: gnosisSafeProxyAddress,
+      storageKeys: [
+        "0x0000000000000000000000000000000000000000000000000000000000000000"
+      ]
+    },
+    {
+      address: gnosisSafeImplAddress,
+      storageKeys: [
+        "0x0000000000000000000000000000000000000000000000000000000000000000"
+      ]
+    },
+    {
+      address: userAddress,
+      storageKeys: []
+    }
+  ]
+}
 
 export const purchaseDomains = async (
   count: ethers.BigNumber,
@@ -47,10 +71,30 @@ export const purchaseDomains = async (
     `Not enough funds given for purchase of ${count} domains`
   );
 
+  const sellerWallet = await contract.sellerWallet();
+
+  // If using a Gnosis safe as the seller wallet you must
+  // provide the implementation address for the tx accessList
+  const sellerWalletImpl = process.env.SELLER_WALLET_IMPL;
+  if (!sellerWalletImpl) {
+    throw Error("No seller wallet implementation address was provided")
+  }
+
   if (status === SaleStatus.PublicSale) {
-    const tx = await contract.purchaseDomainsPublicSale(count, {
-      value: price.mul(count),
-    });
+    const tx = await contract
+      .connect(signer)
+      .purchaseDomainsPublicSale(
+        count,
+        {
+          value: price.mul(count),
+          type: 1,
+          accessList: generateAccessList(
+            address,
+            sellerWallet,
+            sellerWalletImpl
+          )
+        }
+      );
     return tx;
   }
 
@@ -78,6 +122,12 @@ export const purchaseDomains = async (
       userClaim.proof,
       {
         value: price.mul(count),
+        type: 1,
+        accessList: generateAccessList(
+          address,
+          sellerWallet,
+          sellerWalletImpl
+        )
       }
     );
   return tx;

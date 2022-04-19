@@ -1,4 +1,5 @@
 import * as ethers from "ethers";
+import { WolfSale } from "./contracts";
 
 export type Maybe<T> = T | undefined | null;
 
@@ -157,7 +158,8 @@ export interface Instance {
   purchaseDomains(
     count: ethers.BigNumber,
     signer: ethers.Signer,
-    saleToken?: string
+    contract: WolfSale,
+    mintlist: Mintlist
   ): Promise<ethers.ContractTransaction>;
 
   /** Admin helper to pause the sale */
