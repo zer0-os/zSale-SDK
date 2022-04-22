@@ -2,12 +2,12 @@ import * as chai from "chai";
 import * as chaiAsPromised from "chai-as-promised"
 import * as dotenv from "dotenv";
 import { ethers } from "ethers";
-import { createInstance } from "../src";
 
+import { createInstance } from "../src";
 import * as actions from "../src/actions";
 import { getSaleStatus, getMintlist } from "../src/actions";
 import { getWolfSaleContract, WolfSale } from "../src/contracts";
-import { Claim, Config, Instance, Maybe, Mintlist, SaleStatus } from "../src/types";
+import { Claim, Config, Instance, Maybe, SaleStatus } from "../src/types";
 
 const expect = chai.expect;
 chai.use(chaiAsPromised.default);
@@ -27,10 +27,6 @@ describe("Test Custom SDK Logic", () => {
   const voidSignerAddress = "0x8ba1f109551bD432803012645Ac136ddd64DBA72";
   const astroTest = "0x35888AD3f1C0b39244Bb54746B96Ee84A5d97a53";
 
-  // Sample merkle file
-  const ipfsUrl =
-    "ipfs://bafybeihy6gypowkcfwtsuvspbqah6chvtfjd3lz5xcjdvwnwyjdxh2bufa";
-
   // From dApp Rinkeby zSale SDK Config
   const config: Config = {
     web3Provider: provider,
@@ -43,7 +39,18 @@ describe("Test Custom SDK Logic", () => {
     },
   }
 
+  const abi = ["function masterCopy() external view returns (address)"]
+
   describe("e2e purchase", () => {
+    it("real contract tests", async () => {
+      const wolfSale: WolfSale = await getWolfSaleContract(signer, config.contractAddress);
+      const sellerWalletAddress = await wolfSale.sellerWallet();
+
+      const contract = new ethers.Contract(sellerWalletAddress, abi, provider);
+
+      const implAddress = await contract.masterCopy();
+      console.log(implAddress);
+    });
     it("runs with access list", async () => {
       const sdk: Instance = createInstance(config);
       const mintlist = await sdk.getMintlist()
@@ -59,8 +66,9 @@ describe("Test Custom SDK Logic", () => {
       }
 
       const claim = mintlist.claims[address];
+      expect(claim?.quantity === 12)
 
-      const purchased = await wolfSale.domainsPurchasedByAccount(address)
+      const purchased = await wolfSale.domainsPurchasedByAccount(address);
 
       const tx = await sdk.purchaseDomains(
         args.count,
@@ -68,8 +76,6 @@ describe("Test Custom SDK Logic", () => {
         args.contract,
         args.mintlist
       );
-
-      const receipt = await tx.wait(1);
     })
   })
   describe("getMintlistedUserClaim", () => {

@@ -3,6 +3,8 @@ import { getSaleStatus } from ".";
 import { WolfSale } from "../contracts/types";
 import { Claim, SaleStatus, Mintlist, Maybe } from "../types";
 
+const abi = ["function masterCopy() external view returns (address)"]
+
 const errorCheck = async (condition: boolean, errorMessage: string) => {
   if (condition) {
     throw errorMessage;
@@ -71,14 +73,11 @@ export const purchaseDomains = async (
     `Not enough funds given for purchase of ${count} domains`
   );
 
-  const sellerWallet = await contract.sellerWallet();
-
   // If using a Gnosis safe as the seller wallet you must
   // provide the implementation address for the tx accessList
-  const sellerWalletImpl = process.env.SELLER_WALLET_IMPL;
-  if (!sellerWalletImpl) {
-    throw Error("No seller wallet implementation address was provided")
-  }
+  const sellerWallet = await contract.sellerWallet();
+  const sellerContract = new ethers.Contract(sellerWallet, abi, contract.provider);
+  const implAddress = await sellerContract.masterCopy();
 
   if (status === SaleStatus.PublicSale) {
     const tx = await contract
@@ -91,7 +90,7 @@ export const purchaseDomains = async (
           accessList: generateAccessList(
             address,
             sellerWallet,
-            sellerWalletImpl
+            implAddress
           )
         }
       );
@@ -126,7 +125,7 @@ export const purchaseDomains = async (
         accessList: generateAccessList(
           address,
           sellerWallet,
-          sellerWalletImpl
+          implAddress
         )
       }
     );
