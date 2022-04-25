@@ -1,14 +1,40 @@
-import { CloudflareProvider } from "@ethersproject/providers";
 import * as ethers from "ethers";
 import { getSaleStatus } from ".";
 import { WolfSale } from "../contracts/types";
 import { Claim, SaleStatus, Mintlist, Maybe } from "../types";
+
+const abi = ["function masterCopy() external view returns (address)"]
 
 const errorCheck = async (condition: boolean, errorMessage: string) => {
   if (condition) {
     throw errorMessage;
   }
 };
+
+const generateAccessList = (
+  userAddress: string,
+  gnosisSafeProxyAddress: string,
+  gnosisSafeImplAddress: string
+) => {
+  return [
+    {
+      address: gnosisSafeProxyAddress,
+      storageKeys: [
+        "0x0000000000000000000000000000000000000000000000000000000000000000"
+      ]
+    },
+    {
+      address: gnosisSafeImplAddress,
+      storageKeys: [
+        "0x0000000000000000000000000000000000000000000000000000000000000000"
+      ]
+    },
+    {
+      address: userAddress,
+      storageKeys: []
+    }
+  ]
+}
 
 export const purchaseDomains = async (
   count: ethers.BigNumber,
@@ -47,10 +73,27 @@ export const purchaseDomains = async (
     `Not enough funds given for purchase of ${count} domains`
   );
 
+  // If using a Gnosis safe as the seller wallet you must
+  // provide the implementation address for the tx accessList
+  const sellerWallet = await contract.sellerWallet();
+  const sellerContract = new ethers.Contract(sellerWallet, abi, contract.provider);
+  const implAddress = await sellerContract.masterCopy();
+
   if (status === SaleStatus.PublicSale) {
-    const tx = await contract.purchaseDomainsPublicSale(count, {
-      value: price.mul(count),
-    });
+    const tx = await contract
+      .connect(signer)
+      .purchaseDomainsPublicSale(
+        count,
+        {
+          value: price.mul(count),
+          type: 1,
+          accessList: generateAccessList(
+            address,
+            sellerWallet,
+            implAddress
+          )
+        }
+      );
     return tx;
   }
 
@@ -78,6 +121,12 @@ export const purchaseDomains = async (
       userClaim.proof,
       {
         value: price.mul(count),
+        type: 1,
+        accessList: generateAccessList(
+          address,
+          sellerWallet,
+          implAddress
+        )
       }
     );
   return tx;

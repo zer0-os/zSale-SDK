@@ -2,6 +2,8 @@ import { ethers } from "ethers";
 
 import { WolfSale, WolfSale__factory } from "./types";
 
+export * from "./types"
+
 export const getWolfSaleContract = async (
   provider: ethers.providers.Provider | ethers.Signer,
   address: string
