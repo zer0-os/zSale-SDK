@@ -1,5 +1,6 @@
 import { fetch } from "cross-fetch";
 import { Config, Maybe, Mintlist } from "../types";
+import { AirWild2Sale } from "../contracts/types";
 
 const extractIPFSHash = (hay: string) => {
   const regex = /(Qm.+)$/;
@@ -12,23 +13,30 @@ const extractIPFSHash = (hay: string) => {
 
 const defaultIpfsGateway = "https://ipfs.io/ipfs/";
 
-export const getMintlist = async (config: Config) => {
+export const getMintlist = async (config: Config, contract?: AirWild2Sale) => {
   let mintlist: Maybe<Mintlist>;
+  let merkleTreeIndex = 0;
+
+  if (contract) {
+    merkleTreeIndex = (await contract.currentMerkleRootIndex()).toNumber();
+  }
 
   // fetch via main uri
   try {
-    const res = await fetch(config.merkleTreeFileUri, { method: "GET" });
+    const res = await fetch(config.merkleTreeFileUris[merkleTreeIndex], {
+      method: "GET",
+    });
     mintlist = (await res.json()) as Mintlist;
     return mintlist;
   } catch (e) {
     console.error(
-      `Unable to fetch mint list via uri ${config.merkleTreeFileUri}`
+      `Unable to fetch mint list via uri ${config.merkleTreeFileUris}`
     );
   }
 
   let ipfsHash: Maybe<string> = config.advanced?.merkleTreeFileIPFSHash;
   if (!ipfsHash) {
-    ipfsHash = extractIPFSHash(config.merkleTreeFileUri);
+    ipfsHash = extractIPFSHash(config.merkleTreeFileUris[merkleTreeIndex]);
   }
 
   // need an IPFS hash or we cant get via ipfs

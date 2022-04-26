@@ -15,7 +15,7 @@ export interface Config {
   /**
    * Url to the merkle tree file
    */
-  merkleTreeFileUri: string;
+  merkleTreeFileUris: string[];
 
   /**
    * web3 provider to access blockchain with (on read operations)
