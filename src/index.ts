@@ -15,7 +15,6 @@ import {
 export * from "./types";
 
 const defaultPublicSalePurchaseLimit = 100;
-const PRIVATE_SALE_INDEX = 0;
 
 export const createInstance = (config: Config): Instance => {
   let cachedMintlist: Maybe<Mintlist>;
@@ -84,7 +83,9 @@ export const createInstance = (config: Config): Instance => {
         config.web3Provider,
         config.contractAddress
       );
-      const duration = await contract.mintlistDurations(PRIVATE_SALE_INDEX);
+      const duration = await contract.mintlistDurations(
+        await contract.currentMerkleRootIndex()
+      );
       return duration;
     },
     getTotalForSale: async (): Promise<ethers.BigNumber> => {

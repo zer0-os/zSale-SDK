@@ -73,18 +73,6 @@ export const purchaseDomains = async (
     `Not enough funds given for purchase of ${count} domains`
   );
 
-  // If using a Gnosis safe as the seller wallet you must
-  // provide the implementation address for the tx accessList
-  const sellerWallet = await contract.sellerWallet();
-  const sellerContract = new ethers.Contract(
-    sellerWallet,
-    abi,
-    contract.provider
-  );
-  const implAddress = await sellerContract.masterCopy();
-
-  const purchased = await contract.domainsPurchasedByAccount(address);
-
   let userClaim: Maybe<Claim> = mintlist.claims[address];
 
   // To purchase in private sale a user must be on the mintlist
@@ -92,11 +80,29 @@ export const purchaseDomains = async (
   userClaim = userClaim!;
 
   // Sale is in private sale
+  const purchased = await contract.domainsPurchasedByAccount(address);
   errorCheck(
     purchased.add(count).gte(userClaim.quantity),
     `Buying ${count} more domains would go over the maximum purchase amount of domains
     for this user. Try reducing the purchase amount.`
   );
+
+  let accessList;
+  try {
+    // If using a Gnosis safe as the seller wallet you must
+    // provide the implementation address for the tx accessList
+    const sellerWallet = await contract.sellerWallet();
+
+    const sellerContract = new ethers.Contract(
+      sellerWallet,
+      abi,
+      contract.provider
+    );
+    const implAddress = await sellerContract.masterCopy();
+    accessList = generateAccessList(address, sellerWallet, implAddress);
+  } catch (e) {
+    console.log(`Seller wallet is not a contract`);
+  }
 
   const tx = await contract
     .connect(signer)
@@ -108,7 +114,7 @@ export const purchaseDomains = async (
       {
         value: price.mul(count),
         type: 1,
-        accessList: generateAccessList(address, sellerWallet, implAddress),
+        accessList: accessList,
       }
     );
   return tx;

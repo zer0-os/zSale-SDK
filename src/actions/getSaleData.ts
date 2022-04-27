@@ -7,14 +7,14 @@ export const getSaleData = async (
   isEth: boolean
 ): Promise<SaleData> => {
   const started = await contract.saleStarted();
-  const PRIVATE_SALE_INDEX = 0;
+  const privateSaleIndex = 0;
 
   const startBlock = started
     ? (await contract.saleStartBlock()).toNumber()
     : undefined;
 
   const privateSaleDuration = (
-    await contract.mintlistDurations(PRIVATE_SALE_INDEX)
+    await contract.mintlistDurations(privateSaleIndex)
   ).toNumber();
 
   const publicSaleStartBlock =
