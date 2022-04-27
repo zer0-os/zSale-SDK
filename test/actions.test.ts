@@ -6,7 +6,7 @@ import { ethers } from "ethers";
 import { createInstance } from "../src";
 import * as actions from "../src/actions";
 import { getSaleStatus, getMintlist } from "../src/actions";
-import { getWolfSaleContract, WolfSale } from "../src/contracts";
+import { getAirWild2SaleContract, AirWild2Sale } from "../src/contracts";
 import { Claim, Config, Instance, Maybe, SaleStatus } from "../src/types";
 
 const expect = chai.expect;

@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 
-import { getWolfSaleContract } from "./contracts";
+import { getAirWild2SaleContract } from "./contracts";
 import * as actions from "./actions";
 import {
   Claim,
@@ -15,6 +15,7 @@ import {
 export * from "./types";
 
 const defaultPublicSalePurchaseLimit = 100;
+const PRIVATE_SALE_INDEX = 0;
 
 export const createInstance = (config: Config): Instance => {
   let cachedMintlist: Maybe<Mintlist>;
@@ -31,7 +32,7 @@ export const createInstance = (config: Config): Instance => {
 
   const instance: Instance = {
     getSalePrice: async (): Promise<string> => {
-      const contract = await getWolfSaleContract(
+      const contract = await getAirWild2SaleContract(
         config.web3Provider,
         config.contractAddress
       );
@@ -39,7 +40,7 @@ export const createInstance = (config: Config): Instance => {
       return ethers.utils.formatEther(price).toString();
     },
     getSaleData: async (): Promise<SaleData> => {
-      const contract = await getWolfSaleContract(
+      const contract = await getAirWild2SaleContract(
         config.web3Provider,
         config.contractAddress
       );
@@ -49,7 +50,7 @@ export const createInstance = (config: Config): Instance => {
       return saleData;
     },
     getSaleStartBlock: async (): Promise<string> => {
-      const contract = await getWolfSaleContract(
+      const contract = await getAirWild2SaleContract(
         config.web3Provider,
         config.contractAddress
       );
@@ -57,7 +58,7 @@ export const createInstance = (config: Config): Instance => {
       return startBlock.toString();
     },
     getSaleStatus: async (): Promise<SaleStatus> => {
-      const contract = await getWolfSaleContract(
+      const contract = await getAirWild2SaleContract(
         config.web3Provider,
         config.contractAddress
       );
@@ -79,29 +80,24 @@ export const createInstance = (config: Config): Instance => {
       return userClaim;
     },
     getSaleMintlistDuration: async (): Promise<ethers.BigNumber> => {
-      const contract = await getWolfSaleContract(
+      const contract = await getAirWild2SaleContract(
         config.web3Provider,
         config.contractAddress
       );
-      const duration = await contract.privateSaleDuration();
+      const duration = await contract.mintlistDurations(PRIVATE_SALE_INDEX);
       return duration;
     },
     getTotalForSale: async (): Promise<ethers.BigNumber> => {
-      const contract = await getWolfSaleContract(
+      const contract = await getAirWild2SaleContract(
         config.web3Provider,
         config.contractAddress
       );
-      const total = await contract.numberForSaleForCurrentPhase();
-      const numSold = await contract.domainsSold();
-
-      if (numSold.gt(total)) {
-        return numSold;
-      }
+      const total = await contract.totalForSale();
 
       return total;
     },
     getNumberOfDomainsSold: async (): Promise<ethers.BigNumber> => {
-      const contract = await getWolfSaleContract(
+      const contract = await getAirWild2SaleContract(
         config.web3Provider,
         config.contractAddress
       );
@@ -122,7 +118,7 @@ export const createInstance = (config: Config): Instance => {
       return isOnWhitelist;
     },
     getDomainsPurchasedByAccount: async (address: string): Promise<number> => {
-      const contract = await getWolfSaleContract(
+      const contract = await getAirWild2SaleContract(
         config.web3Provider,
         config.contractAddress
       );
@@ -133,7 +129,7 @@ export const createInstance = (config: Config): Instance => {
       count: ethers.BigNumber,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      const contract = await getWolfSaleContract(
+      const contract = await getAirWild2SaleContract(
         signer,
         config.contractAddress
       );
@@ -152,7 +148,7 @@ export const createInstance = (config: Config): Instance => {
       pauseStatus: boolean,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      const contract = await getWolfSaleContract(
+      const contract = await getAirWild2SaleContract(
         signer,
         config.contractAddress
       );
@@ -161,7 +157,7 @@ export const createInstance = (config: Config): Instance => {
     },
     numberPurchasableByAccount: async (address: string): Promise<number> => {
       const mintlist = await getMintlist();
-      const contract = await getWolfSaleContract(
+      const contract = await getAirWild2SaleContract(
         config.web3Provider,
         config.contractAddress
       );

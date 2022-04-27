@@ -1,5 +1,5 @@
 import * as ethers from "ethers";
-import { WolfSale } from "./contracts";
+import { AirWild2Sale } from "./contracts";
 
 export type Maybe<T> = T | undefined | null;
 
@@ -33,7 +33,7 @@ export interface Config {
    */
   advanced?: {
     /**
-     * IPFS Hash of the merkle tree, used as a fallback if the `merkleTreeFileUri` is not an IPFS url
+     * IPFS Hashes of the merkle trees, used as a fallback if the `merkleTreeFileUris` list is not an IPFS url at a given entry
      */
     merkleTreeFileIPFSHashes?: string[];
 
@@ -158,7 +158,7 @@ export interface Instance {
   purchaseDomains(
     count: ethers.BigNumber,
     signer: ethers.Signer,
-    contract: WolfSale,
+    contract: AirWild2Sale,
     mintlist: Mintlist
   ): Promise<ethers.ContractTransaction>;
 

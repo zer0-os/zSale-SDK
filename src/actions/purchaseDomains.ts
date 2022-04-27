@@ -1,9 +1,9 @@
 import * as ethers from "ethers";
 import { getSaleStatus } from ".";
-import { WolfSale } from "../contracts/types";
+import { AirWild2Sale } from "../contracts/types";
 import { Claim, SaleStatus, Mintlist, Maybe } from "../types";
 
-const abi = ["function masterCopy() external view returns (address)"]
+const abi = ["function masterCopy() external view returns (address)"];
 
 const errorCheck = async (condition: boolean, errorMessage: string) => {
   if (condition) {
@@ -20,26 +20,26 @@ const generateAccessList = (
     {
       address: gnosisSafeProxyAddress,
       storageKeys: [
-        "0x0000000000000000000000000000000000000000000000000000000000000000"
-      ]
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+      ],
     },
     {
       address: gnosisSafeImplAddress,
       storageKeys: [
-        "0x0000000000000000000000000000000000000000000000000000000000000000"
-      ]
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+      ],
     },
     {
       address: userAddress,
-      storageKeys: []
-    }
-  ]
-}
+      storageKeys: [],
+    },
+  ];
+};
 
 export const purchaseDomains = async (
   count: ethers.BigNumber,
   signer: ethers.Signer,
-  contract: WolfSale,
+  contract: AirWild2Sale,
   mintlist: Mintlist
 ): Promise<ethers.ContractTransaction> => {
   const status = await getSaleStatus(contract);
@@ -57,7 +57,7 @@ export const purchaseDomains = async (
   errorCheck(paused, "Sale contract is paused");
 
   const domainsSold = await contract.domainsSold();
-  const numberForSale = await contract.numberForSaleForCurrentPhase();
+  const numberForSale = await contract.totalForSale();
 
   errorCheck(
     domainsSold.gte(numberForSale),
@@ -76,26 +76,12 @@ export const purchaseDomains = async (
   // If using a Gnosis safe as the seller wallet you must
   // provide the implementation address for the tx accessList
   const sellerWallet = await contract.sellerWallet();
-  const sellerContract = new ethers.Contract(sellerWallet, abi, contract.provider);
+  const sellerContract = new ethers.Contract(
+    sellerWallet,
+    abi,
+    contract.provider
+  );
   const implAddress = await sellerContract.masterCopy();
-
-  if (status === SaleStatus.PublicSale) {
-    const tx = await contract
-      .connect(signer)
-      .purchaseDomainsPublicSale(
-        count,
-        {
-          value: price.mul(count),
-          type: 1,
-          accessList: generateAccessList(
-            address,
-            sellerWallet,
-            implAddress
-          )
-        }
-      );
-    return tx;
-  }
 
   const purchased = await contract.domainsPurchasedByAccount(address);
 
@@ -122,11 +108,7 @@ export const purchaseDomains = async (
       {
         value: price.mul(count),
         type: 1,
-        accessList: generateAccessList(
-          address,
-          sellerWallet,
-          implAddress
-        )
+        accessList: generateAccessList(address, sellerWallet, implAddress),
       }
     );
   return tx;

@@ -19,14 +19,20 @@ export const getMintlist = async (config: Config) => {
   let merkleTreeIndex = 0;
 
   const airWild2Sale = await getAirWild2SaleContract(
-    new ethers.VoidSigner(""),
+    config.web3Provider,
     config.contractAddress
-  ); // Since we'll only be reading here we actually don't need a signer
+  );
 
-  if (airWild2Sale) {
-    merkleTreeIndex = (await airWild2Sale.currentMerkleRootIndex()).toNumber();
+  merkleTreeIndex = (await airWild2Sale.currentMerkleRootIndex()).toNumber();
+
+  if (merkleTreeIndex >= config.merkleTreeFileUris.length) {
+    console.error(
+      `No merkle tree file URI at the current sale index, which is ${merkleTreeIndex}`
+    );
+    throw Error(
+      `No merkle tree file URI at the current sale index, which is ${merkleTreeIndex}`
+    );
   }
-
   // fetch via main uri
   try {
     const res = await fetch(config.merkleTreeFileUris[merkleTreeIndex], {
@@ -36,7 +42,7 @@ export const getMintlist = async (config: Config) => {
     return mintlist;
   } catch (e) {
     console.error(
-      `Unable to fetch mint list via uri ${config.merkleTreeFileUris}`
+      `Unable to fetch mint list number ${merkleTreeIndex} via uri ${config.merkleTreeFileUris[merkleTreeIndex]}`
     );
   }
 
