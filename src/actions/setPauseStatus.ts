@@ -1,9 +1,9 @@
 import { ethers } from "ethers";
-import { WolfSale } from "../contracts/types";
+import { AirWild2Sale } from "../contracts/types";
 
 export const setPauseStatus = async (
   pauseStatus: boolean,
-  saleContract: WolfSale,
+  saleContract: AirWild2Sale,
   signer: ethers.Signer
 ): Promise<ethers.ContractTransaction> => {
   const currentStatus = await saleContract.paused();

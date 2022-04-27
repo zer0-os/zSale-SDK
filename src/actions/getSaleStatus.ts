@@ -1,27 +1,31 @@
 import * as ethers from "ethers";
-import { WolfSale } from "../contracts/types";
+import { AirWild2Sale } from "../contracts/types";
 
 import { SaleStatus } from "../types";
 
-export const getSaleStatus = async (contract: WolfSale) => {
+export const getSaleStatus = async (contract: AirWild2Sale) => {
   const saleStarted = await contract.saleStarted();
+  const firstSaleIndex = 0;
 
-  if (!saleStarted) return SaleStatus.NotStarted;
+  if (!saleStarted) {
+    return SaleStatus.NotStarted;
+  }
 
   const currentBlock = await contract.provider.getBlockNumber();
   const startBlock = await contract.saleStartBlock();
-  const duration = await contract.privateSaleDuration();
+
+  const numSold = await contract.domainsSold();
+  const totalForSale = await contract.totalForSale();
+  if (numSold >= totalForSale) {
+    return SaleStatus.Ended;
+  }
+  const currentMintlist = (await contract.currentMerkleRootIndex()).toNumber();
+  const duration = await contract.mintlistDurations(currentMintlist);
 
   if (ethers.BigNumber.from(currentBlock).gt(startBlock.add(duration))) {
-    const numberSold = await contract.domainsSold();
-    const forSaleInPhase = await contract.numberForSaleForCurrentPhase();
-
-    if (numberSold.gte(forSaleInPhase)) {
-      return SaleStatus.Ended;
-    }
-
-    return SaleStatus.PublicSale;
+    return SaleStatus.Ended;
   }
-
-  return SaleStatus.PrivateSale;
+  return currentMintlist == firstSaleIndex
+    ? SaleStatus.PrivateSale
+    : SaleStatus.PublicSale;
 };

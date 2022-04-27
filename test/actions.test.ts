@@ -1,12 +1,12 @@
 import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised"
+import * as chaiAsPromised from "chai-as-promised";
 import * as dotenv from "dotenv";
 import { ethers } from "ethers";
 
 import { createInstance } from "../src";
 import * as actions from "../src/actions";
 import { getSaleStatus, getMintlist } from "../src/actions";
-import { getWolfSaleContract, WolfSale } from "../src/contracts";
+import { getAirWild2SaleContract, AirWild2Sale } from "../src/contracts";
 import { Claim, Config, Instance, Maybe, SaleStatus } from "../src/types";
 
 const expect = chai.expect;
@@ -32,18 +32,24 @@ describe("Test Custom SDK Logic", () => {
     web3Provider: provider,
     contractAddress: "0xC82E9E9B1e28F10a4C13a915a0BDCD4Db00d086d",
     // Using Rinkeby not Kovan, but can use same file for tests
-    merkleTreeFileUri: 'https://d3810nvssqir6b.cloudfront.net/kovan-test-merkleTree.json',
+    merkleTreeFileUris: [
+      "https://d3810nvssqir6b.cloudfront.net/kovan-test-merkleTree.json",
+    ],
     advanced: {
-      merkleTreeFileIPFSHash:
-        'Qmf8XuYT181zdvhNXSeYUhkptgezzK8QJnrAD16GGj8TrV',
+      merkleTreeFileIPFSHashes: [
+        "Qmf8XuYT181zdvhNXSeYUhkptgezzK8QJnrAD16GGj8TrV",
+      ],
     },
-  }
+  };
 
-  const abi = ["function masterCopy() external view returns (address)"]
+  const abi = ["function masterCopy() external view returns (address)"];
 
   describe("e2e purchase", () => {
     it("real contract tests", async () => {
-      const wolfSale: WolfSale = await getWolfSaleContract(signer, config.contractAddress);
+      const wolfSale: WolfSale = await getWolfSaleContract(
+        signer,
+        config.contractAddress
+      );
       const sellerWalletAddress = await wolfSale.sellerWallet();
 
       const contract = new ethers.Contract(sellerWalletAddress, abi, provider);
@@ -53,20 +59,23 @@ describe("Test Custom SDK Logic", () => {
     });
     it("runs with access list", async () => {
       const sdk: Instance = createInstance(config);
-      const mintlist = await sdk.getMintlist()
+      const mintlist = await sdk.getMintlist();
 
-      const wolfSale = await getWolfSaleContract(signer, config.contractAddress)
-      const address = await signer.getAddress()
+      const wolfSale = await getWolfSaleContract(
+        signer,
+        config.contractAddress
+      );
+      const address = await signer.getAddress();
 
       const args = {
         count: ethers.BigNumber.from("1"),
         signer: signer,
         contract: wolfSale,
-        mintlist: mintlist
-      }
+        mintlist: mintlist,
+      };
 
       const claim = mintlist.claims[address];
-      expect(claim?.quantity === 12)
+      expect(claim?.quantity === 12);
 
       const purchased = await wolfSale.domainsPurchasedByAccount(address);
 
@@ -76,8 +85,8 @@ describe("Test Custom SDK Logic", () => {
         args.contract,
         args.mintlist
       );
-    })
-  })
+    });
+  });
   describe("getMintlistedUserClaim", () => {
     it("errors when address is not in merkle tree", async () => {
       const mintlist = await getMintlist(config);

@@ -1,5 +1,7 @@
 import { fetch } from "cross-fetch";
 import { Config, Maybe, Mintlist } from "../types";
+import { getAirWild2SaleContract } from "../contracts";
+import { ethers } from "ethers";
 
 const extractIPFSHash = (hay: string) => {
   const regex = /(Qm.+)$/;
@@ -14,21 +16,42 @@ const defaultIpfsGateway = "https://ipfs.io/ipfs/";
 
 export const getMintlist = async (config: Config) => {
   let mintlist: Maybe<Mintlist>;
+  let merkleTreeIndex = 0;
 
+  const airWild2Sale = await getAirWild2SaleContract(
+    config.web3Provider,
+    config.contractAddress
+  );
+
+  merkleTreeIndex = (await airWild2Sale.currentMerkleRootIndex()).toNumber();
+
+  if (merkleTreeIndex >= config.merkleTreeFileUris.length) {
+    console.error(
+      `No merkle tree file URI at the current sale index, which is ${merkleTreeIndex}`
+    );
+    throw Error(
+      `No merkle tree file URI at the current sale index, which is ${merkleTreeIndex}`
+    );
+  }
   // fetch via main uri
   try {
-    const res = await fetch(config.merkleTreeFileUri, { method: "GET" });
+    const res = await fetch(config.merkleTreeFileUris[merkleTreeIndex], {
+      method: "GET",
+    });
     mintlist = (await res.json()) as Mintlist;
     return mintlist;
   } catch (e) {
     console.error(
-      `Unable to fetch mint list via uri ${config.merkleTreeFileUri}`
+      `Unable to fetch mint list number ${merkleTreeIndex} via uri ${config.merkleTreeFileUris[merkleTreeIndex]}`
     );
   }
 
-  let ipfsHash: Maybe<string> = config.advanced?.merkleTreeFileIPFSHash;
-  if (!ipfsHash) {
-    ipfsHash = extractIPFSHash(config.merkleTreeFileUri);
+  let ipfsHash: Maybe<string>;
+  if (config.advanced?.merkleTreeFileIPFSHashes) {
+    ipfsHash = config.advanced.merkleTreeFileIPFSHashes[merkleTreeIndex];
+    if (!ipfsHash) {
+      ipfsHash = extractIPFSHash(config.merkleTreeFileUris[merkleTreeIndex]);
+    }
   }
 
   // need an IPFS hash or we cant get via ipfs

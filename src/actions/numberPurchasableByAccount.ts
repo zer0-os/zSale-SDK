@@ -1,10 +1,10 @@
-import { WolfSale } from "../contracts/types";
+import { AirWild2Sale } from "../contracts/types";
 import { Mintlist, SaleStatus } from "../types";
 import { getSaleStatus } from "./getSaleStatus";
 
 export const numberPurchasableByAccount = async (
   mintlist: Mintlist,
-  contract: WolfSale,
+  contract: AirWild2Sale,
   account: string,
   publicSalePurchaseLimit: number
 ): Promise<number> => {

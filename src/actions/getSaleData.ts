@@ -1,25 +1,28 @@
 import { ethers } from "ethers";
-import { WolfSale } from "../contracts/types";
+import { AirWild2Sale } from "../contracts/types";
 import { SaleData } from "../types";
 
 export const getSaleData = async (
-  contract: WolfSale,
+  contract: AirWild2Sale,
   isEth: boolean
 ): Promise<SaleData> => {
   const started = await contract.saleStarted();
+  const privateSaleIndex = 0;
 
   const startBlock = started
     ? (await contract.saleStartBlock()).toNumber()
     : undefined;
 
-  const privateSaleDuration = (await contract.privateSaleDuration()).toNumber();
+  const privateSaleDuration = (
+    await contract.mintlistDurations(privateSaleIndex)
+  ).toNumber();
 
   const publicSaleStartBlock =
     started && startBlock ? startBlock + privateSaleDuration : undefined;
 
   const saleData: SaleData = {
     amountSold: (await contract.domainsSold()).toNumber(),
-    amountForSale: (await contract.numberForSaleForCurrentPhase()).toNumber(),
+    amountForSale: (await contract.totalForSale()).toNumber(),
     salePrice: ethers.utils.formatEther(await contract.salePrice()),
     started: started,
     privateSaleDuration,
@@ -27,8 +30,8 @@ export const getSaleData = async (
     startBlock: startBlock,
     publicSaleStartBlock,
     advanced: {
-      amountForSalePrivate: (await contract.privateSaleQuantity()).toNumber(),
-      amountForSalePublic: (await contract.publicSaleQuantity()).toNumber(),
+      amountForSalePrivate: (await contract.totalForSale()).toNumber(),
+      amountForSalePublic: (await contract.totalForSale()).toNumber(),
     },
   };
   return saleData;
