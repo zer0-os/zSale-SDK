@@ -13,9 +13,9 @@ export interface Config {
   contractAddress: string;
 
   /**
-   * Url to the merkle tree file
+   * Since there are going to be multiple whitelists, we need to be able to access all of them - so we have a list of merkle tree URIs
    */
-  merkleTreeFileUri: string;
+  merkleTreeFileUris: string[];
 
   /**
    * web3 provider to access blockchain with (on read operations)
@@ -35,7 +35,7 @@ export interface Config {
     /**
      * IPFS Hash of the merkle tree, used as a fallback if the `merkleTreeFileUri` is not an IPFS url
      */
-    merkleTreeFileIPFSHash?: string;
+    merkleTreeFileIPFSHashes?: string[];
 
     /**
      * IPFS Gateway to use
