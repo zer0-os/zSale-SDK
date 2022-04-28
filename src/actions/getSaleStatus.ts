@@ -16,7 +16,7 @@ export const getSaleStatus = async (contract: AirWild2Sale) => {
 
   const numSold = await contract.domainsSold();
   const totalForSale = await contract.totalForSale();
-  if (numSold >= totalForSale) {
+  if (numSold.gte(totalForSale)) {
     return SaleStatus.Ended;
   }
   const currentMintlist = (await contract.currentMerkleRootIndex()).toNumber();
