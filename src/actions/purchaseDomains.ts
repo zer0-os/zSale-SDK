@@ -113,7 +113,7 @@ export const purchaseDomains = async (
       userClaim.proof,
       {
         value: price.mul(count),
-        type: 1,
+        type: 2,
         accessList: accessList,
       }
     );
