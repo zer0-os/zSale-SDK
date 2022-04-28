@@ -82,9 +82,9 @@ export const purchaseDomains = async (
   // Sale is in private sale
   const purchased = await contract.domainsPurchasedByAccount(address);
   errorCheck(
-    purchased.add(count).gte(userClaim.quantity),
+    purchased.add(count).gt(userClaim.quantity),
     `Buying ${count} more domains would go over the maximum purchase amount of domains
-    for this user. Try reducing the purchase amount.`
+    for this user, ${userClaim.quantity}. Try reducing the purchase amount.`
   );
 
   let accessList;
@@ -101,7 +101,7 @@ export const purchaseDomains = async (
     const implAddress = await sellerContract.masterCopy();
     accessList = generateAccessList(address, sellerWallet, implAddress);
   } catch (e) {
-    console.log(`Seller wallet is not a contract`);
+    //console.log(`Seller wallet is not a contract`);
   }
 
   const tx = await contract
