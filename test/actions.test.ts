@@ -46,7 +46,7 @@ describe("Test Custom SDK Logic", () => {
 
   describe("e2e purchase", () => {
     it("real contract tests", async () => {
-      const wolfSale: WolfSale = await getWolfSaleContract(
+      const wolfSale: AirWild2Sale = await getAirWild2SaleContract(
         signer,
         config.contractAddress
       );
@@ -61,7 +61,7 @@ describe("Test Custom SDK Logic", () => {
       const sdk: Instance = createInstance(config);
       const mintlist = await sdk.getMintlist();
 
-      const wolfSale = await getWolfSaleContract(
+      const wolfSale = await getAirWild2SaleContract(
         signer,
         config.contractAddress
       );
@@ -79,12 +79,7 @@ describe("Test Custom SDK Logic", () => {
 
       const purchased = await wolfSale.domainsPurchasedByAccount(address);
 
-      const tx = await sdk.purchaseDomains(
-        args.count,
-        args.signer,
-        args.contract,
-        args.mintlist
-      );
+      const tx = await sdk.purchaseDomains(args.count, args.signer);
     });
   });
   describe("getMintlistedUserClaim", () => {
@@ -101,7 +96,7 @@ describe("Test Custom SDK Logic", () => {
   });
   describe("getSaleStatus", () => {
     it("runs", async () => {
-      const contract = await getWolfSaleContract(
+      const contract = await getAirWild2SaleContract(
         signer,
         config.contractAddress
       );
@@ -117,7 +112,7 @@ describe("Test Custom SDK Logic", () => {
   });
   describe("getSaleData", () => {
     it("runs", async () => {
-      const contract = await getWolfSaleContract(
+      const contract = await getAirWild2SaleContract(
         signer,
         config.contractAddress
       );

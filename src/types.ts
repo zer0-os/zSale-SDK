@@ -157,9 +157,7 @@ export interface Instance {
   /** Purchase domains */
   purchaseDomains(
     count: ethers.BigNumber,
-    signer: ethers.Signer,
-    contract: AirWild2Sale,
-    mintlist: Mintlist
+    signer: ethers.Signer
   ): Promise<ethers.ContractTransaction>;
 
   /** Admin helper to pause the sale */
