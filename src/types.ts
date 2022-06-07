@@ -67,7 +67,7 @@ export interface Mintlist {
   claims: Claims;
 }
 
-export interface SaleData {
+export interface AirWildS2SaleData {
   /**
    * how many have been sold
    */
@@ -114,12 +114,12 @@ export interface SaleData {
   };
 }
 
-export interface Instance {
+export interface AirWildS2Instance {
   /** Get the price of the sale */
   getSalePrice(): Promise<string>;
 
   /** Get data about the current sale */
-  getSaleData(): Promise<SaleData>;
+  getSaleData(): Promise<AirWildS2SaleData>;
 
   /** Get the block that the sale started on (will be zero unless the sale already started) */
   getSaleStartBlock(): Promise<string>;
@@ -168,4 +168,82 @@ export interface Instance {
 
   /** Get the amount a user could purchase */
   numberPurchasableByAccount(address: string): Promise<number>;
+}
+
+export interface ClaimWithChildInstance {
+  /** Get the price of the sale */
+  getSalePrice(): Promise<string>;
+
+  /** Get data about the current sale */
+  getSaleData(): Promise<ClaimWithChildSaleData>;
+
+  /** Get the block that the sale started on (will be zero unless the sale already started) */
+  getSaleStartBlock(): Promise<string>;
+
+  /** Get the current status of the sale */
+  getSaleStatus(): Promise<SaleStatus>;
+
+  /** Get how long the sale lasts for */
+  getSaleDuration(): Promise<ethers.BigNumber>;
+
+  /** Get how many domains for for sale (in the current phase) */
+  getTotalForSale(): Promise<ethers.BigNumber>;
+
+  /** Get the number of domains that have been sold */
+  getNumberOfDomainsSold(): Promise<ethers.BigNumber>;
+
+  /** Get the current block number */
+  getBlockNumber(): Promise<number>;
+
+  /** Get the eth balance of a user */
+  getEthBalance(address: string): Promise<string>;
+
+  /** Returns true if an NFT can still be used to make a claim, and false otherwise */
+  canBeClaimed(domainId: string): Promise<boolean>;
+
+  /** Return the address of the user who has claimed the given domain ID, or the Zero Address if no one has claimed with that ID yet. */
+  domainClaimedBy(domainId: string): Promise<string>;
+
+  /** Purchase domains */
+  claimDomains(
+    claimingIds: string[],
+    signer: ethers.Signer
+  ): Promise<ethers.ContractTransaction>;
+
+  /** Admin helper to pause the sale */
+  setPauseStatus(
+    pauseStatus: boolean,
+    signer: ethers.Signer
+  ): Promise<ethers.ContractTransaction>;
+}
+
+export interface ClaimWithChildSaleData {
+  /**
+   * how many have been sold
+   */
+  amountSold: number;
+  /**
+   * How many are for sale given the current phase (private or public sale)
+   */
+  amountForSale: number;
+  /**
+   * the sale price
+   */
+  salePrice: string;
+  /**
+   * has the sale started
+   */
+  started: boolean;
+  /**
+   * how long the private sale will last
+   */
+  saleDuration: number;
+  /**
+   * is the sale paused
+   */
+  paused: boolean;
+  /**
+   * when did the sale start (only defined if the sale started)
+   */
+  startBlock?: number;
 }

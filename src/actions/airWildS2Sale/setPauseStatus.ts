@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { AirWild2Sale } from "../contracts/types";
+import { AirWild2Sale } from "../../contracts/types";
 
 export const setPauseStatus = async (
   pauseStatus: boolean,

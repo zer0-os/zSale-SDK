@@ -3,11 +3,16 @@ import * as chaiAsPromised from "chai-as-promised";
 import * as dotenv from "dotenv";
 import { ethers } from "ethers";
 
-import { createInstance } from "../src";
-import * as actions from "../src/actions";
-import { getSaleStatus, getMintlist } from "../src/actions";
+import { createAirWild2SaleInstance } from "../src";
+import * as airWildS2Actions from "../src/actions/airWildS2Sale";
 import { getAirWild2SaleContract, AirWild2Sale } from "../src/contracts";
-import { Claim, Config, Instance, Maybe, SaleStatus } from "../src/types";
+import {
+  Claim,
+  Config,
+  AirWildS2Instance,
+  Maybe,
+  SaleStatus,
+} from "../src/types";
 
 const expect = chai.expect;
 chai.use(chaiAsPromised.default);
@@ -58,7 +63,7 @@ describe("Test Custom SDK Logic", () => {
       console.log(implAddress);
     });
     it("runs with access list", async () => {
-      const sdk: Instance = createInstance(config);
+      const sdk: AirWildS2Instance = createAirWild2SaleInstance(config);
       const mintlist = await sdk.getMintlist();
 
       const wolfSale = await getAirWild2SaleContract(
@@ -84,12 +89,12 @@ describe("Test Custom SDK Logic", () => {
   });
   describe("getMintlistedUserClaim", () => {
     it("errors when address is not in merkle tree", async () => {
-      const mintlist = await getMintlist(config);
+      const mintlist = await airWildS2Actions.getMintlist(config);
       const userClaim: Maybe<Claim> = mintlist.claims[voidSignerAddress];
       expect(userClaim).to.equal(undefined);
     });
     it("returns the account information when address is in the merkle tree", async () => {
-      const mintlist = await getMintlist(config);
+      const mintlist = await airWildS2Actions.getMintlist(config);
       const userClaim: Maybe<Claim> = mintlist.claims[astroTest];
       expect(userClaim);
     });
@@ -100,13 +105,13 @@ describe("Test Custom SDK Logic", () => {
         signer,
         config.contractAddress
       );
-      const status = await getSaleStatus(contract);
+      const status = await airWildS2Actions.getSaleStatus(contract);
       expect(status).to.equal(SaleStatus.PublicSale);
     });
   });
   describe("getMintlist", () => {
     it("runs", async () => {
-      const whitelist = await getMintlist(config);
+      const whitelist = await airWildS2Actions.getMintlist(config);
       expect(whitelist);
     });
   });
@@ -116,7 +121,7 @@ describe("Test Custom SDK Logic", () => {
         signer,
         config.contractAddress
       );
-      const data = await actions.getSaleData(contract, true);
+      const data = await airWildS2Actions.getSaleData(contract, true);
       expect(data);
     });
   });
