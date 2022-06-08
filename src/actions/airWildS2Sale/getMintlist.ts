@@ -1,7 +1,6 @@
 import { fetch } from "cross-fetch";
 import { AirWildS2Config, Maybe, Mintlist } from "../../types";
 import { getAirWild2SaleContract } from "../../contracts";
-import { ethers } from "ethers";
 
 const extractIPFSHash = (hay: string) => {
   const regex = /(Qm.+)$/;
