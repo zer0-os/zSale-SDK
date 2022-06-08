@@ -11,7 +11,7 @@ const main = async () => {
       "https://rinkeby.infura.io/v3/77c3d733140f4c12a77699e24cb30c27"
     )
   );
-  const config: sdk.Config = {
+  const config: sdk.AirWildS2Config = {
     web3Provider: wallet.provider,
     merkleTreeFileUri:
       "https://ipfs.io/ipfs/QmSarejrKPohT6peSHAWwLDkfBhy8qwEouFhBMzzw2vCit",

@@ -8,7 +8,7 @@ import * as airWildS2Actions from "../src/actions/airWildS2Sale";
 import { getAirWild2SaleContract, AirWild2Sale } from "../src/contracts";
 import {
   Claim,
-  Config,
+  AirWildS2Config,
   AirWildS2Instance,
   Maybe,
   SaleStatus,
@@ -33,7 +33,7 @@ describe("Test Custom SDK Logic", () => {
   const astroTest = "0x35888AD3f1C0b39244Bb54746B96Ee84A5d97a53";
 
   // From dApp Rinkeby zSale SDK Config
-  const config: Config = {
+  const config: AirWildS2Config = {
     web3Provider: provider,
     contractAddress: "0xC82E9E9B1e28F10a4C13a915a0BDCD4Db00d086d",
     // Using Rinkeby not Kovan, but can use same file for tests

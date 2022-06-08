@@ -6,7 +6,30 @@ export type Maybe<T> = T | undefined | null;
 /**
  * Configuration Object
  */
-export interface Config {
+export interface ClaimSaleConfig {
+  /**
+   * Address of the sale contract
+   */
+  contractAddress: string;
+
+  /**
+   * web3 provider to access blockchain with (on read operations)
+   */
+  web3Provider: ethers.providers.Provider;
+
+  /**
+   * Advanced settings / properties
+   */
+  advanced?: {
+    /**
+     * IPFS Gateway to use
+     * (Should be fully formed, ie: https://ipfs.fleek.co/ipfs)
+     */
+    ipfsGateway?: string;
+  };
+}
+
+export interface AirWildS2Config {
   /**
    * Address of the sale contract
    */

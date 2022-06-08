@@ -5,7 +5,8 @@ import * as airWildS2Actions from "./actions/airWildS2Sale";
 import * as claimWithChildSaleActions from "./actions/claimWithChildSale";
 import {
   Claim,
-  Config,
+  ClaimSaleConfig,
+  AirWildS2Config,
   AirWildS2Instance,
   Maybe,
   AirWildS2SaleData,
@@ -20,7 +21,7 @@ export * from "./types";
 const defaultPublicSalePurchaseLimit = 100;
 
 export const createAirWild2SaleInstance = (
-  config: Config
+  config: AirWildS2Config
 ): AirWildS2Instance => {
   let cachedMintlist: Maybe<Mintlist>;
 
@@ -190,7 +191,7 @@ export const createAirWild2SaleInstance = (
 };
 
 export const createClaimWithChildInstance = (
-  config: Config
+  config: ClaimSaleConfig
 ): ClaimWithChildInstance => {
   const instance: ClaimWithChildInstance = {
     getSalePrice: async (): Promise<string> => {
