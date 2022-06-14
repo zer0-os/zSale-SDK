@@ -309,21 +309,18 @@ export const createClaimWithChildInstance = (
       walletID: string,
       signer: ethers.Signer
     ): Promise<string[]> => {
-      const claimingRegistrar = await getClaimingToken(
+      const claimingToken = await getClaimingToken(
         signer,
         config.claimingRegistrarAddress
       );
       let childDomain: ethers.BigNumber;
       const claimingIDs: string[] = [];
-      const bigNumOwned = await claimingRegistrar.balanceOf(walletID);
+      const bigNumOwned = await claimingToken.balanceOf(walletID);
       const numOwned = bigNumOwned.toNumber();
       if (numOwned != 0) {
         let i = 0;
         while (i < numOwned) {
-          childDomain = await claimingRegistrar.tokenOfOwnerByIndex(
-            walletID,
-            i
-          );
+          childDomain = await claimingToken.tokenOfOwnerByIndex(walletID, i);
           if (await instance.canBeClaimed(childDomain.toHexString())) {
             claimingIDs.push(childDomain.toHexString());
           }
