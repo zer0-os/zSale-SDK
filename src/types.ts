@@ -18,6 +18,11 @@ export interface ClaimSaleConfig {
   web3Provider: ethers.providers.Provider;
 
   /**
+   * Registrar that holds the domains being used to claim for this sale.
+   */
+  claimingRegistrarAddress: string;
+
+  /**
    * Advanced settings / properties
    */
   advanced?: {
@@ -238,6 +243,12 @@ export interface ClaimWithChildInstance {
     pauseStatus: boolean,
     signer: ethers.Signer
   ): Promise<ethers.ContractTransaction>;
+
+  /** Get a list of the token IDs owned by a given wallet which could be used to claim a domain */
+  getClaimingIDsForUser(
+    walletAddress: string,
+    signer: ethers.Signer
+  ): Promise<string[]>;
 }
 
 export interface ClaimWithChildSaleData {
