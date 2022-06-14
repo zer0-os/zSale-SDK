@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import {
   getAirWild2SaleContract,
   getClaimContract,
-  getClaimRegistrar as getClaimingToken,
+  getClaimingToken as getClaimingToken,
 } from "./contracts";
 import * as airWildS2Actions from "./actions/airWildS2Sale";
 import * as claimWithChildSaleActions from "./actions/claimWithChildSale";
@@ -305,21 +305,18 @@ export const createClaimWithChildInstance = (
       );
       return tx;
     },
-    getClaimingIDsForUser: async (
-      walletID: string,
-      signer: ethers.Signer
-    ): Promise<string[]> => {
+    getClaimingIDsForUser: async (walletID: string): Promise<string[]> => {
       const claimingToken = await getClaimingToken(
-        signer,
+        config.web3Provider,
         config.claimingRegistrarAddress
       );
       let childDomain: ethers.BigNumber;
       const claimingIDs: string[] = [];
-      const bigNumOwned = await claimingToken.balanceOf(walletID);
-      const numOwned = bigNumOwned.toNumber();
-      if (numOwned != 0) {
+      const bigNumDomainsOwned = await claimingToken.balanceOf(walletID);
+      const numDomainsOwned = bigNumDomainsOwned.toNumber();
+      if (numDomainsOwned != 0) {
         let i = 0;
-        while (i < numOwned) {
+        while (i < numDomainsOwned) {
           childDomain = await claimingToken.tokenOfOwnerByIndex(walletID, i);
           if (await instance.canBeClaimed(childDomain.toHexString())) {
             claimingIDs.push(childDomain.toHexString());

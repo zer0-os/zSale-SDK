@@ -24,8 +24,8 @@ export const getClaimContract = async (
   return contract;
 };
 
-export const getClaimRegistrar = async (
-  provider: ethers.providers.Provider | ethers.Signer,
+export const getClaimingToken = async (
+  provider: ethers.providers.Provider,
   address: string
 ): Promise<IERC721EnumerableUpgradeable> => {
   const contract = IERC721EnumerableUpgradeable__factory.connect(

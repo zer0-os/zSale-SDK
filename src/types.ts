@@ -245,10 +245,7 @@ export interface ClaimWithChildInstance {
   ): Promise<ethers.ContractTransaction>;
 
   /** Get a list of the token IDs owned by a given wallet which could be used to claim a domain */
-  getClaimingIDsForUser(
-    walletAddress: string,
-    signer: ethers.Signer
-  ): Promise<string[]>;
+  getClaimingIDsForUser(walletAddress: string): Promise<string[]>;
 }
 
 export interface ClaimWithChildSaleData {
