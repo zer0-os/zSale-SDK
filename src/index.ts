@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import {
   getAirWild2SaleContract,
   getClaimContract,
-  getClaimRegistrar,
+  getClaimRegistrar as getClaimingToken,
 } from "./contracts";
 import * as airWildS2Actions from "./actions/airWildS2Sale";
 import * as claimWithChildSaleActions from "./actions/claimWithChildSale";
@@ -309,7 +309,7 @@ export const createClaimWithChildInstance = (
       walletID: string,
       signer: ethers.Signer
     ): Promise<string[]> => {
-      const claimingRegistrar = await getClaimRegistrar(
+      const claimingRegistrar = await getClaimingToken(
         signer,
         config.claimingRegistrarAddress
       );
