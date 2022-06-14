@@ -1,7 +1,6 @@
 import { fetch } from "cross-fetch";
-import { Config, Maybe, Mintlist } from "../types";
-import { getAirWild2SaleContract } from "../contracts";
-import { ethers } from "ethers";
+import { AirWildS2Config, Maybe, Mintlist } from "../../types";
+import { getAirWild2SaleContract } from "../../contracts";
 
 const extractIPFSHash = (hay: string) => {
   const regex = /(Qm.+)$/;
@@ -14,7 +13,7 @@ const extractIPFSHash = (hay: string) => {
 
 const defaultIpfsGateway = "https://ipfs.io/ipfs/";
 
-export const getMintlist = async (config: Config) => {
+export const getMintlist = async (config: AirWildS2Config) => {
   let mintlist: Maybe<Mintlist>;
   let merkleTreeIndex = 0;
 

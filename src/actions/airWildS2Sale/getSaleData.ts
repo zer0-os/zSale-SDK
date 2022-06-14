@@ -1,11 +1,11 @@
 import { ethers } from "ethers";
-import { AirWild2Sale } from "../contracts/types";
-import { SaleData } from "../types";
+import { AirWild2Sale } from "../../contracts/types";
+import { AirWildS2SaleData } from "../../types";
 
 export const getSaleData = async (
   contract: AirWild2Sale,
   isEth: boolean
-): Promise<SaleData> => {
+): Promise<AirWildS2SaleData> => {
   const started = await contract.saleStarted();
   const privateSaleIndex = 0;
 
@@ -20,7 +20,7 @@ export const getSaleData = async (
   const publicSaleStartBlock =
     started && startBlock ? startBlock + privateSaleDuration : undefined;
 
-  const saleData: SaleData = {
+  const saleData: AirWildS2SaleData = {
     amountSold: (await contract.domainsSold()).toNumber(),
     amountForSale: (await contract.totalForSale()).toNumber(),
     salePrice: ethers.utils.formatEther(await contract.salePrice()),

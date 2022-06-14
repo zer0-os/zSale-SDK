@@ -1,7 +1,7 @@
 import * as ethers from "ethers";
 import { getSaleStatus } from ".";
-import { AirWild2Sale } from "../contracts/types";
-import { Claim, SaleStatus, Mintlist, Maybe } from "../types";
+import { AirWild2Sale } from "../../contracts/types";
+import { Claim, SaleStatus, Mintlist, Maybe } from "../../types";
 
 const abi = ["function masterCopy() external view returns (address)"];
 

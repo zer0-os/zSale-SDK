@@ -1,5 +1,5 @@
-import { AirWild2Sale } from "../contracts/types";
-import { Mintlist, SaleStatus } from "../types";
+import { AirWild2Sale } from "../../contracts/types";
+import { Mintlist, SaleStatus } from "../../types";
 import { getSaleStatus } from "./getSaleStatus";
 
 export const numberPurchasableByAccount = async (
