@@ -321,6 +321,7 @@ export const createClaimWithChildInstance = (
           if (await instance.canBeClaimed(childDomain.toHexString())) {
             claimingIDs.push(childDomain.toHexString());
           }
+          i++;
         }
       }
       return claimingIDs;
