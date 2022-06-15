@@ -12,34 +12,24 @@ const main = async () => {
       "https://rinkeby.infura.io/v3/77c3d733140f4c12a77699e24cb30c27"
     )
   );
-  const config: sdk.Config = {
+  const config: sdk.ClaimSaleConfig = {
     web3Provider: new ethers.providers.JsonRpcProvider(
       "https://rinkeby.infura.io/v3/77c3d733140f4c12a77699e24cb30c27"
     ),
-    contractAddress: "0x9e903BB3c48BC2b679B20959F365c0be7Ab88961",
-    merkleTreeFileUris: [
-      "https://ipfs.io/ipfs/QmXQLJN49XRAgdgeJ8Hz6zf7izQGokPnQ5MZ6p79m2avpk",
-      "https://ipfs.io/ipfs/QmXn7C5GrzHU8tgdGRT1g25WQe1rrvrfy1rEWjw6Cjm5sL",
-    ],
-    advanced: {
-      merkleTreeFileIPFSHashes: [
-        "QmXQLJN49XRAgdgeJ8Hz6zf7izQGokPnQ5MZ6p79m2avpk",
-        "QmXn7C5GrzHU8tgdGRT1g25WQe1rrvrfy1rEWjw6Cjm5sL",
-      ],
-    },
+    contractAddress: "0x0cda74723a9945977df45268394dff7989e0265b",
+    claimingRegistrarAddress: "0x06b3fb925b342411fc7420fdc7bd5433f7a7261b",
   };
 
-  const instance = sdk.createInstance(config);
+  console.log(config);
 
-  const data = await instance.getSaleData();
+  const instance = sdk.createClaimWithChildInstance(config);
+
+  const data = await instance.getClaimingIDsForUser(
+    "0x35888AD3f1C0b39244Bb54746B96Ee84A5d97a53"
+  );
   console.log(data);
 
-  console.log((await instance.getSaleStatus()) as SaleStatus);
-  console.log("num sold = " + (await instance.getNumberOfDomainsSold()));
-  console.log("totalForSale = " + (await instance.getTotalForSale()));
-
-  const currentMintlist = (await instance.getSaleMintlistDuration()).toNumber();
-  const duration = await contract.mintlistDurations(currentMintlist);
+  // const duration = await contract.mintlistDurations(currentMintlist);
 };
 
 main().catch(console.error);

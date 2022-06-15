@@ -1,4 +1,5 @@
 import * as ethers from "ethers";
+import { IDWithClaimStatus } from ".";
 import { AirWild2Sale } from "./contracts";
 
 export type Maybe<T> = T | undefined | null;
@@ -245,7 +246,7 @@ export interface ClaimWithChildInstance {
   ): Promise<ethers.ContractTransaction>;
 
   /** Get a list of the token IDs owned by a given wallet which could be used to claim a domain */
-  getClaimingIDsForUser(walletAddress: string): Promise<string[]>;
+  getClaimingIDsForUser(walletAddress: string): Promise<IDWithClaimStatus[]>;
 }
 
 export interface ClaimWithChildSaleData {

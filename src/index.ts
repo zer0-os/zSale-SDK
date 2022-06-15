@@ -19,10 +19,16 @@ import {
   ClaimWithChildInstance,
   ClaimWithChildSaleData,
 } from "./types";
+import { chunkedPromiseAll } from "./helpers";
 
 export * from "./types";
 
 const defaultPublicSalePurchaseLimit = 100;
+
+export interface IDWithClaimStatus {
+  id: string;
+  canBeClaimed: boolean;
+}
 
 export const createAirWild2SaleInstance = (
   config: AirWildS2Config
@@ -305,26 +311,42 @@ export const createClaimWithChildInstance = (
       );
       return tx;
     },
-    getClaimingIDsForUser: async (walletID: string): Promise<string[]> => {
+    getClaimingIDsForUser: async (
+      walletID: string
+    ): Promise<IDWithClaimStatus[]> => {
       const claimingToken = await getClaimingToken(
         config.web3Provider,
         config.claimingRegistrarAddress
       );
-      let childDomain: ethers.BigNumber;
-      const claimingIDs: string[] = [];
+      const IDs: IDWithClaimStatus[] = [];
       const bigNumDomainsOwned = await claimingToken.balanceOf(walletID);
       const numDomainsOwned = bigNumDomainsOwned.toNumber();
+      let promises: Promise<void>[] = [];
       if (numDomainsOwned != 0) {
-        let i = 0;
-        while (i < numDomainsOwned) {
-          childDomain = await claimingToken.tokenOfOwnerByIndex(walletID, i);
-          if (await instance.canBeClaimed(childDomain.toHexString())) {
-            claimingIDs.push(childDomain.toHexString());
-          }
-          i++;
+        let count = 0;
+        while (count < numDomainsOwned) {
+          const getDomain = async () => {
+            const childDomain = await claimingToken.tokenOfOwnerByIndex(
+              walletID,
+              count
+            );
+            const idWithClaimStatus: IDWithClaimStatus = {
+              id: childDomain.toHexString(),
+              canBeClaimed: await instance.canBeClaimed(
+                childDomain.toHexString()
+              ),
+            };
+            IDs.push(idWithClaimStatus);
+          };
+          promises.push(getDomain());
+          count++;
         }
       }
-      return claimingIDs;
+      await chunkedPromiseAll(promises, 100, 5); // chunks of 100 at a time, 5 ms delay between chunks
+      return [
+        ...IDs.filter((id) => id.canBeClaimed),
+        ...IDs.filter((id) => !id.canBeClaimed),
+      ];
     },
   };
 
