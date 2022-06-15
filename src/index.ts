@@ -321,7 +321,7 @@ export const createClaimWithChildInstance = (
       const IDs: IDWithClaimStatus[] = [];
       const bigNumDomainsOwned = await claimingToken.balanceOf(walletID);
       const numDomainsOwned = bigNumDomainsOwned.toNumber();
-      let promises: Promise<void>[] = [];
+      const promises: Promise<void>[] = [];
       if (numDomainsOwned != 0) {
         let count = 0;
         while (count < numDomainsOwned) {
