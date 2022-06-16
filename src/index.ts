@@ -293,7 +293,7 @@ export const createClaimWithChildInstance = (
         );
         const parentIdOfAttemptedClaim =
           await registrarOfAttemptedClaim.parentOf(domainId);
-        return claimingParentId == parentIdOfAttemptedClaim;
+        return claimingParentId.eq(parentIdOfAttemptedClaim);
       }
 
       return false;
