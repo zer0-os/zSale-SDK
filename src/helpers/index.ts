@@ -1,3 +1,5 @@
+import { ethers } from "ethers";
+
 export function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -14,9 +16,25 @@ export async function chunkedPromiseAll<T>(
   delayTime = 0
 ) {
   const chunks = chunkArray(promises, chunkSize);
+  const result: T[][] = [];
 
   for (const chunk of chunks) {
-    await Promise.all(chunk);
-    await delay(delayTime);
+    if (result.length != 0) {
+      await delay(delayTime);
+    }
+    result.push(await Promise.all(chunk));
   }
+
+  return result.flat();
+}
+
+export function padZeros(hex: string) {
+  if (hex.length == 66)
+    // already the correct length
+    return hex;
+
+  const hexAsUint8 = ethers.utils.arrayify(hex);
+  const paddedArray = ethers.utils.zeroPad(hexAsUint8, 32);
+  const rehexed = ethers.utils.hexlify(paddedArray);
+  return rehexed;
 }
