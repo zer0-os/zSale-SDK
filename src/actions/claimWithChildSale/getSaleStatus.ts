@@ -15,7 +15,7 @@ export const getSaleStatus = async (contract: ClaimWithChildSale) => {
 
   const numSold = await contract.domainsSold();
   const totalForSale = await contract.totalForSale();
-  if (numSold >= totalForSale) {
+  if (numSold.gt(totalForSale)) {
     return SaleStatus.Ended;
   }
   const duration = await contract.saleDuration();
