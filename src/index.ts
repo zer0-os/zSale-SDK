@@ -18,7 +18,11 @@ import {
   Mintlist,
   ClaimWithChildInstance,
   ClaimWithChildSaleData,
+  ClaimableDomain,
 } from "./types";
+import { chunkedPromiseAll, padZeros } from "./helpers";
+import { ZNSHub__factory } from "./contracts/types/factories/ZNSHub__factory";
+import { Registrar__factory } from "./contracts/types/factories/Registrar__factory";
 
 export * from "./types";
 
@@ -274,7 +278,25 @@ export const createClaimWithChildInstance = (
         config.contractAddress
       );
       const claimingAddress = await contract.domainsClaimedWithBy(domainId);
-      return claimingAddress == ethers.constants.AddressZero;
+      if (claimingAddress == ethers.constants.AddressZero) {
+        const claimingParentId = await contract.claimingParentId();
+        const znsHubAddress = await contract.zNSHub();
+        const znsHub = await ZNSHub__factory.connect(
+          znsHubAddress,
+          config.web3Provider
+        );
+        const registrarAddressOfAttemptedClaim =
+          await znsHub.getRegistrarForDomain(domainId);
+        const registrarOfAttemptedClaim = await Registrar__factory.connect(
+          registrarAddressOfAttemptedClaim,
+          config.web3Provider
+        );
+        const parentIdOfAttemptedClaim =
+          await registrarOfAttemptedClaim.parentOf(domainId);
+        return claimingParentId.eq(parentIdOfAttemptedClaim);
+      }
+
+      return false;
     },
     domainClaimedBy: async (domainId: string): Promise<string> => {
       const contract = await getClaimContract(
@@ -305,26 +327,42 @@ export const createClaimWithChildInstance = (
       );
       return tx;
     },
-    getClaimingIDsForUser: async (walletID: string): Promise<string[]> => {
+    getClaimingIDsForUser: async (
+      walletID: string
+    ): Promise<ClaimableDomain[]> => {
       const claimingToken = await getClaimingToken(
         config.web3Provider,
         config.claimingRegistrarAddress
       );
-      let childDomain: ethers.BigNumber;
-      const claimingIDs: string[] = [];
       const bigNumDomainsOwned = await claimingToken.balanceOf(walletID);
       const numDomainsOwned = bigNumDomainsOwned.toNumber();
+      const promises: Promise<ClaimableDomain>[] = [];
       if (numDomainsOwned != 0) {
-        let i = 0;
-        while (i < numDomainsOwned) {
-          childDomain = await claimingToken.tokenOfOwnerByIndex(walletID, i);
-          if (await instance.canBeClaimed(childDomain.toHexString())) {
-            claimingIDs.push(childDomain.toHexString());
-          }
-          i++;
+        for (let count = 0; count < numDomainsOwned; count++) {
+          const getDomain = async () => {
+            const childDomain = await claimingToken.tokenOfOwnerByIndex(
+              walletID,
+              count
+            );
+            const paddedDomainId = padZeros(childDomain.toHexString());
+            const idWithClaimStatus: ClaimableDomain = {
+              id: paddedDomainId,
+              canBeClaimed: await instance.canBeClaimed(paddedDomainId),
+            };
+            return idWithClaimStatus;
+          };
+          promises.push(getDomain());
         }
       }
-      return claimingIDs;
+      const claimableDomains: ClaimableDomain[] = await chunkedPromiseAll(
+        promises,
+        100,
+        5
+      ); // chunks of 100 at a time, 5 ms delay between chunks
+      return [
+        ...claimableDomains.filter((id) => id.canBeClaimed),
+        ...claimableDomains.filter((id) => !id.canBeClaimed),
+      ];
     },
   };
 

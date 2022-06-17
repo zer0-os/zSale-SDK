@@ -94,6 +94,13 @@ export interface Mintlist {
   merkleRoot: string;
   claims: Claims;
 }
+/**
+ * A domain that could be used in a claim sale to claim a new domain.
+ */
+export interface ClaimableDomain {
+  id: string;
+  canBeClaimed: boolean;
+}
 
 export interface AirWildS2SaleData {
   /**
@@ -245,7 +252,7 @@ export interface ClaimWithChildInstance {
   ): Promise<ethers.ContractTransaction>;
 
   /** Get a list of the token IDs owned by a given wallet which could be used to claim a domain */
-  getClaimingIDsForUser(walletAddress: string): Promise<string[]>;
+  getClaimingIDsForUser(walletAddress: string): Promise<ClaimableDomain[]>;
 }
 
 export interface ClaimWithChildSaleData {
