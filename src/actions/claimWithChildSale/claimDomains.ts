@@ -114,10 +114,20 @@ export const claimDomains = async (
     console.log(`Seller wallet is not a contract`);
   }
 
+  const gasEstimate = await contract
+    .connect(signer)
+    .estimateGas.claimDomains(claimingIds, {
+      value: price.mul(count),
+      type: 1,
+      accessList: accessList,
+    });
+
+  const generousGasEstimate = gasEstimate.mul(12).div(10); // 20% bonus gas limit
   const tx = await contract.connect(signer).claimDomains(claimingIds, {
     value: price.mul(count),
     type: 1,
     accessList: accessList,
+    gasLimit: generousGasEstimate,
   });
   return tx;
 };
