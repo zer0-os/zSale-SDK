@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
 
 import { AirWild2Sale, AirWild2Sale__factory } from "./types";
+import { WapeSale, WapeSale__factory } from "./types";
 import { ClaimWithChildSale } from "./types/ClaimWithChildSale";
 import { ClaimWithChildSale__factory } from "./types/factories/ClaimWithChildSale__factory";
 import { IERC721EnumerableUpgradeable__factory } from "./types/factories/IERC721EnumerableUpgradeable__factory";
@@ -13,6 +14,14 @@ export const getAirWild2SaleContract = async (
   address: string
 ): Promise<AirWild2Sale> => {
   const contract = AirWild2Sale__factory.connect(address, provider);
+  return contract;
+};
+
+export const getWapeSaleContract = async (
+  provider: ethers.providers.Provider | ethers.Signer,
+  address: string
+): Promise<WapeSale> => {
+  const contract = WapeSale__factory.connect(address, provider);
   return contract;
 };
 

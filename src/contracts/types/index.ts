@@ -9,3 +9,7 @@ export { WolfSale__factory } from "./factories/WolfSale__factory";
 export type { AirWild2Sale } from "./AirWild2Sale";
 
 export { AirWild2Sale__factory } from "./factories/AirWild2Sale__factory";
+
+export type { WapeSale } from "./WapeSale";
+
+export { WapeSale__factory } from "./factories/WapeSale__factory";
