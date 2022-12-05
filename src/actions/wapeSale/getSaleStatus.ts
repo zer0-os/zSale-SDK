@@ -9,18 +9,29 @@ export const getSaleStatus = async (contract: WapeSale) => {
     return SaleStatus.NotStarted;
   }
 
-  const currentBlock = await contract.provider.getBlockNumber();
-  const startBlock = await contract.saleStartBlock();
 
-  const numSold = await contract.domainsSold();
-  const totalForSale = await contract.amountForSale();
+  const saleDataPromises = [
+    contract.domainsSold(),
+    contract.amountForSale(),
+    contract.saleStartBlock(),
+    contract.mintlistSaleDuration(),
+  ];
+
+  const [
+    numSold,
+    totalForSale,
+    startBlock,
+    duration
+  ] = await Promise.all(saleDataPromises)
+
   if (numSold.gte(totalForSale)) {
     return SaleStatus.Ended;
   }
-  const duration = await contract.mintlistSaleDuration();
+  
+  const currentBlock = contract.provider.getBlockNumber();
 
   if (ethers.BigNumber.from(currentBlock).gt(startBlock.add(duration))) {
-    if (await contract.saleStarted()) {
+    if (saleStarted) {
       return SaleStatus.PublicSale;
     }
     return SaleStatus.Ended;

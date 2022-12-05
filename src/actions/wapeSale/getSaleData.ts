@@ -20,9 +20,11 @@ export const getSaleData = async (
   const publicSaleStartBlock =
     started && startBlock ? startBlock + privateSaleDuration : undefined;
 
+  const amountForSale = (await contract.amountForSale()).toNumber();
+
   const saleData: WapeSaleData = {
     amountSold: (await contract.domainsSold()).toNumber(),
-    amountForSale: (await contract.amountForSale()).toNumber(),
+    amountForSale: amountForSale,
     salePrice: ethers.utils.formatEther(await contract.salePrice()),
     started: started,
     privateSaleDuration,
@@ -30,8 +32,8 @@ export const getSaleData = async (
     startBlock: startBlock,
     publicSaleStartBlock,
     advanced: {
-      amountForSalePrivate: (await contract.amountForSale()).toNumber(),
-      amountForSalePublic: (await contract.amountForSale()).toNumber(),
+      amountForSalePrivate: amountForSale,
+      amountForSalePublic: amountForSale,
     },
   };
   return saleData;

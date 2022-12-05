@@ -49,7 +49,7 @@ export const getMintlist = async (config: WapeSaleConfig) => {
   }
 
   let ipfsGateway = config.advanced?.ipfsGateway ?? defaultIpfsGateway;
-  if (ipfsGateway[ipfsGateway.length - 1] != "/") {
+  if (ipfsGateway[ipfsGateway.length - 1] !== "/") {
     // check if user forgot to add a / at the end of the gateway
     ipfsGateway += "/";
   }

@@ -46,7 +46,7 @@ export const purchaseDomains = async (
 
   errorCheck(
     status === SaleStatus.NotStarted,
-    "Cannot purchase a domain when sale has not started or has ended"
+    "Cannot purchase a domain when sale has not started"
   );
 
   errorCheck(status === SaleStatus.Ended, "Sale has already ended");
@@ -101,7 +101,9 @@ export const purchaseDomains = async (
     const implAddress = await sellerContract.masterCopy();
     accessList = generateAccessList(address, sellerWallet, implAddress);
   } catch (e) {
-    //console.log(`Seller wallet is not a contract`);
+    throw Error(
+      `Unable to get accessList information for tx using user address: ${address}`
+      );
   }
 
   const tx = await contract
