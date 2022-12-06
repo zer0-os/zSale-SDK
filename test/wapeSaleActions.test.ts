@@ -47,7 +47,6 @@ describe("Test Custom SDK Logic", () => {
     contractAddress: "0xFEeDBd2b5c3Ae26fD534275bA68908100B107AF3", // 12/5/22
     merkleTreeFileUri:
     "https://res.cloudinary.com/fact0ry/raw/upload/v1670283875/drops/wapes/wapes-dry-run-merkleTree.json",
-      // "https://res.cloudinary.com/fact0ry/raw/upload/v1670283073/wape-sale-mintlist-merkleTree_urrz7o.json",
     advanced: {
       merkleTreeFileIPFSHash: "Qmf526r9ShRJp8hgfB64txgMMhop9JSy3QWgBhqq41ucVs",
     },
@@ -103,8 +102,7 @@ describe("Test Custom SDK Logic", () => {
       expect(claim?.quantity === 12);
 
       const purchased = await wapeSale.domainsPurchasedByAccount(address);
-
-      // const tx = await sdk.purchaseDomains(args.count, args.signer);
+      const tx = await sdk.purchaseDomains(args.count, args.signer);
     });
   });
   describe("Test the merkle tree behaviour", () => {
