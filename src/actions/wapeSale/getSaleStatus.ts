@@ -9,7 +9,6 @@ export const getSaleStatus = async (contract: WapeSale) => {
     return SaleStatus.NotStarted;
   }
 
-
   const saleDataPromises = [
     contract.domainsSold(),
     contract.amountForSale(),
@@ -28,7 +27,7 @@ export const getSaleStatus = async (contract: WapeSale) => {
     return SaleStatus.Ended;
   }
   
-  const currentBlock = contract.provider.getBlockNumber();
+  const currentBlock = await contract.provider.getBlockNumber();
 
   if (ethers.BigNumber.from(currentBlock).gt(startBlock.add(duration))) {
     if (saleStarted) {

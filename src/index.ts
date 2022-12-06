@@ -23,6 +23,7 @@ import {
   ClaimableDomain,
   WapeSaleConfig,
   WapeSaleInstance,
+  WapeSaleData,
 } from "./types";
 import { chunkedPromiseAll, padZeros } from "./helpers";
 import { ZNSHub__factory } from "./contracts/types/factories/ZNSHub__factory";
@@ -226,14 +227,14 @@ export const createWapeSaleInstance = (
       const price = await contract.salePrice();
       return ethers.utils.formatEther(price).toString();
     },
-    getSaleData: async (): Promise<AirWildS2SaleData> => {
+    getSaleData: async (): Promise<WapeSaleData> => {
       const contract = await getWapeSaleContract(
         config.web3Provider,
         config.contractAddress
       );
 
       // always eth sales currently
-      const saleData: AirWildS2SaleData = await wapeSaleActions.getSaleData(
+      const saleData: WapeSaleData = await wapeSaleActions.getSaleData(
         contract,
         true
       );

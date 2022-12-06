@@ -295,7 +295,7 @@ export interface WapeSaleInstance {
   getSalePrice(): Promise<string>;
 
   /** Get data about the current sale */
-  getSaleData(): Promise<AirWildS2SaleData>;
+  getSaleData(): Promise<WapeSaleData>;
 
   /** Get the block that the sale started on (will be zero unless the sale already started) */
   getSaleStartBlock(): Promise<string>;
