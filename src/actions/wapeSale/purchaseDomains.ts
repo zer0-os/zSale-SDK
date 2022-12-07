@@ -106,18 +106,18 @@ export const purchaseDomains = async (
       );
   }
 
-  const tx = await contract
-    .connect(signer)
-    .purchaseDomains(
-      count,
-      userClaim.index,
-      userClaim.quantity,
-      userClaim.proof,
-      {
-        value: price.mul(count),
-        type: 2,
-        accessList: accessList,
-      }
-    );
-  return tx;
+    const tx = await contract
+      .connect(signer)
+      .purchaseDomains(
+        count,
+        userClaim.index,
+        userClaim.quantity,
+        userClaim.proof,
+        {
+          value: price.mul(count),
+          type: 2,
+          accessList: accessList,
+        }
+      );
+    return tx;
 };
