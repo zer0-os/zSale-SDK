@@ -39,12 +39,10 @@ describe("Test Custom SDK Logic", () => {
   const voidSignerAddress = "0x8ba1f109551bD432803012645Ac136ddd64DBA72";
   const astroTest = "0x35888AD3f1C0b39244Bb54746B96Ee84A5d97a53";
 
-
-
   // From dApp Goerli zSale SDK Config
   const config: WapeSaleConfig = {
     web3Provider: provider,
-    contractAddress: "0xFEeDBd2b5c3Ae26fD534275bA68908100B107AF3", // 12/5/22
+    contractAddress: "0xCBab48dD077581e785a257948341Eb3567aaa3e9", // Deployed 12/6/22
     merkleTreeFileUri:
     "https://res.cloudinary.com/fact0ry/raw/upload/v1670283875/drops/wapes/wapes-dry-run-merkleTree.json",
     advanced: {
@@ -54,55 +52,34 @@ describe("Test Custom SDK Logic", () => {
 
   const abi = ["function masterCopy() external view returns (address)"];
 
-  describe("e2e tests", () => {
+  describe("e2e", () => {
     let sdk: WapeSaleInstance;
     before(async () => {
       sdk = createWapeSaleInstance(config);
     });
-    it("real contract tests", async () => {
+    it("Makes a purchase", async () => {
+      // Modifies contract state, only uncomment to test through sdk manually
+      // const tx = await sdk.purchaseDomains(ethers.BigNumber.from("1"), signer);
+      // console.log(tx.hash)
+      // const receipt = await tx.wait(3);
+    });
+  });
+  describe("SDK Tests", () => {
+    let sdk: WapeSaleInstance;
+    before(async () => {
+      sdk = createWapeSaleInstance(config);
+    });
+    it("Can get the seller wallet implementation copy", async () => {
       const wapeSaleContract: WapeSale = await getWapeSaleContract(
         signer,
         config.contractAddress
       );
       const sellerWalletAddress = await wapeSaleContract.sellerWallet();
 
-      // If using a testnet the seller wallet may be an EOA
-      // and this will throw an error. For parity with mainnet, call a Gnosis safe
-      let contract;
-      let implAddress;
-      try {
-        contract = new ethers.Contract(sellerWalletAddress, abi, provider);
-        
-        implAddress = await contract.masterCopy();
-        expect(implAddress).to.not.be.undefined;
-      } catch (e) {
-        const goerliGnosisSafeAddress = "0x7336eF6E88A994182853fFb1fd0A779b16d02945";
-        contract = new ethers.Contract(goerliGnosisSafeAddress, abi, provider);
-        implAddress = await contract.masterCopy();
-        expect(implAddress).to.not.be.undefined;
-      }
-    });
-    it("Makes a purchase with access list", async () => {
-      const mintlist = await sdk.getMintlist();
-
-      const wapeSale = await getWapeSaleContract(
-        signer,
-        config.contractAddress
-      );
-      const address = await signer.getAddress();
-
-      const args = {
-        count: ethers.BigNumber.from("1"),
-        signer: signer,
-        contract: wapeSale,
-        mintlist: mintlist,
-      };
-
-      const claim = mintlist.claims[address];
-      expect(claim?.quantity === 12);
-
-      const purchased = await wapeSale.domainsPurchasedByAccount(address);
-      const tx = await sdk.purchaseDomains(args.count, args.signer);
+      const contract = new ethers.Contract(sellerWalletAddress, abi, provider);        
+      const implAddress = await contract.masterCopy();
+      
+      expect(implAddress).to.not.be.undefined;
     });
   });
   describe("Test the merkle tree behaviour", () => {
@@ -121,7 +98,7 @@ describe("Test Custom SDK Logic", () => {
       expect(userClaim).to.not.be.undefined;
     });
   });
-  describe("Get sale data", () => {
+  describe("Get info from sale through SDK", () => {
     let sdk: WapeSaleInstance;
     before(async () => {
       sdk = createWapeSaleInstance(config);
@@ -137,17 +114,6 @@ describe("Test Custom SDK Logic", () => {
     it("getSaleStatus", async () => {
       const status = await sdk.getSaleStatus();
       expect(status).to.not.eq(SaleStatus.NotStarted);
-    });
-    
-  });
-  describe("getSaleData", () => {
-    it("runs", async () => {
-      const contract = await getWapeSaleContract(
-        signer,
-        config.contractAddress
-      );
-      const data = await wapeSaleActions.getSaleData(contract, true);
-      expect(data);
     });
   });
 });
