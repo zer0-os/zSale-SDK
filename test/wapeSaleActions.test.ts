@@ -2,6 +2,7 @@ import * as chai from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import * as dotenv from "dotenv";
 import { ethers } from "ethers";
+import { solidityKeccak256 } from "ethers/lib/utils";
 
 import { createWapeSaleInstance } from "../src";
 import * as wapeSaleActions from "../src/actions/wapeSale";
@@ -9,6 +10,8 @@ import {
   getAirWild2SaleContract,
   AirWild2Sale,
   getWapeSaleContract,
+  WapeSale,
+  WapeSale__factory,
 } from "../src/contracts";
 import {
   Claim,
@@ -25,10 +28,10 @@ dotenv.config();
 describe("Test Custom SDK Logic", () => {
   const provider = new ethers.providers.JsonRpcProvider(
     process.env["INFURA_URL"],
-    4
+    5
   );
 
-  const pk = process.env["ASTRO_PRIVATE_KEY"];
+  const pk = process.env["TESTNET_PRIVATE_KEY"];
   if (!pk) throw Error("No private key");
 
   const signer = new ethers.Wallet(pk, provider);
@@ -36,35 +39,50 @@ describe("Test Custom SDK Logic", () => {
   const voidSignerAddress = "0x8ba1f109551bD432803012645Ac136ddd64DBA72";
   const astroTest = "0x35888AD3f1C0b39244Bb54746B96Ee84A5d97a53";
 
-  // From dApp Rinkeby zSale SDK Config
+
+
+  // From dApp Goerli zSale SDK Config
   const config: WapeSaleConfig = {
     web3Provider: provider,
-    contractAddress: "0xC82E9E9B1e28F10a4C13a915a0BDCD4Db00d086d",
-    // Using Rinkeby not Kovan, but can use same file for tests
+    contractAddress: "0xFEeDBd2b5c3Ae26fD534275bA68908100B107AF3", // 12/5/22
     merkleTreeFileUri:
-      "https://d3810nvssqir6b.cloudfront.net/kovan-test-merkleTree.json",
+    "https://res.cloudinary.com/fact0ry/raw/upload/v1670283875/drops/wapes/wapes-dry-run-merkleTree.json",
     advanced: {
-      merkleTreeFileIPFSHash: "Qmf8XuYT181zdvhNXSeYUhkptgezzK8QJnrAD16GGj8TrV",
+      merkleTreeFileIPFSHash: "Qmf526r9ShRJp8hgfB64txgMMhop9JSy3QWgBhqq41ucVs",
     },
   };
 
   const abi = ["function masterCopy() external view returns (address)"];
 
-  describe("e2e purchase", () => {
+  describe("e2e tests", () => {
+    let sdk: WapeSaleInstance;
+    before(async () => {
+      sdk = createWapeSaleInstance(config);
+    });
     it("real contract tests", async () => {
-      const wolfSale: AirWild2Sale = await getAirWild2SaleContract(
+      const wapeSaleContract: WapeSale = await getWapeSaleContract(
         signer,
         config.contractAddress
       );
-      const sellerWalletAddress = await wolfSale.sellerWallet();
+      const sellerWalletAddress = await wapeSaleContract.sellerWallet();
 
-      const contract = new ethers.Contract(sellerWalletAddress, abi, provider);
-
-      const implAddress = await contract.masterCopy();
-      console.log(implAddress);
+      // If using a testnet the seller wallet may be an EOA
+      // and this will throw an error. For parity with mainnet, call a Gnosis safe
+      let contract;
+      let implAddress;
+      try {
+        contract = new ethers.Contract(sellerWalletAddress, abi, provider);
+        
+        implAddress = await contract.masterCopy();
+        expect(implAddress).to.not.be.undefined;
+      } catch (e) {
+        const goerliGnosisSafeAddress = "0x7336eF6E88A994182853fFb1fd0A779b16d02945";
+        contract = new ethers.Contract(goerliGnosisSafeAddress, abi, provider);
+        implAddress = await contract.masterCopy();
+        expect(implAddress).to.not.be.undefined;
+      }
     });
-    it("runs with access list", async () => {
-      const sdk: WapeSaleInstance = createWapeSaleInstance(config);
+    it("Makes a purchase with access list", async () => {
       const mintlist = await sdk.getMintlist();
 
       const wapeSale = await getWapeSaleContract(
@@ -84,37 +102,43 @@ describe("Test Custom SDK Logic", () => {
       expect(claim?.quantity === 12);
 
       const purchased = await wapeSale.domainsPurchasedByAccount(address);
-
       const tx = await sdk.purchaseDomains(args.count, args.signer);
     });
   });
-  describe("getMintlistedUserClaim", () => {
+  describe("Test the merkle tree behaviour", () => {
+    let sdk: WapeSaleInstance;
+    before(async () => {
+      sdk = createWapeSaleInstance(config);
+    });
     it("errors when address is not in merkle tree", async () => {
-      const mintlist = await wapeSaleActions.getMintlist(config);
+      const mintlist = await sdk.getMintlist();
       const userClaim: Maybe<Claim> = mintlist.claims[voidSignerAddress];
       expect(userClaim).to.equal(undefined);
     });
     it("returns the account information when address is in the merkle tree", async () => {
-      const mintlist = await wapeSaleActions.getMintlist(config);
+      const mintlist = await sdk.getMintlist();
       const userClaim: Maybe<Claim> = mintlist.claims[astroTest];
-      expect(userClaim);
+      expect(userClaim).to.not.be.undefined;
     });
   });
-  describe("getSaleStatus", () => {
-    it("runs", async () => {
-      const contract = await getWapeSaleContract(
-        signer,
-        config.contractAddress
-      );
-      const status = await wapeSaleActions.getSaleStatus(contract);
-      expect(status).to.equal(SaleStatus.PublicSale);
+  describe("Get sale data", () => {
+    let sdk: WapeSaleInstance;
+    before(async () => {
+      sdk = createWapeSaleInstance(config);
     });
-  });
-  describe("getMintlist", () => {
-    it("runs", async () => {
-      const whitelist = await wapeSaleActions.getMintlist(config);
-      expect(whitelist);
+    it("getMintlist", async () => {
+      const mintlist = await sdk.getMintlist();
+      expect(mintlist).to.not.be.undefined;
     });
+    it("getSaleData", async () => {
+      const saleData = await sdk.getSaleData();
+      expect(saleData).to.not.be.undefined;
+    });
+    it("getSaleStatus", async () => {
+      const status = await sdk.getSaleStatus();
+      expect(status).to.not.eq(SaleStatus.NotStarted);
+    });
+    
   });
   describe("getSaleData", () => {
     it("runs", async () => {

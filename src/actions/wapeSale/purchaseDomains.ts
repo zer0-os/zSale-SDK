@@ -102,7 +102,7 @@ export const purchaseDomains = async (
     accessList = generateAccessList(address, sellerWallet, implAddress);
   } catch (e) {
     throw Error(
-      `Unable to get accessList information for tx using user address: ${address}`
+      `Unable to get accessList information for tx using user address: ${address}. Seller wallet may not be a contract.`
       );
   }
 
