@@ -2,16 +2,11 @@ import * as chai from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import * as dotenv from "dotenv";
 import { ethers } from "ethers";
-import { solidityKeccak256 } from "ethers/lib/utils";
 
 import { createWapeSaleInstance } from "../src";
-import * as wapeSaleActions from "../src/actions/wapeSale";
 import {
-  getAirWild2SaleContract,
-  AirWild2Sale,
   getWapeSaleContract,
   WapeSale,
-  WapeSale__factory,
 } from "../src/contracts";
 import {
   Claim,
@@ -43,8 +38,9 @@ describe("Test Custom SDK Logic", () => {
   const config: WapeSaleConfig = {
     web3Provider: provider,
     contractAddress: "0xCBab48dD077581e785a257948341Eb3567aaa3e9", // Deployed 12/6/22
+    publicSalePurchaseLimit: 9,
     merkleTreeFileUri:
-    "https://res.cloudinary.com/fact0ry/raw/upload/v1670283875/drops/wapes/wapes-dry-run-merkleTree.json",
+    "https://res.cloudinary.com/fact0ry/raw/upload/v1670283875/drops/wapes/merkle/wapes-dry-run-merkleTree.json",
     advanced: {
       merkleTreeFileIPFSHash: "Qmf526r9ShRJp8hgfB64txgMMhop9JSy3QWgBhqq41ucVs",
     },

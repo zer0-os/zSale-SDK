@@ -73,20 +73,6 @@ export const purchaseDomains = async (
     `Not enough funds given for purchase of ${count} domains`
   );
 
-  let userClaim: Maybe<Claim> = mintlist.claims[address];
-
-  // To purchase in private sale a user must be on the mintlist
-  errorCheck(userClaim === undefined, "User is not part of private sale");
-  userClaim = userClaim!;
-
-  // Sale is in private sale
-  const purchased = await contract.domainsPurchasedByAccount(address);
-  errorCheck(
-    purchased.add(count).gt(userClaim.quantity),
-    `Buying ${count} more domains would go over the maximum purchase amount of domains
-    for this user, ${userClaim.quantity}. Try reducing the purchase amount.`
-  );
-
   let accessList;
   try {
     // If using a Gnosis safe as the seller wallet you must
@@ -106,7 +92,24 @@ export const purchaseDomains = async (
       );
   }
 
-    const tx = await contract
+  let tx: ethers.ContractTransaction;
+  const purchased = await contract.domainsPurchasedByAccount(address);
+
+  if (status === SaleStatus.PrivateSale) {
+    let userClaim: Maybe<Claim> = mintlist.claims[address];
+
+    // To purchase in private sale a user must be on the mintlist
+    errorCheck(userClaim === undefined, "User is not part of private sale");
+    userClaim = userClaim!;
+  
+    // Cannot purchase over the allowed mintlist limit
+    errorCheck(
+      purchased.add(count).gt(userClaim.quantity),
+      `This user has already purchased ${purchased.toString()} and buying ${count.toString()} more domains would go over the
+      maximum purchase amount of domains for this user, ${userClaim.quantity}. Try reducing the purchase amount.`
+    );
+
+    tx = await contract
       .connect(signer)
       .purchaseDomains(
         count,
@@ -119,5 +122,26 @@ export const purchaseDomains = async (
           accessList: accessList,
         }
       );
-    return tx;
+  } else {
+    // Public sale
+    const publicSaleLimit = await contract.publicSaleLimit();
+
+    errorCheck(
+      purchased.add(count).gt(publicSaleLimit),
+      `This user has already purchased ${purchased.toString()} and buying ${count.toString()} more domains would go over the
+      maximum purchase amount for the public sale limit of ${publicSaleLimit.toString()}. Try reducing the purchase amount.`
+    );
+
+    tx = await contract
+      .connect(signer)
+      .purchaseDomainsPublicSale(
+        count,
+        {
+          value: price.mul(count),
+          type: 2,
+          accessList: accessList,
+        }
+      );
+  }
+  return tx;
 };
