@@ -18,11 +18,11 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import type { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface WapeSaleInterface extends ethers.utils.Interface {
   functions: {
-    "__WapeSale_init(uint256,uint256,address,address,uint256,uint256,bytes32,uint256,uint256)": FunctionFragment;
+    "__WapeSale_init(uint256,uint256,address,address,uint256,uint256,bytes32,uint256,uint256,uint256)": FunctionFragment;
     "amountForSale()": FunctionFragment;
     "domainsPurchasedByAccount(address)": FunctionFragment;
     "domainsSold()": FunctionFragment;
@@ -32,6 +32,7 @@ interface WapeSaleInterface extends ethers.utils.Interface {
     "owner()": FunctionFragment;
     "parentDomainId()": FunctionFragment;
     "paused()": FunctionFragment;
+    "publicSaleLimit()": FunctionFragment;
     "purchaseDomains(uint256,uint256,uint256,bytes32[])": FunctionFragment;
     "purchaseDomainsPublicSale(uint8)": FunctionFragment;
     "releaseDomain()": FunctionFragment;
@@ -44,6 +45,7 @@ interface WapeSaleInterface extends ethers.utils.Interface {
     "setMerkleRoot(bytes32)": FunctionFragment;
     "setParentDomainId(uint256)": FunctionFragment;
     "setPauseStatus(bool)": FunctionFragment;
+    "setPublicSaleLimit(uint256)": FunctionFragment;
     "setRegistrar(address)": FunctionFragment;
     "setSaleDuration(uint256)": FunctionFragment;
     "setSalePrice(uint256)": FunctionFragment;
@@ -67,6 +69,7 @@ interface WapeSaleInterface extends ethers.utils.Interface {
       BigNumberish,
       BigNumberish,
       BytesLike,
+      BigNumberish,
       BigNumberish,
       BigNumberish
     ]
@@ -101,6 +104,10 @@ interface WapeSaleInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "paused", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "publicSaleLimit",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "purchaseDomains",
     values: [BigNumberish, BigNumberish, BigNumberish, BytesLike[]]
@@ -145,6 +152,10 @@ interface WapeSaleInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "setPauseStatus",
     values: [boolean]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setPublicSaleLimit",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setRegistrar",
@@ -220,6 +231,10 @@ interface WapeSaleInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "publicSaleLimit",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "purchaseDomains",
     data: BytesLike
   ): Result;
@@ -262,6 +277,10 @@ interface WapeSaleInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setPauseStatus",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setPublicSaleLimit",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -320,22 +339,6 @@ interface WapeSaleInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
 }
 
-export type OwnershipTransferredEvent = TypedEvent<
-  [string, string] & { previousOwner: string; newOwner: string }
->;
-
-export type PausedEvent = TypedEvent<[string] & { account: string }>;
-
-export type RefundedEtherEvent = TypedEvent<
-  [string, BigNumber] & { buyer: string; amount: BigNumber }
->;
-
-export type SaleStartedEvent = TypedEvent<[BigNumber] & { block: BigNumber }>;
-
-export type SaleStoppedEvent = TypedEvent<[BigNumber] & { block: BigNumber }>;
-
-export type UnpausedEvent = TypedEvent<[string] & { account: string }>;
-
 export class WapeSale extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
@@ -390,6 +393,7 @@ export class WapeSale extends BaseContract {
       merkleRoot_: BytesLike,
       startingMetadataIndex_: BigNumberish,
       folderGroupID_: BigNumberish,
+      publicSaleLimit_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -413,6 +417,8 @@ export class WapeSale extends BaseContract {
     parentDomainId(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     paused(overrides?: CallOverrides): Promise<[boolean]>;
+
+    publicSaleLimit(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     purchaseDomains(
       count: BigNumberish,
@@ -460,6 +466,11 @@ export class WapeSale extends BaseContract {
 
     setPauseStatus(
       pauseStatus: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setPublicSaleLimit(
+      limit_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -521,6 +532,7 @@ export class WapeSale extends BaseContract {
     merkleRoot_: BytesLike,
     startingMetadataIndex_: BigNumberish,
     folderGroupID_: BigNumberish,
+    publicSaleLimit_: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -544,6 +556,8 @@ export class WapeSale extends BaseContract {
   parentDomainId(overrides?: CallOverrides): Promise<BigNumber>;
 
   paused(overrides?: CallOverrides): Promise<boolean>;
+
+  publicSaleLimit(overrides?: CallOverrides): Promise<BigNumber>;
 
   purchaseDomains(
     count: BigNumberish,
@@ -591,6 +605,11 @@ export class WapeSale extends BaseContract {
 
   setPauseStatus(
     pauseStatus: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setPublicSaleLimit(
+    limit_: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -652,6 +671,7 @@ export class WapeSale extends BaseContract {
       merkleRoot_: BytesLike,
       startingMetadataIndex_: BigNumberish,
       folderGroupID_: BigNumberish,
+      publicSaleLimit_: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -675,6 +695,8 @@ export class WapeSale extends BaseContract {
     parentDomainId(overrides?: CallOverrides): Promise<BigNumber>;
 
     paused(overrides?: CallOverrides): Promise<boolean>;
+
+    publicSaleLimit(overrides?: CallOverrides): Promise<BigNumber>;
 
     purchaseDomains(
       count: BigNumberish,
@@ -718,6 +740,11 @@ export class WapeSale extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setPublicSaleLimit(
+      limit_: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setRegistrar(
       zNSRegistrar_: string,
       overrides?: CallOverrides
@@ -757,14 +784,6 @@ export class WapeSale extends BaseContract {
   };
 
   filters: {
-    "OwnershipTransferred(address,address)"(
-      previousOwner?: string | null,
-      newOwner?: string | null
-    ): TypedEventFilter<
-      [string, string],
-      { previousOwner: string; newOwner: string }
-    >;
-
     OwnershipTransferred(
       previousOwner?: string | null,
       newOwner?: string | null
@@ -773,19 +792,7 @@ export class WapeSale extends BaseContract {
       { previousOwner: string; newOwner: string }
     >;
 
-    "Paused(address)"(
-      account?: null
-    ): TypedEventFilter<[string], { account: string }>;
-
     Paused(account?: null): TypedEventFilter<[string], { account: string }>;
-
-    "RefundedEther(address,uint256)"(
-      buyer?: null,
-      amount?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { buyer: string; amount: BigNumber }
-    >;
 
     RefundedEther(
       buyer?: null,
@@ -795,25 +802,13 @@ export class WapeSale extends BaseContract {
       { buyer: string; amount: BigNumber }
     >;
 
-    "SaleStarted(uint256)"(
-      block?: null
-    ): TypedEventFilter<[BigNumber], { block: BigNumber }>;
-
     SaleStarted(
-      block?: null
-    ): TypedEventFilter<[BigNumber], { block: BigNumber }>;
-
-    "SaleStopped(uint256)"(
       block?: null
     ): TypedEventFilter<[BigNumber], { block: BigNumber }>;
 
     SaleStopped(
       block?: null
     ): TypedEventFilter<[BigNumber], { block: BigNumber }>;
-
-    "Unpaused(address)"(
-      account?: null
-    ): TypedEventFilter<[string], { account: string }>;
 
     Unpaused(account?: null): TypedEventFilter<[string], { account: string }>;
   };
@@ -829,6 +824,7 @@ export class WapeSale extends BaseContract {
       merkleRoot_: BytesLike,
       startingMetadataIndex_: BigNumberish,
       folderGroupID_: BigNumberish,
+      publicSaleLimit_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -852,6 +848,8 @@ export class WapeSale extends BaseContract {
     parentDomainId(overrides?: CallOverrides): Promise<BigNumber>;
 
     paused(overrides?: CallOverrides): Promise<BigNumber>;
+
+    publicSaleLimit(overrides?: CallOverrides): Promise<BigNumber>;
 
     purchaseDomains(
       count: BigNumberish,
@@ -899,6 +897,11 @@ export class WapeSale extends BaseContract {
 
     setPauseStatus(
       pauseStatus: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setPublicSaleLimit(
+      limit_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -961,6 +964,7 @@ export class WapeSale extends BaseContract {
       merkleRoot_: BytesLike,
       startingMetadataIndex_: BigNumberish,
       folderGroupID_: BigNumberish,
+      publicSaleLimit_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -988,6 +992,8 @@ export class WapeSale extends BaseContract {
     parentDomainId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    publicSaleLimit(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     purchaseDomains(
       count: BigNumberish,
@@ -1035,6 +1041,11 @@ export class WapeSale extends BaseContract {
 
     setPauseStatus(
       pauseStatus: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setPublicSaleLimit(
+      limit_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
