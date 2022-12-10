@@ -37,12 +37,12 @@ describe("Test Custom SDK Logic", () => {
   // From dApp Goerli zSale SDK Config
   const config: WapeSaleConfig = {
     web3Provider: provider,
-    contractAddress: "0xCBab48dD077581e785a257948341Eb3567aaa3e9", // Deployed 12/6/22
+    contractAddress: "0x6080bB506Ea15C172462EF035B1A2515abEe2F8a", // Deployed 12/6/22
     publicSalePurchaseLimit: 9,
     merkleTreeFileUri:
-    "https://res.cloudinary.com/fact0ry/raw/upload/v1670283875/drops/wapes/merkle/wapes-dry-run-merkleTree.json",
+    "https://res.cloudinary.com/fact0ry/raw/upload/v1670518628/drops/wapes/merkle/modified-dry-run-mintlist-merkleTree.json",
     advanced: {
-      merkleTreeFileIPFSHash: "Qmf526r9ShRJp8hgfB64txgMMhop9JSy3QWgBhqq41ucVs",
+      merkleTreeFileIPFSHash: "QmdwqhJueoDg5HZYiVS5XiB24CogyFmbDCRZTS361jpUng",
     },
   };
 
@@ -55,9 +55,9 @@ describe("Test Custom SDK Logic", () => {
     });
     it("Makes a purchase", async () => {
       // Modifies contract state, only uncomment to test through sdk manually
-      // const tx = await sdk.purchaseDomains(ethers.BigNumber.from("1"), signer);
-      // console.log(tx.hash)
-      // const receipt = await tx.wait(3);
+      const tx = await sdk.purchaseDomains(ethers.BigNumber.from("1"), signer);
+      console.log(tx.hash)
+      const receipt = await tx.wait(3);
     });
   });
   describe("SDK Tests", () => {
