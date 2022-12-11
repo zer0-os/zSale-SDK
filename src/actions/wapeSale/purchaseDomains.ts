@@ -87,9 +87,14 @@ export const purchaseDomains = async (
     const implAddress = await sellerContract.masterCopy();
     accessList = generateAccessList(address, sellerWallet, implAddress);
   } catch (e) {
-    throw Error(
-      `Unable to get accessList information for tx using user address: ${address}. Seller wallet may not be a contract.`
-      );
+    // We should not be attempting to use accessList at this point, as this is not supported by metamask:
+    // https://github.com/MetaMask/metamask-extension/issues/11863
+    //
+    // I would prefer to just remove this whole block at the moment, but in the interest of introducing minimal
+    // last minute changes, will leave as-is.
+    //
+    // If you are copying this for future use, DO NOT USE accessList without first verifying that support
+    // has been added to metamask!
   }
 
   let tx: ethers.ContractTransaction;
