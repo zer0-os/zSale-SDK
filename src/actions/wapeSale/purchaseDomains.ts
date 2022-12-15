@@ -95,6 +95,7 @@ export const purchaseDomains = async (
     //
     // If you are copying this for future use, DO NOT USE accessList without first verifying that support
     // has been added to metamask!
+    // - Joel Tulloch
   }
 
   let tx: ethers.ContractTransaction;
@@ -106,7 +107,7 @@ export const purchaseDomains = async (
     // To purchase in private sale a user must be on the mintlist
     errorCheck(userClaim === undefined, "User is not part of private sale");
     userClaim = userClaim!;
-  
+
     // Cannot purchase over the allowed mintlist limit
     errorCheck(
       purchased.add(count).gt(userClaim.quantity),

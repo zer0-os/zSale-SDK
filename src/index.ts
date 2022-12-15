@@ -325,12 +325,7 @@ export const createWapeSaleInstance = (
         config.contractAddress
       );
 
-      const signerAddress = await signer.getAddress();
-
       const mintlist = await getMintlist();
-      if (!mintlist.claims[signerAddress]) {
-        throw new Error(`Signer ${signerAddress} not found on mintlist.`);
-      }
 
       const tx = await wapeSaleActions.purchaseDomains(
         count,
