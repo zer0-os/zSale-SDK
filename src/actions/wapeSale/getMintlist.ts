@@ -1,6 +1,6 @@
 import { fetch } from "cross-fetch";
-import { WapeSaleConfig, Maybe, Mintlist } from "../../types";
 import { getWapeSaleContract } from "../../contracts";
+import { WapeSaleConfig, Maybe, Mintlist } from "../../types";
 
 const extractIPFSHash = (hay: string) => {
   const regex = /(Qm.+)$/;

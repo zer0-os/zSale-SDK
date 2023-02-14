@@ -1,4 +1,6 @@
+import { Block } from "@ethersproject/providers";
 import { ethers } from "ethers";
+import { Sale } from "../contracts";
 
 export function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -37,4 +39,16 @@ export function padZeros(hex: string) {
   const paddedArray = ethers.utils.zeroPad(hexAsUint8, 32);
   const rehexed = ethers.utils.hexlify(paddedArray);
   return rehexed;
+}
+
+/**
+ * "Automatic" phase transitions are done by calling a purchase function.
+ * This function check if the phase of the current sale is about to automatically transition to public.
+ * Useful to prevent calls to the wrong purchase function which would be rejected
+ */
+export async function isTransitionToPublicPhasePending(saleStartTime: number, privateSaleDuration: number, currentBlock: Block) {
+  if (currentBlock.timestamp > saleStartTime + privateSaleDuration) {
+    return true
+  }
+  return false
 }
