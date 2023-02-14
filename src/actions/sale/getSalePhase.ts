@@ -7,11 +7,14 @@ import { SalePhase, SaleStatus } from "../../types";
  * @param contract 
  * @returns 
  */
-export const getSaleStatus = async (contract: Sale) => {
+export const getSaleStatus = async (contract: Sale): Promise<SalePhase> => {
   const salePhase = await contract.salePhase();
 
-  if (salePhase === SalePhase.ReadyForNewSale || salePhase === SalePhase.Inactive) {
-    return SaleStatus[salePhase];
+  if (salePhase === SalePhase.ReadyForNewSale) {
+    return SalePhase.ReadyForNewSale;
+  }
+  if (salePhase === SalePhase.Inactive) {
+    return SalePhase.Inactive
   }
 
   const saleDataPromises = [

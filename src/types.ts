@@ -86,7 +86,7 @@ export interface SaleContractConfig {
      * amount the SDK should return for the public sale purchase limit
      * (in theory this is infinite)
      */
-    publicSalePurchaseLimit?: number; //#TODO why is this here
+    publicSalePurchaseLimit?: number; //#TODO-REQ why is this here
   
     /**
      * Advanced settings / properties
@@ -230,6 +230,67 @@ export interface WapeSaleInstance {
 
   /** Get the number of domains purchase by a user */
   getDomainsPurchasedByAccount(address: string): Promise<number>;
+
+  /** Purchase domains */
+  purchaseDomains(
+    count: ethers.BigNumber,
+    signer: ethers.Signer
+  ): Promise<ethers.ContractTransaction>;
+
+  /** Admin helper to pause the sale */
+  setPauseStatus(
+    pauseStatus: boolean,
+    signer: ethers.Signer
+  ): Promise<ethers.ContractTransaction>;
+
+  /** Get the amount a user could purchase */
+  numberPurchasableByAccount(address: string): Promise<number>;
+}
+
+export type PriceInfo = {
+  publicPrice: string,
+  privatePrice: string
+}
+
+export interface SaleInstance {
+  /** Get the price of the sale */
+  getSalePrice(): Promise<PriceInfo>;
+
+  /** Get data about the current sale */
+  getSaleData(): Promise<SaleData>;
+
+  /** Gets the timestamp (seconds) of the block the sale started on (will be zero unless the sale already started) */
+  getSaleStartTime(): Promise<string>;
+
+  /** Get the current phase of the sale */
+  getSaleStatus(): Promise<SalePhase>;
+
+  /** Get the mint list */
+  getMintlist(): Promise<Mintlist>;
+
+  /** Get a users claim from the mintlist */
+  getMintlistedUserClaim(address: string): Promise<Claim>;
+
+  /** Get how long the private sale lasts for */
+  getSaleMintlistDuration(): Promise<ethers.BigNumber>;
+
+  /** Get how many domains for for sale (in the current phase) */
+  getTotalForSale(): Promise<ethers.BigNumber>;
+
+  /** Get the number of domains that have been sold */
+  getNumberOfDomainsSold(): Promise<ethers.BigNumber>;
+
+  /** Get the current block number */
+  getBlockNumber(): Promise<number>;
+
+  /** Get the eth balance of a user */
+  getEthBalance(address: string): Promise<string>;
+
+  /** Check if a user is on the mint list */
+  isUserOnMintlist(address: string): Promise<boolean>;
+
+  /** Get the number of domains purchase by a user for a given sale */
+  getDomainsPurchasedByAccountForSale(activeSaleId: number, address: string): Promise<number>;
 
   /** Purchase domains */
   purchaseDomains(

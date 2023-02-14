@@ -74,11 +74,6 @@ export const purchaseDomains = async (
   const privatePrice = saleConfiguration.privateSalePrice;
   const saleStartTime = await (await contract.saleStartBlockTimestamp()).toNumber();
   const privateSaleDuration = saleConfiguration.mintlistSaleDuration.toNumber();
-  // TODO implement isPublicTransitionPending function, 
-  // update logic here to use private price when necessary
-  // add a get current price of domain function
-  // 
-
   errorCheck(
     balance.lt(price.mul(count)),
     `Not enough funds given for purchase of ${count} domains`
@@ -107,7 +102,7 @@ export const purchaseDomains = async (
     // If you are copying this for future use, DO NOT USE accessList without first verifying that support
     // has been added to metamask!
     // - Joel Tulloch
-    // TODO parking lot with Joel
+    // -TODO-REQ parking lot with Joel
   }
 
   let tx: ethers.ContractTransaction;
