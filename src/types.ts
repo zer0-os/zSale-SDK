@@ -19,9 +19,9 @@ export type SaleConfiguration = {
 };
 
 export type SaleData = {
-  saleId: number;
+  saleId: string;
   salePhaseName: string;
-  saleStartTime: string;
+  saleStartTime: number;
   salePhase: SalePhase;
   saleCounter: number;
   saleConfiguration: SaleConfiguration;

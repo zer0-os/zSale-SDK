@@ -9,8 +9,8 @@ export const getSaleData = async (
   const salePhase: SalePhase =
     (await contract.salePhase()) as SalePhase;
   const salePhaseName = SalePhases[salePhase];
-  const saleStartTime = (await contract.saleStartBlockTimestamp()).toString();
-  const saleId = (await contract.saleId()).toNumber();
+  const saleStartTime = (await contract.saleStartBlockTimestamp()).toNumber();
+  const saleId = (await contract.saleId()).toString();
   const saleCounter = (await contract.saleCounter()).toNumber();
   const saleConfigurationRaw = await contract.saleConfiguration();
 
@@ -32,7 +32,7 @@ export const getSaleData = async (
     saleId: saleId,
     salePhaseName: salePhaseName,
     saleConfiguration: saleConfiguration,
-    saleStartTime: saleStartTime.toString(),
+    saleStartTime: saleStartTime,
     saleCounter: saleCounter,
     salePhase: salePhase
   }

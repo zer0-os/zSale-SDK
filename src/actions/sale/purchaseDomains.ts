@@ -72,12 +72,8 @@ export const purchaseDomains = async (
   const saleId = await contract.saleId();
   const price = saleConfiguration.salePrice;
   const privatePrice = saleConfiguration.privateSalePrice;
-  const saleStartTime = await (await contract.saleStartBlockTimestamp()).toNumber();
+  const saleStartTime = (await contract.saleStartBlockTimestamp()).toNumber();
   const privateSaleDuration = saleConfiguration.mintlistSaleDuration.toNumber();
-  errorCheck(
-    balance.lt(price.mul(count)),
-    `Not enough funds given for purchase of ${count} domains`
-  );
 
   let accessList;
   try {
@@ -122,6 +118,11 @@ export const purchaseDomains = async (
       `This user has already purchased ${purchased.toString()} and buying ${count.toString()} more domains would go over the
       maximum purchase amount of domains for this user, ${userClaim.quantity}. Try reducing the purchase amount.`
     );
+    errorCheck(
+      balance.lt(privatePrice.mul(count)),
+      `Not enough funds given for purchase of ${count} domains`
+    );
+  
 
     tx = await contract
       .connect(signer)
@@ -131,7 +132,7 @@ export const purchaseDomains = async (
         userClaim.quantity,
         userClaim.proof,
         {
-          value: price.mul(count),
+          value: privatePrice.mul(count),
           type: 2,
           accessList: accessList,
         }
@@ -140,6 +141,10 @@ export const purchaseDomains = async (
     // Public sale
     const publicSaleLimit = await contract.publicSaleLimit();
 
+    errorCheck(
+      balance.lt(price.mul(count)),
+      `Not enough funds given for purchase of ${count} domains`
+    );
     errorCheck(
       purchased.add(count).gt(publicSaleLimit),
       `This user has already purchased ${purchased.toString()} and buying ${count.toString()} more domains would go over the
