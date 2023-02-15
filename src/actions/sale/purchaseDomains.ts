@@ -41,17 +41,19 @@ export const purchaseDomains = async (
   count: ethers.BigNumber,
   signer: ethers.Signer,
   contract: Sale,
-  mintlist: Mintlist,
+  mintlist: Mintlist
 ): Promise<ethers.ContractTransaction> => {
-  const status: SalePhase =
-    (await contract.salePhase()) as SalePhase;
+  const status: SalePhase = (await contract.salePhase()) as SalePhase;
 
   errorCheck(
-    status === SalePhase.Inactive || status === SalePhase.ReadyForNewSale,
+    status === SalePhase.ReadyForNewSale,
     "Cannot purchase domains: Sale prepared but not yet started"
   );
 
-  errorCheck(status === SalePhase.Inactive, "Cannot purchase domains: No sale in progress");
+  errorCheck(
+    status === SalePhase.Inactive,
+    "Cannot purchase domains: No sale in progress"
+  );
 
   errorCheck(count.eq("0"), "Cannot purchase 0 domains");
 
@@ -79,7 +81,7 @@ export const purchaseDomains = async (
   try {
     // If using a Gnosis safe as the seller wallet you must
     // provide the implementation address for the tx accessList
-    const sellerWallet = saleConfiguration.sellerWallet
+    const sellerWallet = saleConfiguration.sellerWallet;
 
     const sellerContract = new ethers.Contract(
       sellerWallet,
@@ -102,10 +104,20 @@ export const purchaseDomains = async (
   }
 
   let tx: ethers.ContractTransaction;
-  const purchased = await contract.domainsPurchasedByAccountPerSale(saleId, address);
+  const purchased = await contract.domainsPurchasedByAccountPerSale(
+    saleId,
+    address
+  );
   const currentBlock = await contract.provider.getBlock("latest");
 
-  if (status === SalePhase.Private && !isTransitionToPublicPhasePending(saleStartTime, privateSaleDuration, currentBlock)) {
+  if (
+    status === SalePhase.Private &&
+    !isTransitionToPublicPhasePending(
+      saleStartTime,
+      privateSaleDuration,
+      currentBlock
+    )
+  ) {
     let userClaim: Maybe<Claim> = mintlist.claims[address];
 
     // To purchase in private sale a user must be on the mintlist
@@ -116,13 +128,14 @@ export const purchaseDomains = async (
     errorCheck(
       purchased.add(count).gt(userClaim.quantity),
       `This user has already purchased ${purchased.toString()} and buying ${count.toString()} more domains would go over the
-      maximum purchase amount of domains for this user, ${userClaim.quantity}. Try reducing the purchase amount.`
+      maximum purchase amount of domains for this user, ${
+        userClaim.quantity
+      }. Try reducing the purchase amount.`
     );
     errorCheck(
       balance.lt(privatePrice.mul(count)),
       `Not enough funds given for purchase of ${count} domains`
     );
-  
 
     tx = await contract
       .connect(signer)
@@ -151,16 +164,11 @@ export const purchaseDomains = async (
       maximum purchase amount for the public sale limit of ${publicSaleLimit.toString()}. Try reducing the purchase amount.`
     );
 
-    tx = await contract
-      .connect(signer)
-      .purchaseDomainsPublicSale(
-        count,
-        {
-          value: price.mul(count),
-          type: 2,
-          accessList: accessList,
-        }
-      );
+    tx = await contract.connect(signer).purchaseDomainsPublicSale(count, {
+      value: price.mul(count),
+      type: 2,
+      accessList: accessList,
+    });
   }
   return tx;
 };

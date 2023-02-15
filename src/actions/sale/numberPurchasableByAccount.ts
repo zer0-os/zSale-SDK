@@ -7,10 +7,12 @@ export const numberPurchasableByAccount = async (
   account: string,
   publicSalePurchaseLimit: number // REQ why is this passed in? Get it from sale config?
 ): Promise<number> => {
-  const salePhase: SalePhase =
-  (await contract.salePhase()) as SalePhase;
+  const salePhase: SalePhase = (await contract.salePhase()) as SalePhase;
 
-  if (salePhase === SalePhase.ReadyForNewSale || salePhase === SalePhase.Private) {
+  if (
+    salePhase === SalePhase.ReadyForNewSale ||
+    salePhase === SalePhase.Private
+  ) {
     const userClaim = mintlist.claims[account];
     if (userClaim) {
       return userClaim.quantity;

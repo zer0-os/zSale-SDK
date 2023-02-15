@@ -112,7 +112,9 @@ export const purchaseDomains = async (
     errorCheck(
       purchased.add(count).gt(userClaim.quantity),
       `This user has already purchased ${purchased.toString()} and buying ${count.toString()} more domains would go over the
-      maximum purchase amount of domains for this user, ${userClaim.quantity}. Try reducing the purchase amount.`
+      maximum purchase amount of domains for this user, ${
+        userClaim.quantity
+      }. Try reducing the purchase amount.`
     );
 
     tx = await contract
@@ -138,16 +140,11 @@ export const purchaseDomains = async (
       maximum purchase amount for the public sale limit of ${publicSaleLimit.toString()}. Try reducing the purchase amount.`
     );
 
-    tx = await contract
-      .connect(signer)
-      .purchaseDomainsPublicSale(
-        count,
-        {
-          value: price.mul(count),
-          type: 2,
-          accessList: accessList,
-        }
-      );
+    tx = await contract.connect(signer).purchaseDomainsPublicSale(count, {
+      value: price.mul(count),
+      type: 2,
+      accessList: accessList,
+    });
   }
   return tx;
 };

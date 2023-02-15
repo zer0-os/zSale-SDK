@@ -3,7 +3,7 @@ import * as ethers from "ethers";
 export type Maybe<T> = T | undefined | null;
 
 /**
- * Reusable Sale Config 
+ * Reusable Sale Config
  */
 export type SaleConfiguration = {
   sellerWallet: string;
@@ -67,42 +67,42 @@ export interface WapeSaleConfig {
 }
 
 export interface SaleContractConfig {
-    /**
+  /**
    * Address of the sale contract
    */
-    contractAddress: string;
+  contractAddress: string;
+
+  /**
+   * URI for the merkle tree file
+   */
+  merkleTreeFileUri: string;
+
+  /**
+   * web3 provider to access blockchain with (on read operations)
+   */
+  web3Provider: ethers.providers.Provider;
+
+  /**
+   * amount the SDK should return for the public sale purchase limit
+   * (in theory this is infinite)
+   */
+  publicSalePurchaseLimit?: number; //#TODO-REQ why is this here
+
+  /**
+   * Advanced settings / properties
+   */
+  advanced?: {
+    /**
+     * IPFS Hashes of the merkle tree, used as a fallback if the `merkleTreeFileUri` is not an IPFS url at a given entry
+     */
+    merkleTreeFileIPFSHash?: string;
 
     /**
-     * URI for the merkle tree file
+     * IPFS Gateway to use
+     * (Should be fully formed, ie: https://ipfs.fleek.co/ipfs)
      */
-    merkleTreeFileUri: string;
-  
-    /**
-     * web3 provider to access blockchain with (on read operations)
-     */
-    web3Provider: ethers.providers.Provider;
-  
-    /**
-     * amount the SDK should return for the public sale purchase limit
-     * (in theory this is infinite)
-     */
-    publicSalePurchaseLimit?: number; //#TODO-REQ why is this here
-  
-    /**
-     * Advanced settings / properties
-     */
-    advanced?: {
-      /**
-       * IPFS Hashes of the merkle tree, used as a fallback if the `merkleTreeFileUri` is not an IPFS url at a given entry
-       */
-      merkleTreeFileIPFSHash?: string;
-  
-      /**
-       * IPFS Gateway to use
-       * (Should be fully formed, ie: https://ipfs.fleek.co/ipfs)
-       */
-      ipfsGateway?: string;
-    };
+    ipfsGateway?: string;
+  };
 }
 
 /**
@@ -248,9 +248,9 @@ export interface WapeSaleInstance {
 }
 
 export type PriceInfo = {
-  publicPrice: string,
-  privatePrice: string
-}
+  publicPrice: string;
+  privatePrice: string;
+};
 
 export interface SaleInstance {
   /** Get the price of the sale */
@@ -290,7 +290,10 @@ export interface SaleInstance {
   isUserOnMintlist(address: string): Promise<boolean>;
 
   /** Get the number of domains purchase by a user for a given sale */
-  getDomainsPurchasedByAccountForSale(activeSaleId: number, address: string): Promise<number>;
+  getDomainsPurchasedByAccountForSale(
+    activeSaleId: number,
+    address: string
+  ): Promise<number>;
 
   /** Purchase domains */
   purchaseDomains(

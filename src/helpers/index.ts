@@ -46,9 +46,13 @@ export function padZeros(hex: string) {
  * This function check if the phase of the current sale is about to automatically transition to public.
  * Useful to prevent calls to the wrong purchase function which would be rejected
  */
-export async function isTransitionToPublicPhasePending(saleStartTime: number, privateSaleDuration: number, currentBlock: Block) {
+export async function isTransitionToPublicPhasePending(
+  saleStartTime: number,
+  privateSaleDuration: number,
+  currentBlock: Block
+) {
   if (currentBlock.timestamp > saleStartTime + privateSaleDuration) {
-    return true
+    return true;
   }
-  return false
+  return false;
 }

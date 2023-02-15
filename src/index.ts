@@ -1,11 +1,8 @@
 import { ethers } from "ethers";
 
-import {
-  getSaleContract,
-  getWapeSaleContract,
-} from "./contracts";
+import { getSaleContract, getWapeSaleContract } from "./contracts";
 import * as wapeSaleActions from "./actions/wapeSale";
-import * as saleActions from "./actions/sale"
+import * as saleActions from "./actions/sale";
 import {
   Claim,
   Maybe,
@@ -219,10 +216,10 @@ export const createSaleInstance = (
       const privatePrice = saleConfig.privateSalePrice;
       const priceInfo = {
         publicPrice: ethers.utils.formatEther(publicPrice).toString(),
-        privatePrice: ethers.utils.formatEther(privatePrice).toString()
-      }
+        privatePrice: ethers.utils.formatEther(privatePrice).toString(),
+      };
 
-      return priceInfo
+      return priceInfo;
     },
     getSaleData: async (): Promise<SaleData> => {
       const contract = await getSaleContract(
@@ -231,9 +228,7 @@ export const createSaleInstance = (
       );
 
       // always eth sales currently
-      const saleData: SaleData = await saleActions.getSaleData(
-        contract
-      );
+      const saleData: SaleData = await saleActions.getSaleData(contract);
       return saleData;
     },
     getSaleStartTime: async (): Promise<string> => {
@@ -306,22 +301,25 @@ export const createSaleInstance = (
       const isOnWhitelist = mintlist.claims[address] ? true : false;
       return isOnWhitelist;
     },
-    getDomainsPurchasedByAccountForSale: async (activeSaleId: number, address: string): Promise<number> => {
+    getDomainsPurchasedByAccountForSale: async (
+      activeSaleId: number,
+      address: string
+    ): Promise<number> => {
       const contract = await getSaleContract(
         config.web3Provider,
         config.contractAddress
       );
-      const domains = await contract.domainsPurchasedByAccountPerSale(activeSaleId, address);
+      const domains = await contract.domainsPurchasedByAccountPerSale(
+        activeSaleId,
+        address
+      );
       return domains.toNumber();
     },
     purchaseDomains: async (
       count: ethers.BigNumber,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      const contract = await getSaleContract(
-        signer,
-        config.contractAddress
-      );
+      const contract = await getSaleContract(signer, config.contractAddress);
 
       const mintlist = await getMintlist();
 
@@ -337,10 +335,7 @@ export const createSaleInstance = (
       pauseStatus: boolean,
       signer: ethers.Signer
     ): Promise<ethers.ContractTransaction> => {
-      const contract = await getSaleContract(
-        signer,
-        config.contractAddress
-      );
+      const contract = await getSaleContract(signer, config.contractAddress);
       const tx = await saleActions.setPauseStatus(
         pauseStatus,
         contract,
@@ -369,6 +364,3 @@ export const createSaleInstance = (
 
   return instance;
 };
-
-
-
