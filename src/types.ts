@@ -83,12 +83,6 @@ export interface SaleContractConfig {
   web3Provider: ethers.providers.Provider;
 
   /**
-   * amount the SDK should return for the public sale purchase limit
-   * (in theory this is infinite)
-   */
-  publicSalePurchaseLimit?: number; //#TODO-REQ why is this here
-
-  /**
    * Advanced settings / properties
    */
   advanced?: {

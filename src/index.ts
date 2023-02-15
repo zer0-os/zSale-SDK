@@ -350,13 +350,11 @@ export const createSaleInstance = (
         config.contractAddress
       );
 
-      // TODO-REQ confirm requirements
       const amount = await saleActions.numberPurchasableByAccount(
         mintlist,
         contract,
-        address,
-        config.publicSalePurchaseLimit ?? defaultPublicSalePurchaseLimit
-      );
+        address
+        );
 
       return amount;
     },

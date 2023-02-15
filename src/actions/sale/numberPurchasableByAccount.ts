@@ -5,9 +5,9 @@ export const numberPurchasableByAccount = async (
   mintlist: Mintlist,
   contract: Sale,
   account: string,
-  publicSalePurchaseLimit: number // REQ why is this passed in? Get it from sale config?
 ): Promise<number> => {
   const salePhase: SalePhase = (await contract.salePhase()) as SalePhase;
+  const publicSalePurchaseLimit = (await contract.saleConfiguration()).publicSaleLimit.toNumber();
 
   if (
     salePhase === SalePhase.ReadyForNewSale ||
