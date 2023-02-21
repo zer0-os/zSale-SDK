@@ -6,24 +6,25 @@ export type Maybe<T> = T | undefined | null;
  * Reusable Sale Config
  */
 export type SaleConfiguration = {
+  amountSold: ethers.BigNumber;
   sellerWallet: string;
   parentDomainId: string;
   publicSalePrice: string;
   privateSalePrice: string;
-  mintlistSaleDuration: number;
-  amountForSale: number;
+  mintlistSaleDurationSeconds: ethers.BigNumber;
+  amountForSale: ethers.BigNumber;
   mintlistMerkleRoot: string;
-  startingMetadataIndex: number;
-  folderGroupID: number;
-  publicSaleLimit: number;
+  startingMetadataIndex: ethers.BigNumber;
+  folderGroupID: ethers.BigNumber;
+  publicSaleLimit: ethers.BigNumber;
 };
 
 export type SaleData = {
   saleId: string;
   salePhaseName: string;
-  saleStartTime: number;
+  saleStartTimeSeconds: ethers.BigNumber;
   salePhase: SalePhase;
-  saleCounter: number;
+  saleCounter: ethers.BigNumber;
   saleConfiguration: SaleConfiguration;
 };
 
