@@ -11,7 +11,7 @@ const extractIPFSHash = (hay: string) => {
   return matches[1];
 };
 
-const defaultIpfsGateway = "https://ipfs.io/ipfs/";
+export const defaultIpfsGateway = "https://ipfs.io/ipfs/";
 
 export const getMintlist = async (config: AirWildS2Config) => {
   let mintlist: Maybe<Mintlist>;
