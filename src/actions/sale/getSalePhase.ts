@@ -29,7 +29,6 @@ export const getSaleStatus = async (contract: Sale): Promise<SalePhase> => {
   const amountForSale = saleConfiguration.amountForSale.toNumber();
   const startTime = startTimeRaw.toNumber();
 
-  // PR - sale is technically still active here, owner could add more for sale, but for zApp purposes they may want to display the sale as over.
   if (numSold.gte(amountForSale)) {
     return SalePhase.Inactive;
   }
