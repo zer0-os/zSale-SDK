@@ -11,7 +11,7 @@ export type SaleConfiguration = {
   parentDomainId: string;
   publicSalePrice: string;
   privateSalePrice: string;
-  mintlistSaleDurationSeconds: ethers.BigNumber;
+  mintlistSaleDurationSeconds: number;
   amountForSale: ethers.BigNumber;
   mintlistMerkleRoot: string;
   startingMetadataIndex: ethers.BigNumber;
@@ -22,9 +22,9 @@ export type SaleConfiguration = {
 export type SaleData = {
   saleId: string;
   salePhaseName: string;
-  saleStartTimeSeconds: ethers.BigNumber;
+  saleStartTimeSeconds: number;
   salePhase: SalePhase;
-  saleCounter: ethers.BigNumber;
+  saleCounter: number;
   saleConfiguration: SaleConfiguration;
 };
 
