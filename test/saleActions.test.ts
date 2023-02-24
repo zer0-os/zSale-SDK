@@ -7,6 +7,8 @@ import { SalePhase } from "../src/types";
 import "mocha";
 import { BigNumber, CallOverrides, ethers } from "ethers";
 import { defaultIpfsGateway, getMintlist } from "../src/actions/sale/getMintlist";
+import { getSaleStatus } from "../src/actions/sale";
+import { Block, BlockTag, Provider } from "@ethersproject/providers";
 
 function getDefaultMockSaleConfiguration(): Promise<
   [
@@ -38,7 +40,7 @@ function getDefaultMockSaleConfiguration(): Promise<
     parentDomainId: BigNumber.from(123),
     salePrice: BigNumber.from(456),
     privateSalePrice: BigNumber.from(789),
-    mintlistSaleDuration: BigNumber.from(100),
+    mintlistSaleDuration: BigNumber.from(1000),
     amountForSale: BigNumber.from(50),
     mintlistMerkleRoot: "0xabcdef1234567890abcdef1234567890abcdef12",
     startingMetadataIndex: BigNumber.from(1),
@@ -51,10 +53,18 @@ describe("Sale SDK tests", async () => {
   // current vars hold the state of the mock sale contract, allowing for modification during test
   let currentSaleConfiguration = await getDefaultMockSaleConfiguration();
   let currentSalePhase = SalePhase.Private;
+  let currentDomainsSold = BigNumber.from(0);
+  let currentSaleStartTimestamp = BigNumber.from(1677173138); // 2/23/2023
+  let latestBlock = 0;
 
   // Mock implementation of Sale contract
   const mockSale: Partial<Sale> = {
-    async salePhase() {
+    provider: {
+      async getBlock(): Promise<Block> {
+        return Promise.resolve( { timestamp: Math.floor(Date.now() / 1000) } as unknown as Block)
+      }
+    } as unknown as Provider,
+    async salePhase(): Promise<number> {
       return currentSalePhase;
     },
     async saleConfiguration(overrides?: CallOverrides): Promise<
@@ -84,8 +94,16 @@ describe("Sale SDK tests", async () => {
     > {
       return currentSaleConfiguration;
     },
-  };
 
+    async domainsSold(): Promise<BigNumber> {
+      return currentDomainsSold;
+    },
+    async saleStartBlockTimestamp(): Promise<BigNumber> {
+      return currentSaleStartTimestamp
+    }
+
+  };
+  
   describe("numberPurchasableByAccount", async () => {
     beforeEach(async () => {
       // reset any modifications made to contract state to defaults
@@ -168,16 +186,6 @@ describe("Sale SDK tests", async () => {
       claims: {},
     };
     
-    beforeEach(() => {
-      nock('https://example.com')
-        .get('/mintlist')
-        .reply(200, mockMintlist);
-  
-      nock('https://ipfs.io')
-        .get('/ipfs/QmHash')
-        .reply(200, mockMintlist);
-    });
-  
     afterEach(() => {
       nock.cleanAll();
     });
@@ -189,6 +197,10 @@ describe("Sale SDK tests", async () => {
         web3Provider: new ethers.providers.JsonRpcProvider(),
       };
   
+      nock('https://example.com')
+      .get('/mintlist')
+      .reply(200, mockMintlist);
+      
       const result = await getMintlist(config);
       expect(result).to.deep.equal(mockMintlist);
     });
@@ -203,9 +215,82 @@ describe("Sale SDK tests", async () => {
           ipfsGateway: 'https://ipfs.io/ipfs/',
         },
       };
+
+      nock('https://example.com')
+      .get('/mintlist')
+      .reply(404, mockMintlist);
   
+      nock('https://ipfs.io')
+        .get('/ipfs/QmHash')
+        .reply(200, mockMintlist);
+
       const result = await getMintlist(config);
       expect(result).to.deep.equal(mockMintlist);
+    });
+  });
+
+  describe("getSaleStatus", () => {
+    const mockSaleAsSale: Sale = mockSale as Sale; // Cast to Sale to access types
+  
+    it("should return the ReadyForNewSale phase if salePhase returns ReadyForNewSale", async () => {
+      // Arrange
+      currentSalePhase = SalePhase.ReadyForNewSale;
+  
+      // Act
+      const saleStatus = await getSaleStatus(mockSaleAsSale);
+  
+      // Assert
+      expect(saleStatus).to.equal(SalePhase.ReadyForNewSale);
+    });
+  
+    it("should return the Inactive phase if salePhase returns Inactive", async () => {
+      // Arrange
+      currentSalePhase = SalePhase.Inactive;
+  
+      // Act
+      const saleStatus = await getSaleStatus(mockSaleAsSale);
+  
+      // Assert
+      expect(saleStatus).to.equal(SalePhase.Inactive);
+    });
+  
+    it("should return the Private phase if the sale is still in the Private phase", async () => {
+      // Arrange
+      currentSalePhase = SalePhase.Private;
+      currentDomainsSold = BigNumber.from(0);
+      currentSaleStartTimestamp = BigNumber.from(Math.floor(Date.now() / 1000));
+  
+      // Act
+      const saleStatus = await getSaleStatus(mockSaleAsSale);
+  
+      // Assert
+      expect(saleStatus).to.equal(SalePhase.Private);
+    });
+  
+    it("should return the Public phase if the sale is in the Public phase", async () => {
+      // Arrange
+      currentSalePhase = SalePhase.Private;
+      currentDomainsSold = BigNumber.from(1); // One domain sold
+      currentSaleStartTimestamp = BigNumber.from(Math.floor(Date.now() / 1000));
+  
+      // Act
+      const saleStatus = await getSaleStatus(mockSaleAsSale);
+  
+      // Assert
+      expect(saleStatus).to.equal(SalePhase.Public);
+    });
+  
+    it("should return the Inactive phase if the sale has sold out", async () => {
+      // Arrange
+      currentSalePhase = SalePhase.Private;
+      currentDomainsSold = BigNumber.from(50); // All domains sold
+      currentSaleStartTimestamp = BigNumber.from(Math.floor(Date.now() / 1000));
+  
+      // Act
+      const saleStatus = await getSaleStatus(mockSaleAsSale);
+  
+      // Assert
+      expect(saleStatus).to.equal(SalePhase.Inactive);
     });
   });
   
