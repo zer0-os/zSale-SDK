@@ -77,32 +77,6 @@ export const purchaseDomains = async (
   const saleStartTime = (await contract.saleStartBlockTimestamp()).toNumber();
   const privateSaleDuration = saleConfiguration.mintlistSaleDuration.toNumber();
 
-  let accessList;
-  try {
-    // If using a Gnosis safe as the seller wallet you must
-    // provide the implementation address for the tx accessList
-    const sellerWallet = saleConfiguration.sellerWallet;
-
-    const sellerContract = new ethers.Contract(
-      sellerWallet,
-      abi,
-      contract.provider
-    );
-    const implAddress = await sellerContract.masterCopy();
-    accessList = generateAccessList(address, sellerWallet, implAddress);
-  } catch (e) {
-    // We should not be attempting to use accessList at this point, as this is not supported by metamask:
-    // https://github.com/MetaMask/metamask-extension/issues/11863
-    //
-    // I would prefer to just remove this whole block at the moment, but in the interest of introducing minimal
-    // last minute changes, will leave as-is.
-    //
-    // If you are copying this for future use, DO NOT USE accessList without first verifying that support
-    // has been added to metamask!
-    // - Joel Tulloch
-    // -TODO-REQ parking lot with Joel
-  }
-
   let tx: ethers.ContractTransaction;
   const purchased = await contract.domainsPurchasedByAccountPerSale(
     saleId,
@@ -144,11 +118,6 @@ export const purchaseDomains = async (
         userClaim.index,
         userClaim.quantity,
         userClaim.proof,
-        {
-          value: privatePrice.mul(count),
-          type: 2,
-          accessList: accessList,
-        }
       );
   } else {
     // Public sale
@@ -167,7 +136,6 @@ export const purchaseDomains = async (
     tx = await contract.connect(signer).purchaseDomainsPublicSale(count, {
       value: price.mul(count),
       type: 2,
-      accessList: accessList,
     });
   }
   return tx;
