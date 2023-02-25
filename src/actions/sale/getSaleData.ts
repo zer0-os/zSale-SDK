@@ -20,7 +20,7 @@ export const getSaleData = async (contract: Sale): Promise<SaleData> => {
     privateSalePrice: ethers.utils.formatEther(
       saleConfigurationRaw.privateSalePrice
     ),
-    mintlistSaleDurationSeconds: saleConfigurationRaw.mintlistSaleDuration,
+    mintlistSaleDurationSeconds: saleConfigurationRaw.mintlistSaleDuration.toNumber(),
     amountForSale: saleConfigurationRaw.amountForSale,
     mintlistMerkleRoot: saleConfigurationRaw.mintlistMerkleRoot.toString(),
     startingMetadataIndex:
@@ -33,8 +33,8 @@ export const getSaleData = async (contract: Sale): Promise<SaleData> => {
     saleId: saleId,
     salePhaseName: salePhaseName,
     saleConfiguration: saleConfiguration,
-    saleStartTimeSeconds: saleStartTime,
-    saleCounter: saleCounter,
+    saleStartTimeSeconds: saleStartTime.toNumber(),
+    saleCounter: saleCounter.toNumber(),
     salePhase: salePhase,
   };
 
