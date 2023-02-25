@@ -1,7 +1,8 @@
 import * as ethers from "ethers";
 import { getSaleStatus } from ".";
-import { WapeSale } from "../../contracts/types";
-import { Claim, SaleStatus, Mintlist, Maybe } from "../../types";
+import { Sale, WapeSale } from "../../contracts/types";
+import { isTransitionToPublicPhasePending } from "../../helpers";
+import { Claim, SaleStatus, Mintlist, Maybe, SalePhase } from "../../types";
 
 const abi = ["function masterCopy() external view returns (address)"];
 
@@ -39,17 +40,20 @@ const generateAccessList = (
 export const purchaseDomains = async (
   count: ethers.BigNumber,
   signer: ethers.Signer,
-  contract: WapeSale,
+  contract: Sale,
   mintlist: Mintlist
 ): Promise<ethers.ContractTransaction> => {
-  const status = await getSaleStatus(contract);
+  const status: SalePhase = (await contract.salePhase()) as SalePhase;
 
   errorCheck(
-    status === SaleStatus.NotStarted,
-    "Cannot purchase a domain when sale has not started"
+    status === SalePhase.ReadyForNewSale,
+    "Cannot purchase domains: Sale prepared but not yet started"
   );
 
-  errorCheck(status === SaleStatus.Ended, "Sale has already ended");
+  errorCheck(
+    status === SalePhase.Inactive,
+    "Cannot purchase domains: No sale in progress"
+  );
 
   errorCheck(count.eq("0"), "Cannot purchase 0 domains");
 
@@ -57,7 +61,8 @@ export const purchaseDomains = async (
   errorCheck(paused, "Sale contract is paused");
 
   const domainsSold = await contract.domainsSold();
-  const numberForSale = await contract.amountForSale();
+  const saleConfiguration = await contract.saleConfiguration();
+  const numberForSale = saleConfiguration.amountForSale.toNumber();
 
   errorCheck(
     domainsSold.gte(numberForSale),
@@ -66,18 +71,17 @@ export const purchaseDomains = async (
 
   const address = await signer.getAddress();
   const balance = await signer.getBalance();
-  const price = await contract.salePrice();
-
-  errorCheck(
-    balance.lt(price.mul(count)),
-    `Not enough funds given for purchase of ${count} domains`
-  );
+  const saleId = await contract.saleId();
+  const price = saleConfiguration.salePrice;
+  const privatePrice = saleConfiguration.privateSalePrice;
+  const saleStartTime = (await contract.saleStartBlockTimestamp()).toNumber();
+  const privateSaleDuration = saleConfiguration.mintlistSaleDuration.toNumber();
 
   let accessList;
   try {
     // If using a Gnosis safe as the seller wallet you must
     // provide the implementation address for the tx accessList
-    const sellerWallet = await contract.sellerWallet();
+    const sellerWallet = saleConfiguration.sellerWallet;
 
     const sellerContract = new ethers.Contract(
       sellerWallet,
@@ -96,12 +100,24 @@ export const purchaseDomains = async (
     // If you are copying this for future use, DO NOT USE accessList without first verifying that support
     // has been added to metamask!
     // - Joel Tulloch
+    // -TODO-REQ parking lot with Joel
   }
 
   let tx: ethers.ContractTransaction;
-  const purchased = await contract.domainsPurchasedByAccount(address);
+  const purchased = await contract.domainsPurchasedByAccountPerSale(
+    saleId,
+    address
+  );
+  const currentBlock = await contract.provider.getBlock("latest");
 
-  if (status === SaleStatus.PrivateSale) {
+  if (
+    status === SalePhase.Private &&
+    !isTransitionToPublicPhasePending(
+      saleStartTime,
+      privateSaleDuration,
+      currentBlock
+    )
+  ) {
     let userClaim: Maybe<Claim> = mintlist.claims[address];
 
     // To purchase in private sale a user must be on the mintlist
@@ -116,16 +132,20 @@ export const purchaseDomains = async (
         userClaim.quantity
       }. Try reducing the purchase amount.`
     );
+    errorCheck(
+      balance.lt(privatePrice.mul(count)),
+      `Not enough funds given for purchase of ${count} domains`
+    );
 
     tx = await contract
       .connect(signer)
-      .purchaseDomains(
+      .purchaseDomainsPrivateSale(
         count,
         userClaim.index,
         userClaim.quantity,
         userClaim.proof,
         {
-          value: price.mul(count),
+          value: privatePrice.mul(count),
           type: 2,
           accessList: accessList,
         }
@@ -134,6 +154,10 @@ export const purchaseDomains = async (
     // Public sale
     const publicSaleLimit = await contract.publicSaleLimit();
 
+    errorCheck(
+      balance.lt(price.mul(count)),
+      `Not enough funds given for purchase of ${count} domains`
+    );
     errorCheck(
       purchased.add(count).gt(publicSaleLimit),
       `This user has already purchased ${purchased.toString()} and buying ${count.toString()} more domains would go over the

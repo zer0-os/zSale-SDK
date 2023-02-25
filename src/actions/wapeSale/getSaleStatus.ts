@@ -16,17 +16,14 @@ export const getSaleStatus = async (contract: WapeSale) => {
     contract.mintlistSaleDuration(),
   ];
 
-  const [
-    numSold,
-    totalForSale,
-    startBlock,
-    duration
-  ] = await Promise.all(saleDataPromises)
+  const [numSold, totalForSale, startBlock, duration] = await Promise.all(
+    saleDataPromises
+  );
 
   if (numSold.gte(totalForSale)) {
     return SaleStatus.Ended;
   }
-  
+
   const currentBlock = await contract.provider.getBlockNumber();
 
   if (ethers.BigNumber.from(currentBlock).gt(startBlock.add(duration))) {

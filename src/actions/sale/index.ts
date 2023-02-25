@@ -1,4 +1,4 @@
-export * from "./getSaleStatus";
+export * from "./getSalePhase";
 export * from "./getSaleData";
 export * from "./getMintlist";
 export * from "./purchaseDomains";

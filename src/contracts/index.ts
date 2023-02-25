@@ -1,21 +1,10 @@
 import { ethers } from "ethers";
 
-import { AirWild2Sale, AirWild2Sale__factory } from "./types";
-import { WapeSale, WapeSale__factory } from "./types";
-import { ClaimWithChildSale } from "./types/ClaimWithChildSale";
-import { ClaimWithChildSale__factory } from "./types/factories/ClaimWithChildSale__factory";
+import { Sale, Sale__factory, WapeSale, WapeSale__factory } from "./types";
 import { IERC721EnumerableUpgradeable__factory } from "./types/factories/IERC721EnumerableUpgradeable__factory";
 import { IERC721EnumerableUpgradeable } from "./types/IERC721EnumerableUpgradeable";
 
 export * from "./types";
-
-export const getAirWild2SaleContract = async (
-  provider: ethers.providers.Provider | ethers.Signer,
-  address: string
-): Promise<AirWild2Sale> => {
-  const contract = AirWild2Sale__factory.connect(address, provider);
-  return contract;
-};
 
 export const getWapeSaleContract = async (
   provider: ethers.providers.Provider | ethers.Signer,
@@ -25,11 +14,11 @@ export const getWapeSaleContract = async (
   return contract;
 };
 
-export const getClaimContract = async (
+export const getSaleContract = async (
   provider: ethers.providers.Provider | ethers.Signer,
   address: string
-): Promise<ClaimWithChildSale> => {
-  const contract = ClaimWithChildSale__factory.connect(address, provider);
+): Promise<Sale> => {
+  const contract = Sale__factory.connect(address, provider);
   return contract;
 };
 

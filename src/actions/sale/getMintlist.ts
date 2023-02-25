@@ -1,6 +1,5 @@
 import { fetch } from "cross-fetch";
-import { AirWildS2Config, Maybe, Mintlist } from "../../types";
-import { getAirWild2SaleContract } from "../../contracts";
+import { SaleContractConfig, Maybe, Mintlist } from "../../types";
 
 const extractIPFSHash = (hay: string) => {
   const regex = /(Qm.+)$/;
@@ -13,43 +12,27 @@ const extractIPFSHash = (hay: string) => {
 
 const defaultIpfsGateway = "https://ipfs.io/ipfs/";
 
-export const getMintlist = async (config: AirWildS2Config) => {
+export const getMintlist = async (config: SaleContractConfig) => {
   let mintlist: Maybe<Mintlist>;
-  let merkleTreeIndex = 0;
 
-  const airWild2Sale = await getAirWild2SaleContract(
-    config.web3Provider,
-    config.contractAddress
-  );
-
-  merkleTreeIndex = (await airWild2Sale.currentMerkleRootIndex()).toNumber();
-
-  if (merkleTreeIndex >= config.merkleTreeFileUris.length) {
-    console.error(
-      `No merkle tree file URI at the current sale index, which is ${merkleTreeIndex}`
-    );
-    throw Error(
-      `No merkle tree file URI at the current sale index, which is ${merkleTreeIndex}`
-    );
-  }
   // fetch via main uri
   try {
-    const res = await fetch(config.merkleTreeFileUris[merkleTreeIndex], {
+    const res = await fetch(config.merkleTreeFileUri, {
       method: "GET",
     });
     mintlist = (await res.json()) as Mintlist;
     return mintlist;
   } catch (e) {
     console.error(
-      `Unable to fetch mint list number ${merkleTreeIndex} via uri ${config.merkleTreeFileUris[merkleTreeIndex]}`
+      `Unable to fetch mint list via uri ${config.merkleTreeFileUri}`
     );
   }
 
   let ipfsHash: Maybe<string>;
-  if (config.advanced?.merkleTreeFileIPFSHashes) {
-    ipfsHash = config.advanced.merkleTreeFileIPFSHashes[merkleTreeIndex];
+  if (config.advanced?.merkleTreeFileIPFSHash) {
+    ipfsHash = config.advanced.merkleTreeFileIPFSHash;
     if (!ipfsHash) {
-      ipfsHash = extractIPFSHash(config.merkleTreeFileUris[merkleTreeIndex]);
+      ipfsHash = extractIPFSHash(config.merkleTreeFileUri);
     }
   }
 
@@ -60,7 +43,7 @@ export const getMintlist = async (config: AirWildS2Config) => {
   }
 
   let ipfsGateway = config.advanced?.ipfsGateway ?? defaultIpfsGateway;
-  if (ipfsGateway[ipfsGateway.length - 1] != "/") {
+  if (ipfsGateway[ipfsGateway.length - 1] !== "/") {
     // check if user forgot to add a / at the end of the gateway
     ipfsGateway += "/";
   }
