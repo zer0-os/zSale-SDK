@@ -1,20 +1,29 @@
 import nock from "nock";
-import { assert, expect } from "chai";
+import { expect } from "chai";
 import { numberPurchasableByAccount } from "../src/actions/sale/numberPurchasableByAccount";
-import { Mintlist, SaleConfiguration, SaleContractConfig } from "../src/types";
+import { Mintlist,SaleContractConfig } from "../src/types";
 import { Sale } from "../src/contracts/types";
 import { SalePhase } from "../src/types";
 import "mocha";
-import { BigNumber, CallOverrides, ethers } from "ethers";
+import { BigNumber, CallOverrides, ContractTransaction, ethers, Signer } from "ethers";
 import {
-  defaultIpfsGateway,
   getMintlist,
 } from "../src/actions/sale/getMintlist";
-import { getSaleStatus } from "../src/actions/sale";
+import { getSaleData, getSaleStatus, purchaseDomains } from "../src/actions/sale";
 import { Block, BlockTag, Provider } from "@ethersproject/providers";
+import { SalePhases } from "../src/constants";
 
 const feb23TsSeconds = 1677173138;
 const feb24TsSeconds = 1677264314;
+
+const mockSigner: Partial<Signer> = {
+  async getAddress(): Promise<string> {
+    return Promise.resolve("0x1234567890123456789012345678901234567890");
+  },
+  async getBalance(): Promise<ethers.BigNumber> {
+    return Promise.resolve(ethers.utils.parseEther("10.0"));
+  }
+}
 
 function getDefaultMockSaleConfiguration(): Promise<
   [
@@ -61,14 +70,17 @@ describe("Sale SDK tests", async () => {
   let currentSalePhase = SalePhase.Private;
   let currentDomainsSold = BigNumber.from(0);
   let currentSaleStartTimestamp = BigNumber.from(feb23TsSeconds); // ~2/23/2023
-  let currentLatestBlock: Partial<Block> = { timestamp: feb24TsSeconds } // ~2/24/2023
+  let currentLatestBlock: Partial<Block> = { timestamp: feb24TsSeconds }; // ~2/24/2023
+  let currentSaleId = "12345";
+  let currentSaleCounter = BigNumber.from(1);
+  let currentAmountSold = BigNumber.from(10);
 
   // Mock implementation of Sale contract
   const mockSale: Partial<Sale> = {
     provider: {
       async getBlock(): Promise<Block> {
         return Promise.resolve(currentLatestBlock as Block);
-      },
+      }
     } as unknown as Provider,
     async salePhase(): Promise<number> {
       return currentSalePhase;
@@ -107,6 +119,35 @@ describe("Sale SDK tests", async () => {
     async saleStartBlockTimestamp(): Promise<BigNumber> {
       return currentSaleStartTimestamp;
     },
+    async saleId(): Promise<BigNumber> {
+      return BigNumber.from(currentSaleId);
+    },
+    async saleCounter(): Promise<BigNumber> {
+      return currentSaleCounter;
+    },
+    async paused(): Promise<boolean> {
+      return false;
+    },
+    async purchaseDomainsPrivateSale(
+      count: BigNumber,
+      index: BigNumber,
+      quantity: BigNumber,
+      proof: Array<string>
+    ): Promise<ContractTransaction> {
+      return {} as ContractTransaction;
+    },
+    async domainsPurchasedByAccountPerSale(
+      saleId: BigNumber,
+      account: string
+    ): Promise<BigNumber> {
+      return BigNumber.from(0);
+    },
+    async purchaseDomainsPublicSale(
+      count: BigNumber,
+      overrides: CallOverrides
+    ): Promise<ContractTransaction> {
+      return {} as ContractTransaction;
+    },
   };
 
   describe("numberPurchasableByAccount", async () => {
@@ -114,9 +155,11 @@ describe("Sale SDK tests", async () => {
       // reset any modifications made to contract state
       currentSaleConfiguration = await getDefaultMockSaleConfiguration();
       currentSalePhase = SalePhase.Private;
-      currentDomainsSold = BigNumber.from(0);
+      currentDomainsSold = BigNumber.from(5);
       currentSaleStartTimestamp = BigNumber.from(feb23TsSeconds); // ~2/23/2023
-      currentLatestBlock = {timestamp: feb24TsSeconds}   // ~2/24/2023
+      currentLatestBlock = { timestamp: feb24TsSeconds }; // ~2/24/2023
+      currentSaleId = "12345";
+      currentSaleCounter = BigNumber.from(1);
     });
 
     it("returns 0 for users not in the mint list during private or ready phase", async () => {
@@ -264,7 +307,7 @@ describe("Sale SDK tests", async () => {
       currentSalePhase = SalePhase.Private;
 
       currentSaleStartTimestamp = BigNumber.from(feb23TsSeconds);
-      currentLatestBlock = { timestamp: feb23TsSeconds + 2 } ; // current time is T start + 2
+      currentLatestBlock = { timestamp: feb23TsSeconds + 2 }; // current time is T start + 2
       let modifiedSaleConfiguration = await getDefaultMockSaleConfiguration();
       modifiedSaleConfiguration.mintlistSaleDuration = BigNumber.from(1); // duration of private phase is T start + 1
       currentSaleConfiguration = modifiedSaleConfiguration;
@@ -284,4 +327,116 @@ describe("Sale SDK tests", async () => {
       expect(saleStatus).to.equal(SalePhase.Inactive);
     });
   });
+
+  describe("getSaleData", async () => {
+    it("should return the sale data correctly", async () => {
+      // TODO create defaults for the rest of these vars
+      const salePhase = SalePhase.Private;
+      const saleId = "12345";
+      const saleCounter = 1;
+      const amountSold = 5;
+      const saleStartTime = 1645694400;
+  
+      const saleConfigurationRaw = await getDefaultMockSaleConfiguration();
+  
+      currentSalePhase = salePhase;
+      currentSaleConfiguration = saleConfigurationRaw;
+      currentDomainsSold = BigNumber.from(amountSold);
+      currentSaleStartTimestamp = BigNumber.from(saleStartTime);
+      currentLatestBlock = { timestamp: feb24TsSeconds } as Partial<Block>;
+  
+      const saleData = await getSaleData(mockSale as Sale);
+  
+      expect(saleData.saleId).to.equal(saleId);
+      expect(saleData.salePhaseName).to.equal(SalePhases[salePhase]);
+      expect(saleData.saleStartTimeSeconds).to.equal(saleStartTime);
+      expect(saleData.saleCounter).to.equal(saleCounter);
+      expect(saleData.salePhase).to.equal(salePhase);
+      expect(saleData.saleConfiguration.amountSold.toNumber()).to.equal(amountSold);
+      expect(saleData.saleConfiguration.sellerWallet).to.equal(saleConfigurationRaw.sellerWallet);
+      expect(saleData.saleConfiguration.parentDomainId).to.equal(saleConfigurationRaw.parentDomainId.toHexString());
+      expect(saleData.saleConfiguration.publicSalePrice).to.equal(ethers.utils.formatEther(saleConfigurationRaw.salePrice));
+      expect(saleData.saleConfiguration.privateSalePrice).to.equal(ethers.utils.formatEther(saleConfigurationRaw.privateSalePrice));
+      expect(saleData.saleConfiguration.mintlistSaleDurationSeconds).to.equal(saleConfigurationRaw.mintlistSaleDuration.toNumber());
+      expect(saleData.saleConfiguration.amountForSale.toNumber()).to.equal(saleConfigurationRaw.amountForSale.toNumber());
+      expect(saleData.saleConfiguration.mintlistMerkleRoot).to.equal(saleConfigurationRaw.mintlistMerkleRoot);
+      expect(saleData.saleConfiguration.startingMetadataIndex.toNumber()).to.equal(saleConfigurationRaw.startingMetadataIndex.toNumber());
+      expect(saleData.saleConfiguration.folderGroupID.toNumber()).to.equal(saleConfigurationRaw.folderGroupID.toNumber());
+      expect(saleData.saleConfiguration.publicSaleLimit.toNumber()).to.equal(saleConfigurationRaw.publicSaleLimit.toNumber());
+    });
+  });
+
+  describe("purchaseDomains", async () => {
+    //TODO review purchaseDomains function, then update mocks on saleContract accordingly
+      // Mock implementation of Mintlist
+  const mockMintlist: Mintlist = {
+    merkleRoot: "0x1234567890123456789012345678901234567890123456789012345678901234",
+    claims: {
+      "0x1111111111111111111111111111111111111111": {
+        index: 0,
+        quantity: 10,
+        proof: [
+          "0x2222222222222222222222222222222222222222222222222222222222222222",
+        ],
+      },
+    },
+  };
+
+    const signer = mockSigner as Signer;
+    const saleContract = mockSale as Sale;
+    const mintlist = mockMintlist;
+
+    it("should fail if the sale is not yet started", async () => {
+      // Arrange
+      currentSalePhase = SalePhase.ReadyForNewSale;
+  
+      // Act and assert
+      await expect(
+        purchaseDomains(BigNumber.from(1), signer, saleContract, mintlist)
+      ).to.be.rejectedWith(
+        "Cannot purchase domains: Sale prepared but not yet started"
+      );
+    });
+  
+    it("should fail if no sale is in progress", async () => {
+      // Arrange
+      currentSalePhase = SalePhase.Inactive;
+  
+      // Act and assert
+      await expect(
+        purchaseDomains(BigNumber.from(1), signer, saleContract, mintlist)
+      ).to.be.rejectedWith("Cannot purchase domains: No sale in progress");
+    });
+  
+    it("should fail if count is 0", async () => {
+      // Act and assert
+      await expect(
+        purchaseDomains(BigNumber.from(0), signer, saleContract, mintlist)
+      ).to.be.rejectedWith("Cannot purchase 0 domains");
+    });
+  
+    // it("should fail if sale contract is paused", async () => {
+    //   // Arrange
+    //   currentSaleConfiguration.paused = true;
+  
+    //   // Act and assert
+    //   await expect(
+    //     purchaseDomains(BigNumber.from(1), signer, saleContract, mintlist)
+    //   ).to.be.rejectedWith("Sale contract is paused");
+    // });
+  
+    it("should fail if all domains have been sold", async () => {
+      // Arrange
+      currentDomainsSold = BigNumber.from(50);
+  
+      // Act and assert
+      await expect(
+        purchaseDomains(BigNumber.from(1), signer, saleContract, mintlist)
+      ).to.be.rejectedWith(
+        "There are no domains left for purchase in the sale"
+      );
+    });
+  });
+
+
 });
