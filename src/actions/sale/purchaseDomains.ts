@@ -1,8 +1,7 @@
 import * as ethers from "ethers";
-import { getSaleStatus } from ".";
-import { Sale, WapeSale } from "../../contracts/types";
+import { Sale } from "../../contracts/types";
 import { isTransitionToPublicPhasePending } from "../../helpers";
-import { Claim, SaleStatus, Mintlist, Maybe, SalePhase } from "../../types";
+import { Claim, Mintlist, Maybe, SalePhase } from "../../types";
 
 const abi = ["function masterCopy() external view returns (address)"];
 
