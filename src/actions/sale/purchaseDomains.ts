@@ -5,12 +5,6 @@ import { Claim, Mintlist, Maybe, SalePhase } from "../../types";
 
 const abi = ["function masterCopy() external view returns (address)"];
 
-const errorCheck = async (condition: boolean, errorMessage: string) => {
-  if (condition) {
-    throw errorMessage;
-  }
-};
-
 const generateAccessList = (
   userAddress: string,
   gnosisSafeProxyAddress: string,
@@ -42,31 +36,34 @@ export const purchaseDomains = async (
   contract: Sale,
   mintlist: Mintlist
 ): Promise<ethers.ContractTransaction> => {
-  const status: SalePhase = (await contract.salePhase()) as SalePhase;
+  const status: SalePhase = await contract.salePhase();
 
-  errorCheck(
-    status === SalePhase.ReadyForNewSale,
-    "Cannot purchase domains: Sale prepared but not yet started"
-  );
+  if (status === SalePhase.ReadyForNewSale) {
+    throw new Error(
+      "Cannot purchase domains: Sale prepared but not yet started"
+    );
+  }
 
-  errorCheck(
-    status === SalePhase.Inactive,
-    "Cannot purchase domains: No sale in progress"
-  );
+  if (status === SalePhase.Inactive) {
+    throw new Error("Cannot purchase domains: No sale in progress");
+  }
 
-  errorCheck(count.eq("0"), "Cannot purchase 0 domains");
+  if (count.eq("0")) {
+    throw new Error("Cannot purchase 0 domains");
+  }
 
   const paused = await contract.paused();
-  errorCheck(paused, "Sale contract is paused");
+  if (paused) {
+    throw new Error("Sale contract is paused");
+  }
 
   const domainsSold = await contract.domainsSold();
   const saleConfiguration = await contract.saleConfiguration();
   const numberForSale = saleConfiguration.amountForSale.toNumber();
 
-  errorCheck(
-    domainsSold.gte(numberForSale),
-    "There are no domains left for purchase in the sale"
-  );
+  if (domainsSold.gte(numberForSale)) {
+    throw new Error("There are no domains left for purchase in the sale");
+  }
 
   const address = await signer.getAddress();
   const balance = await signer.getBalance();
@@ -94,21 +91,24 @@ export const purchaseDomains = async (
     let userClaim: Maybe<Claim> = mintlist.claims[address];
 
     // To purchase in private sale a user must be on the mintlist
-    errorCheck(userClaim === undefined, "User is not part of private sale");
     userClaim = userClaim!;
+    if (userClaim === undefined) {
+      throw new Error("User is not part of private sale");
+    }
 
     // Cannot purchase over the allowed mintlist limit
-    errorCheck(
-      purchased.add(count).gt(userClaim.quantity),
-      `This user has already purchased ${purchased.toString()} and buying ${count.toString()} more domains would go over the
+
+    if (purchased.add(count).gt(userClaim.quantity)) {
+      throw new Error(`This user has already purchased ${purchased.toString()} and buying ${count.toString()} more domains would go over the
       maximum purchase amount of domains for this user, ${
         userClaim.quantity
-      }. Try reducing the purchase amount.`
-    );
-    errorCheck(
-      balance.lt(privatePrice.mul(count)),
-      `Not enough funds given for purchase of ${count} domains`
-    );
+      }. Try reducing the purchase amount.`);
+    }
+    if (balance.lt(privatePrice.mul(count))) {
+      throw new Error(
+        `Not enough funds given for purchase of ${count} domains`
+      );
+    }
 
     tx = await contract
       .connect(signer)
@@ -116,21 +116,21 @@ export const purchaseDomains = async (
         count,
         userClaim.index,
         userClaim.quantity,
-        userClaim.proof,
+        userClaim.proof
       );
   } else {
     // Public sale
-    const publicSaleLimit = await contract.publicSaleLimit();
+    const publicSaleLimit = saleConfiguration.publicSaleLimit.toNumber();
 
-    errorCheck(
-      balance.lt(price.mul(count)),
-      `Not enough funds given for purchase of ${count} domains`
-    );
-    errorCheck(
-      purchased.add(count).gt(publicSaleLimit),
-      `This user has already purchased ${purchased.toString()} and buying ${count.toString()} more domains would go over the
-      maximum purchase amount for the public sale limit of ${publicSaleLimit.toString()}. Try reducing the purchase amount.`
-    );
+    if (balance.lt(price.mul(count))) {
+      throw new Error(
+        `Not enough funds given for purchase of ${count} domains`
+      );
+    }
+    if (purchased.add(count).gt(publicSaleLimit)) {
+      throw new Error(`This user has already purchased ${purchased.toString()} and buying ${count.toString()} more domains would go over the 
+        maximum purchase amount for the public sale limit of ${publicSaleLimit.toString()}. Try reducing the purchase amount.`);
+    }
 
     tx = await contract.connect(signer).purchaseDomainsPublicSale(count, {
       value: price.mul(count),
