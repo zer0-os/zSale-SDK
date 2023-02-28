@@ -40,7 +40,7 @@ export const getSaleStatus = async (contract: Sale): Promise<SalePhase> => {
     currentBlock
   );
 
-   if (pendingPublicTransition) {
+  if (pendingPublicTransition) {
     return SalePhase.Public;
   }
 

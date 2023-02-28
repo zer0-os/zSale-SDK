@@ -4,10 +4,10 @@ import { Mintlist, SalePhase } from "../../types";
 export const numberPurchasableByAccount = async (
   mintlist: Mintlist,
   contract: Sale,
-  account: string,
+  account: string
 ): Promise<number> => {
   const salePhase: SalePhase = (await contract.salePhase()) as SalePhase;
-  const saleConfig = (await contract.saleConfiguration());
+  const saleConfig = await contract.saleConfiguration();
   const publicSalePurchaseLimit = saleConfig.publicSaleLimit.toNumber();
 
   if (salePhase === SalePhase.Inactive) {

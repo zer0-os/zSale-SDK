@@ -354,7 +354,7 @@ export const createSaleInstance = (
         mintlist,
         contract,
         address
-        );
+      );
 
       return amount;
     },

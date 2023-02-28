@@ -471,9 +471,7 @@ export class Sale extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    saleConfiguration(
-      overrides?: CallOverrides
-    ): Promise<
+    saleConfiguration(overrides?: CallOverrides): Promise<
       [
         string,
         BigNumber,
@@ -653,9 +651,7 @@ export class Sale extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  saleConfiguration(
-    overrides?: CallOverrides
-  ): Promise<
+  saleConfiguration(overrides?: CallOverrides): Promise<
     [
       string,
       BigNumber,
@@ -831,9 +827,7 @@ export class Sale extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    saleConfiguration(
-      overrides?: CallOverrides
-    ): Promise<
+    saleConfiguration(overrides?: CallOverrides): Promise<
       [
         string,
         BigNumber,
