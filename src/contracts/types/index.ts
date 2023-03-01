@@ -4,7 +4,9 @@
 export type { AirWild2Sale } from "./AirWild2Sale"
 export type { WapeSale } from "./WapeSale";
 export type { WolfSale } from "./WolfSale";
+export type { GenSale } from "./GenSale";
 
 export { AirWild2Sale__factory } from "./factories/AirWild2Sale__factory";
 export { WapeSale__factory } from "./factories/WapeSale__factory";
 export { WolfSale__factory } from "./factories/WolfSale__factory";
+export { GenSale__factory } from "./factories/GenSale_factory";

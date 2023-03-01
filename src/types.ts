@@ -111,10 +111,55 @@ export interface WapeSaleConfig {
   };
 }
 
+export interface GenSaleConfig {
+  /**
+   * Address of the sale contract
+   */
+  contractAddress: string;
+
+  /**
+   * URI for the merkle tree file
+   */
+  merkleTreeFileUri: string;
+
+  /**
+   * web3 provider to access blockchain with (on read operations)
+   */
+  web3Provider: ethers.providers.Provider;
+
+  /**
+   * amount the SDK should return for the maximum amount purchasable in a single transaction in private sale
+   */
+  privateSaleTransactionLimit?: number;
+
+  /**
+   * Advanced settings / properties
+   */
+  advanced?: {
+    /**
+     * IPFS Hashes of the merkle tree, used as a fallback if the `merkleTreeFileUri` is not an IPFS url at a given entry
+     */
+    merkleTreeFileIPFSHash?: string;
+
+    /**
+     * IPFS Gateway to use
+     * (Should be fully formed, ie: https://ipfs.fleek.co/ipfs)
+     */
+    ipfsGateway?: string;
+  };
+}
+
 export enum SaleStatus {
   NotStarted,
   PrivateSale,
   PublicSale,
+  Ended,
+}
+
+export enum GenSaleStatus {
+  NotStarted,
+  ClaimSale,
+  PrivateSale,
   Ended,
 }
 
@@ -345,6 +390,110 @@ export interface WapeSaleInstance {
   /** Get the amount a user could purchase */
   numberPurchasableByAccount(address: string): Promise<number>;
 }
+
+export interface GenSaleInstance {
+  /** Get the price of the sale */
+  getSalePrice(): Promise<string>;
+
+  /** Get data about the current sale */
+  getSaleData(): Promise<GenSaleData>;
+
+  /** Get the block that the sale started on (will be zero unless the sale already started) */
+  getSaleStartBlock(): Promise<string>;
+
+  /** Get the current status of the sale */
+  getSaleStatus(): Promise<GenSaleStatus>;
+
+  /** Get the mint list */
+  getMintlist(): Promise<Mintlist>;
+
+  /** Sets the price of the sale */
+  setSalePrice(price: ethers.BigNumber, signer: ethers.Signer): Promise<ethers.ContractTransaction>;
+
+  /** Get a users claim from the mintlist */
+  getMintlistedUserClaim(address: string): Promise<Claim>;
+
+  /** Get how many domains for for sale (in the current phase) */
+  getTotalForSale(): Promise<ethers.BigNumber>;
+
+  /** Get the number of domains that have been sold */
+  getNumberOfDomainsSold(): Promise<ethers.BigNumber>;
+
+  /** Get the current block number */
+  getBlockNumber(): Promise<number>;
+
+  /** Get the eth balance of a user */
+  getEthBalance(address: string): Promise<string>;
+
+  /** Check if a user is on the mint list */
+  isUserOnMintlist(address: string): Promise<boolean>;
+
+  /** Get the number of domains purchase by a user */
+  getDomainsPurchasedByAccount(address: string): Promise<number>;
+
+  /** Purchase domains */
+  purchaseDomains(
+    count: ethers.BigNumber,
+    signer: ethers.Signer
+  ): Promise<ethers.ContractTransaction>;
+
+  /** Admin helper to pause the sale */
+  setPauseStatus(
+    pauseStatus: boolean,
+    signer: ethers.Signer
+  ): Promise<ethers.ContractTransaction>;
+
+  /** Get the amount a user could purchase */
+  numberPurchasableByAccount(address: string): Promise<number>;
+}
+
+export interface GenSaleData {
+  /**
+   * How many have been sold
+   */
+  amountSold: number;
+  /**
+   * How many are for sale given the current phase (private or public sale)
+   */
+  amountForSale: number;
+  /**
+   * The sale price
+   */
+  salePrice: string;
+  /**
+   * Has the sale started
+   */
+  started: boolean;
+  /**
+   * Is the sale paused
+   */
+  paused: boolean;
+  /**
+   * When did the sale start (only defined if the sale started)
+   */
+  startBlock?: number;
+  /**
+   * What phase is the sale currently in?
+   * Not Started - The Sale has not yet started
+   * Claim Sale - The sale is accepting GEN Claims from accounts in the Merkle Tree
+   * Private Sael - The sale is accepting private purchases from accounts in the Merkle Tree
+   * Ended - The sale is over
+   */
+  //genSaleStatus?: GenSaleStatus;
+
+  /**
+   * How many domains a wallet may buy in one transaction in the Private Sale
+   */
+  limitPerTransaction?: number;
+
+  advanced: {
+    /**
+     * How many are for sale
+     */
+    amountForSale: number;
+  };
+}
+
 
 export interface ClaimWithChildInstance {
   /** Get the price of the sale */

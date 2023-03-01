@@ -1,6 +1,6 @@
+require("dotenv").config();
 import * as chai from "chai";
 import * as chaiAsPromised from "chai-as-promised";
-import * as dotenv from "dotenv";
 import { ethers } from "ethers";
 
 import { createWapeSaleInstance } from "../src";
@@ -18,7 +18,7 @@ import {
 
 const expect = chai.expect;
 chai.use(chaiAsPromised.default);
-dotenv.config();
+require("dotenv").config();
 
 describe("Test Custom SDK Logic", () => {
   const provider = new ethers.providers.JsonRpcProvider(
@@ -26,7 +26,7 @@ describe("Test Custom SDK Logic", () => {
     5
   );
 
-  const pk = process.env["TESTNET_PRIVATE_KEY"];
+  const pk = process.env.TESTNET_PRIVATE_KEY;
   if (!pk) throw Error("No private key");
 
   const signer = new ethers.Wallet(pk, provider);
