@@ -33,7 +33,6 @@ interface SaleInterface extends ethers.utils.Interface {
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
     "paused()": FunctionFragment;
-    "publicSaleLimit()": FunctionFragment;
     "purchaseDomainsPrivateSale(uint256,uint256,uint256,bytes32[])": FunctionFragment;
     "purchaseDomainsPublicSale(uint8)": FunctionFragment;
     "releaseDomain()": FunctionFragment;
@@ -114,10 +113,6 @@ interface SaleInterface extends ethers.utils.Interface {
     values: [BytesLike, string]
   ): string;
   encodeFunctionData(functionFragment: "paused", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "publicSaleLimit",
-    values?: undefined
-  ): string;
   encodeFunctionData(
     functionFragment: "purchaseDomainsPrivateSale",
     values: [BigNumberish, BigNumberish, BigNumberish, BytesLike[]]
@@ -231,10 +226,6 @@ interface SaleInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "publicSaleLimit",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "purchaseDomainsPrivateSale",
     data: BytesLike
@@ -451,8 +442,6 @@ export class Sale extends BaseContract {
 
     paused(overrides?: CallOverrides): Promise<[boolean]>;
 
-    publicSaleLimit(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     purchaseDomainsPrivateSale(
       count: BigNumberish,
       index: BigNumberish,
@@ -633,8 +622,6 @@ export class Sale extends BaseContract {
 
   paused(overrides?: CallOverrides): Promise<boolean>;
 
-  publicSaleLimit(overrides?: CallOverrides): Promise<BigNumber>;
-
   purchaseDomainsPrivateSale(
     count: BigNumberish,
     index: BigNumberish,
@@ -813,8 +800,6 @@ export class Sale extends BaseContract {
 
     paused(overrides?: CallOverrides): Promise<boolean>;
 
-    publicSaleLimit(overrides?: CallOverrides): Promise<BigNumber>;
-
     purchaseDomainsPrivateSale(
       count: BigNumberish,
       index: BigNumberish,
@@ -917,7 +902,7 @@ export class Sale extends BaseContract {
 
     startSale(overrides?: CallOverrides): Promise<void>;
 
-    stopSale(overrides?: CallOverrides): Promise<void>;
+    stopSale(overrides?: CallOverrides): Promise<BigNumber>;
 
     supportsInterface(
       interfaceId: BytesLike,
@@ -1168,8 +1153,6 @@ export class Sale extends BaseContract {
 
     paused(overrides?: CallOverrides): Promise<BigNumber>;
 
-    publicSaleLimit(overrides?: CallOverrides): Promise<BigNumber>;
-
     purchaseDomainsPrivateSale(
       count: BigNumberish,
       index: BigNumberish,
@@ -1331,8 +1314,6 @@ export class Sale extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    publicSaleLimit(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     purchaseDomainsPrivateSale(
       count: BigNumberish,

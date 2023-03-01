@@ -6,9 +6,9 @@ import { SaleConfiguration, SaleData, SalePhase } from "../../types";
 export const getSaleData = async (contract: Sale): Promise<SaleData> => {
   const salePhase: SalePhase = (await contract.salePhase()) as SalePhase;
   const salePhaseName = SalePhases[salePhase];
-  const saleStartTime = (await contract.saleStartBlockTimestamp())
+  const saleStartTime = await contract.saleStartBlockTimestamp();
   const saleId = (await contract.saleId()).toString();
-  const saleCounter = (await contract.saleCounter())
+  const saleCounter = await contract.saleCounter();
   const saleConfigurationRaw = await contract.saleConfiguration();
   const amountSold = await contract.domainsSold();
 
@@ -20,11 +20,11 @@ export const getSaleData = async (contract: Sale): Promise<SaleData> => {
     privateSalePrice: ethers.utils.formatEther(
       saleConfigurationRaw.privateSalePrice
     ),
-    mintlistSaleDurationSeconds: saleConfigurationRaw.mintlistSaleDuration.toNumber(),
+    mintlistSaleDurationSeconds:
+      saleConfigurationRaw.mintlistSaleDuration.toNumber(),
     amountForSale: saleConfigurationRaw.amountForSale,
     mintlistMerkleRoot: saleConfigurationRaw.mintlistMerkleRoot.toString(),
-    startingMetadataIndex:
-      saleConfigurationRaw.startingMetadataIndex,
+    startingMetadataIndex: saleConfigurationRaw.startingMetadataIndex,
     folderGroupID: saleConfigurationRaw.folderGroupID,
     publicSaleLimit: saleConfigurationRaw.publicSaleLimit,
   };
