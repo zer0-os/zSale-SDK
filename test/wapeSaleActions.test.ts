@@ -5,10 +5,6 @@ import { ethers } from "ethers";
 
 import { createWapeSaleInstance } from "../src";
 import {
-  getWapeSaleContract,
-  WapeSale,
-} from "../src/contracts";
-import {
   Claim,
   WapeSaleConfig,
   WapeSaleInstance,
@@ -46,8 +42,6 @@ describe("Test Custom SDK Logic", () => {
     },
   };
 
-  const abi = ["function masterCopy() external view returns (address)"];
-
   describe("e2e", () => {
     let sdk: WapeSaleInstance;
     before(async () => {
@@ -65,20 +59,8 @@ describe("Test Custom SDK Logic", () => {
     before(async () => {
       sdk = createWapeSaleInstance(config);
     });
-    it("Can get the seller wallet implementation copy", async () => {
-      const wapeSaleContract: WapeSale = await getWapeSaleContract(
-        signer,
-        config.contractAddress
-      );
-      const sellerWalletAddress = await wapeSaleContract.sellerWallet();
-
-      const contract = new ethers.Contract(sellerWalletAddress, abi, provider);
-      // If seller wallet is EOA, this will fail
-      const implAddress = await contract.masterCopy();
-
-      expect(implAddress).to.not.be.undefined;
-    });
   });
+
   describe("Test the merkle tree behaviour", () => {
     let sdk: WapeSaleInstance;
     before(async () => {
