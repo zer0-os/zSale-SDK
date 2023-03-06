@@ -29,7 +29,6 @@ export const getSaleStatus = async (contract: GenSale) => {
         if (saleStarted) {
             return GenSaleStatus.PrivateSale;
         }
-        return GenSaleStatus.Ended;
     }
     return GenSaleStatus.ClaimSale;
 };

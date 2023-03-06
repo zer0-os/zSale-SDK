@@ -1,10 +1,10 @@
 import { ethers } from "ethers";
 import { GenSale } from "../../contracts/types";
 import { GenSaleData } from "../../types";
+import { getSaleStatus } from "./getSaleStatus";
 
 export const getSaleData = async (
-    contract: GenSale,
-    isEth: boolean
+    contract: GenSale
 ): Promise<GenSaleData> => {
     const started = await contract.saleStarted();
 
@@ -22,10 +22,8 @@ export const getSaleData = async (
         started: started,
         paused: await contract.paused(),
         startBlock: startBlock,
-        advanced: {
-            amountForSale: amountForSale,
-        },
-        limitPerTransaction: limitPerTransaction
+        limitPerTransaction: limitPerTransaction,
+        saleStatus: await getSaleStatus(contract)
     };
     return saleData;
 };

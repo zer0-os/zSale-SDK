@@ -11,9 +11,9 @@ export const numberPurchasableByAccount = async (
     const transactonLimit = await contract.limitPerTransaction();
     const userClaim = mintlist.claims[account];
     if (userClaim) {
-        if (status === GenSaleStatus.NotStarted || status == GenSaleStatus.PrivateSale) {
+        if (status == GenSaleStatus.PrivateSale) {
             return transactonLimit.toNumber();
-        } else if (status === GenSaleStatus.ClaimSale) {
+        } else if (status === GenSaleStatus.NotStarted || status === GenSaleStatus.ClaimSale) {
             return userClaim.quantity;
         }
     }

@@ -5,9 +5,9 @@ import { Claim, SaleStatus, Mintlist, Maybe, GenSaleStatus } from "../../types";
 
 const abi = ["function masterCopy() external view returns (address)"];
 
-const errorCheck = async (condition: boolean, errorMessage: string) => {
+const errorCheck = (condition: boolean, errorMessage: string) => {
     if (condition) {
-        throw errorMessage;
+        throw new Error(errorMessage);
     }
 };
 
@@ -42,7 +42,7 @@ export const purchaseDomains = async (
     contract: GenSale,
     mintlist: Mintlist
 ): Promise<ethers.ContractTransaction> => {
-    const status = await getSaleStatus(contract);
+    const status: GenSaleStatus = await getSaleStatus(contract);
 
     errorCheck(
         status === GenSaleStatus.NotStarted,
@@ -58,10 +58,10 @@ export const purchaseDomains = async (
 
     const domainsSold = await contract.domainsSold();
     const numberForSale = await contract.amountForSale();
-
+    const newSoldNumber = domainsSold.add(count);
     errorCheck(
-        domainsSold.gte(numberForSale),
-        "There are no domains left for purchase in the sale"
+        newSoldNumber.gt(numberForSale),
+        "Purchasing more domains than remaining in sale"
     );
 
     const address = await signer.getAddress();
@@ -72,31 +72,6 @@ export const purchaseDomains = async (
         balance.lt(price.mul(count)),
         `Not enough funds given for purchase of ${count} domains`
     );
-
-    let accessList;
-    try {
-        // If using a Gnosis safe as the seller wallet you must
-        // provide the implementation address for the tx accessList
-        const sellerWallet = await contract.sellerWallet();
-
-        const sellerContract = new ethers.Contract(
-            sellerWallet,
-            abi,
-            contract.provider
-        );
-        const implAddress = await sellerContract.masterCopy();
-        accessList = generateAccessList(address, sellerWallet, implAddress);
-    } catch (e) {
-        // We should not be attempting to use accessList at this point, as this is not supported by metamask:
-        // https://github.com/MetaMask/metamask-extension/issues/11863
-        //
-        // I would prefer to just remove this whole block at the moment, but in the interest of introducing minimal
-        // last minute changes, will leave as-is.
-        //
-        // If you are copying this for future use, DO NOT USE accessList without first verifying that support
-        // has been added to metamask!
-        // - Joel Tulloch
-    }
 
     let tx: ethers.ContractTransaction;
     const purchased = await contract.domainsPurchasedByAccount(address);
@@ -111,8 +86,7 @@ export const purchaseDomains = async (
         // Cannot purchase over the allowed mintlist limit
         errorCheck(
             purchased.add(count).gt(userClaim.quantity),
-            `This user has already claimed ${purchased.toString()} and claiming ${count.toString()} more domains would go over the
-      maximum claim amount of domains for this user, ${userClaim.quantity}. Try reducing the claim amount.`
+            `This user has already claimed ${purchased.toString()} and claiming ${count.toString()} more domains would go over the maximum claim amount of domains for this user, ${userClaim.quantity}. Try reducing the claim amount.`
         );
 
         tx = await contract
@@ -126,10 +100,9 @@ export const purchaseDomains = async (
     } else {
         // Private sale
         const transactionLimit = await contract.limitPerTransaction();
-
         errorCheck(
             purchased.add(count).gt(transactionLimit),
-            `The given number of ${count.toString()} exceeds the purchase limit per transaction in the Private Sale: ${purchased.toString()}.`
+            `The given number of ${count.toString()}, and combined with previously purchased ${purchased.toString()} exceeds the purchase limit per transaction in the Private Sale: ${transactionLimit.toString()}.`
         );
 
         tx = await contract
@@ -140,9 +113,7 @@ export const purchaseDomains = async (
                 userClaim.quantity,
                 userClaim.proof,
                 {
-                    value: price.mul(count),
-                    type: 2,
-                    accessList: accessList,
+                    value: price.mul(count)
                 }
             );
     }

@@ -409,8 +409,7 @@ export const createGenSaleInstance = (
 
       // always eth sales currently
       const saleData: GenSaleData = await genSaleActions.getSaleData(
-        contract,
-        true
+        contract
       );
       return saleData;
     },

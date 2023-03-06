@@ -453,7 +453,7 @@ export interface GenSaleData {
    */
   amountSold: number;
   /**
-   * How many are for sale given the current phase (private or public sale)
+   * How many domains are being sold
    */
   amountForSale: number;
   /**
@@ -472,26 +472,20 @@ export interface GenSaleData {
    * When did the sale start (only defined if the sale started)
    */
   startBlock?: number;
+
   /**
    * What phase is the sale currently in?
    * Not Started - The Sale has not yet started
    * Claim Sale - The sale is accepting GEN Claims from accounts in the Merkle Tree
-   * Private Sael - The sale is accepting private purchases from accounts in the Merkle Tree
+   * Private Sale - The sale is accepting private purchases from accounts in the Merkle Tree
    * Ended - The sale is over
    */
-  //genSaleStatus?: GenSaleStatus;
+  saleStatus: GenSaleStatus;
 
   /**
    * How many domains a wallet may buy in one transaction in the Private Sale
    */
   limitPerTransaction?: number;
-
-  advanced: {
-    /**
-     * How many are for sale
-     */
-    amountForSale: number;
-  };
 }
 
 
