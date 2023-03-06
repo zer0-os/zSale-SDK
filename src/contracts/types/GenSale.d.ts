@@ -3,17 +3,17 @@
 /* eslint-disable */
 
 import {
-    ethers,
-    EventFilter,
-    Signer,
-    BigNumber,
-    BigNumberish,
-    PopulatedTransaction,
-    BaseContract,
-    ContractTransaction,
-    Overrides,
-    PayableOverrides,
-    CallOverrides,
+  ethers,
+  EventFilter,
+  Signer,
+  BigNumber,
+  BigNumberish,
+  PopulatedTransaction,
+  BaseContract,
+  ContractTransaction,
+  Overrides,
+  PayableOverrides,
+  CallOverrides,
 } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
@@ -21,633 +21,636 @@ import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface GenSaleInterface extends ethers.utils.Interface {
-    functions: {
-        "__GenSale_init(uint256,uint256,address,address,uint256,uint8,bytes32,uint256,uint256)": FunctionFragment;
-        "amountForSale()": FunctionFragment;
-        "domainsPurchasedByAccount(address)": FunctionFragment;
-        "domainsSold()": FunctionFragment;
-        "folderGroupID()": FunctionFragment;
-        "limitPerTransaction()": FunctionFragment;
-        "mintlistMerkleRoot()": FunctionFragment;
-        "owner()": FunctionFragment;
-        "parentDomainId()": FunctionFragment;
-        "paused()": FunctionFragment;
-        "purchaseDomains(uint256,uint256,uint256,bytes32[])": FunctionFragment;
-        "releaseDomain()": FunctionFragment;
-        "renounceOwnership()": FunctionFragment;
-        "salePrice()": FunctionFragment;
-        "saleStartBlock()": FunctionFragment;
-        "saleStarted()": FunctionFragment;
-        "sellerWallet()": FunctionFragment;
-        "setAmountForSale(uint256)": FunctionFragment;
-        "setFolderGroupID(uint256)": FunctionFragment;
-        "setLimitPerTransaction(uint256)": FunctionFragment;
-        "setMerkleRoot(bytes32)": FunctionFragment;
-        "setParentDomainId(uint256)": FunctionFragment;
-        "setPauseStatus(bool)": FunctionFragment;
-        "setRegistrar(address)": FunctionFragment;
-        "setSalePrice(uint256)": FunctionFragment;
-        "setSellerWallet(address)": FunctionFragment;
-        "setStartIndex(uint256)": FunctionFragment;
-        "startSale()": FunctionFragment;
-        "startingMetadataIndex()": FunctionFragment;
-        "stopSale()": FunctionFragment;
-        "transferOwnership(address)": FunctionFragment;
-        "zNSRegistrar()": FunctionFragment;
-    };
+  functions: {
+    "__GenSale_init(uint256,uint256,address,address,uint256,uint8,bytes32,uint256,uint256)": FunctionFragment;
+    "amountForSale()": FunctionFragment;
+    "domainsPurchasedByAccount(address)": FunctionFragment;
+    "domainsSold()": FunctionFragment;
+    "folderGroupID()": FunctionFragment;
+    "limitPerTransaction()": FunctionFragment;
+    "mintlistMerkleRoot()": FunctionFragment;
+    "owner()": FunctionFragment;
+    "parentDomainId()": FunctionFragment;
+    "paused()": FunctionFragment;
+    "purchaseDomains(uint256,uint256,uint256,bytes32[])": FunctionFragment;
+    "releaseDomain()": FunctionFragment;
+    "renounceOwnership()": FunctionFragment;
+    "salePrice()": FunctionFragment;
+    "saleStartBlock()": FunctionFragment;
+    "saleStarted()": FunctionFragment;
+    "sellerWallet()": FunctionFragment;
+    "setAmountForSale(uint256)": FunctionFragment;
+    "setFolderGroupID(uint256)": FunctionFragment;
+    "setLimitPerTransaction(uint256)": FunctionFragment;
+    "setMerkleRoot(bytes32)": FunctionFragment;
+    "setParentDomainId(uint256)": FunctionFragment;
+    "setPauseStatus(bool)": FunctionFragment;
+    "setRegistrar(address)": FunctionFragment;
+    "setSalePrice(uint256)": FunctionFragment;
+    "setSellerWallet(address)": FunctionFragment;
+    "setStartIndex(uint256)": FunctionFragment;
+    "startSale()": FunctionFragment;
+    "startingMetadataIndex()": FunctionFragment;
+    "stopSale()": FunctionFragment;
+    "transferOwnership(address)": FunctionFragment;
+    "zNSRegistrar()": FunctionFragment;
+  };
 
-    encodeFunctionData(
-        functionFragment: "__GenSale_init",
-        values: [
-            BigNumberish,
-            BigNumberish,
-            string,
-            string,
-            BigNumberish,
-            BigNumberish,
-            BytesLike,
-            BigNumberish,
-            BigNumberish
-        ]
-    ): string;
-    encodeFunctionData(
-        functionFragment: "amountForSale",
-        values?: undefined
-    ): string;
-    encodeFunctionData(
-        functionFragment: "domainsPurchasedByAccount",
-        values: [string]
-    ): string;
-    encodeFunctionData(
-        functionFragment: "domainsSold",
-        values?: undefined
-    ): string;
-    encodeFunctionData(
-        functionFragment: "folderGroupID",
-        values?: undefined
-    ): string;
-    encodeFunctionData(
-        functionFragment: "limitPerTransaction",
-        values?: undefined
-    ): string;
-    encodeFunctionData(
-        functionFragment: "mintlistMerkleRoot",
-        values?: undefined
-    ): string;
-    encodeFunctionData(functionFragment: "owner", values?: undefined): string;
-    encodeFunctionData(
-        functionFragment: "parentDomainId",
-        values?: undefined
-    ): string;
-    encodeFunctionData(functionFragment: "paused", values?: undefined): string;
-    encodeFunctionData(
-        functionFragment: "purchaseDomains",
-        values: [BigNumberish, BigNumberish, BigNumberish, BytesLike[]]
-    ): string;
-    encodeFunctionData(
-        functionFragment: "releaseDomain",
-        values?: undefined
-    ): string;
-    encodeFunctionData(
-        functionFragment: "renounceOwnership",
-        values?: undefined
-    ): string;
-    encodeFunctionData(functionFragment: "salePrice", values?: undefined): string;
-    encodeFunctionData(
-        functionFragment: "saleStartBlock",
-        values?: undefined
-    ): string;
-    encodeFunctionData(
-        functionFragment: "saleStarted",
-        values?: undefined
-    ): string;
-    encodeFunctionData(
-        functionFragment: "sellerWallet",
-        values?: undefined
-    ): string;
-    encodeFunctionData(
-        functionFragment: "setAmountForSale",
-        values: [BigNumberish]
-    ): string;
-    encodeFunctionData(
-        functionFragment: "setFolderGroupID",
-        values: [BigNumberish]
-    ): string;
-    encodeFunctionData(
-        functionFragment: "setLimitPerTransaction",
-        values: [BigNumberish]
-    ): string;
-    encodeFunctionData(
-        functionFragment: "setMerkleRoot",
-        values: [BytesLike]
-    ): string;
-    encodeFunctionData(
-        functionFragment: "setParentDomainId",
-        values: [BigNumberish]
-    ): string;
-    encodeFunctionData(
-        functionFragment: "setPauseStatus",
-        values: [boolean]
-    ): string;
-    encodeFunctionData(
-        functionFragment: "setRegistrar",
-        values: [string]
-    ): string;
-    encodeFunctionData(
-        functionFragment: "setSalePrice",
-        values: [BigNumberish]
-    ): string;
-    encodeFunctionData(
-        functionFragment: "setSellerWallet",
-        values: [string]
-    ): string;
-    encodeFunctionData(
-        functionFragment: "setStartIndex",
-        values: [BigNumberish]
-    ): string;
-    encodeFunctionData(functionFragment: "startSale", values?: undefined): string;
-    encodeFunctionData(
-        functionFragment: "startingMetadataIndex",
-        values?: undefined
-    ): string;
-    encodeFunctionData(functionFragment: "stopSale", values?: undefined): string;
-    encodeFunctionData(
-        functionFragment: "transferOwnership",
-        values: [string]
-    ): string;
-    encodeFunctionData(
-        functionFragment: "zNSRegistrar",
-        values?: undefined
-    ): string;
+  encodeFunctionData(
+    functionFragment: "__GenSale_init",
+    values: [
+      BigNumberish,
+      BigNumberish,
+      string,
+      string,
+      BigNumberish,
+      BigNumberish,
+      BytesLike,
+      BigNumberish,
+      BigNumberish
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "amountForSale",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "domainsPurchasedByAccount",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "domainsSold",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "folderGroupID",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "limitPerTransaction",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "mintlistMerkleRoot",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "parentDomainId",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "paused", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "purchaseDomains",
+    values: [BigNumberish, BigNumberish, BigNumberish, BytesLike[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "releaseDomain",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "renounceOwnership",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "salePrice", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "saleStartBlock",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "saleStarted",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "sellerWallet",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setAmountForSale",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setFolderGroupID",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setLimitPerTransaction",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setMerkleRoot",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setParentDomainId",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setPauseStatus",
+    values: [boolean]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setRegistrar",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setSalePrice",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setSellerWallet",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setStartIndex",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(functionFragment: "startSale", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "startingMetadataIndex",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "stopSale", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "transferOwnership",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "zNSRegistrar",
+    values?: undefined
+  ): string;
 
-    decodeFunctionResult(
-        functionFragment: "__GenSale_init",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "amountForSale",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "domainsPurchasedByAccount",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "domainsSold",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "folderGroupID",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "limitPerTransaction",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "mintlistMerkleRoot",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
-    decodeFunctionResult(
-        functionFragment: "parentDomainId",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
-    decodeFunctionResult(
-        functionFragment: "purchaseDomains",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "releaseDomain",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "renounceOwnership",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(functionFragment: "salePrice", data: BytesLike): Result;
-    decodeFunctionResult(
-        functionFragment: "saleStartBlock",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "saleStarted",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "sellerWallet",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "setAmountForSale",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "setFolderGroupID",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "setLimitPerTransaction",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "setMerkleRoot",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "setParentDomainId",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "setPauseStatus",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "setRegistrar",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "setSalePrice",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "setSellerWallet",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "setStartIndex",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(functionFragment: "startSale", data: BytesLike): Result;
-    decodeFunctionResult(
-        functionFragment: "startingMetadataIndex",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(functionFragment: "stopSale", data: BytesLike): Result;
-    decodeFunctionResult(
-        functionFragment: "transferOwnership",
-        data: BytesLike
-    ): Result;
-    decodeFunctionResult(
-        functionFragment: "zNSRegistrar",
-        data: BytesLike
-    ): Result;
+  decodeFunctionResult(
+    functionFragment: "__GenSale_init",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "amountForSale",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "domainsPurchasedByAccount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "domainsSold",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "folderGroupID",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "limitPerTransaction",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "mintlistMerkleRoot",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "parentDomainId",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "purchaseDomains",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "releaseDomain",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "renounceOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "salePrice", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "saleStartBlock",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "saleStarted",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "sellerWallet",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setAmountForSale",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setFolderGroupID",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setLimitPerTransaction",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setMerkleRoot",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setParentDomainId",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setPauseStatus",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setRegistrar",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setSalePrice",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setSellerWallet",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setStartIndex",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "startSale", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "startingMetadataIndex",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "stopSale", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "transferOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "zNSRegistrar",
+    data: BytesLike
+  ): Result;
 
-    events: {
-        "AmountForSaleChanged(uint256,uint256)": EventFragment;
-        "DomainsPurchased(address,address,uint256,uint256,uint256)": EventFragment;
-        "FolderGroupIdChanged(uint256,uint256)": EventFragment;
-        "GenSaleInit(uint256,uint256,address,address,uint256,uint256,bytes32,uint256,uint256,uint256)": EventFragment;
-        "LimitPerTransactionChanged(uint256,uint256)": EventFragment;
-        "MintlistMerkleRootChanged(bytes32,uint256)": EventFragment;
-        "OwnershipTransferred(address,address)": EventFragment;
-        "ParentDomainIdChanged(uint256,uint256)": EventFragment;
-        "PauseStatusChanged(bool,uint256)": EventFragment;
-        "Paused(address)": EventFragment;
-        "PriceChanged(uint256,uint256)": EventFragment;
-        "RefundedEther(address,uint256,uint256)": EventFragment;
-        "RegistrarChanged(address,uint256)": EventFragment;
-        "SaleStarted(uint256,uint256,address,address,uint256,uint256,bytes32,uint256,uint256,uint256)": EventFragment;
-        "SaleStopped(uint256)": EventFragment;
-        "SellerWalletChanged(address,uint256)": EventFragment;
-        "StartingMetadataIndexChanged(uint256,uint256)": EventFragment;
-        "Unpaused(address)": EventFragment;
-    };
+  events: {
+    "AmountForSaleChanged(uint256,uint256)": EventFragment;
+    "DomainsPurchased(address,address,uint256,uint256,uint256)": EventFragment;
+    "FolderGroupIdChanged(uint256,uint256)": EventFragment;
+    "GenSaleInit(uint256,uint256,address,address,uint256,uint256,bytes32,uint256,uint256,uint256)": EventFragment;
+    "LimitPerTransactionChanged(uint256,uint256)": EventFragment;
+    "MintlistMerkleRootChanged(bytes32,uint256)": EventFragment;
+    "OwnershipTransferred(address,address)": EventFragment;
+    "ParentDomainIdChanged(uint256,uint256)": EventFragment;
+    "PauseStatusChanged(bool,uint256)": EventFragment;
+    "Paused(address)": EventFragment;
+    "PriceChanged(uint256,uint256)": EventFragment;
+    "RefundedEther(address,uint256,uint256)": EventFragment;
+    "RegistrarChanged(address,uint256)": EventFragment;
+    "SaleStarted(uint256,uint256,address,address,uint256,uint256,bytes32,uint256,uint256,uint256)": EventFragment;
+    "SaleStopped(uint256)": EventFragment;
+    "SellerWalletChanged(address,uint256)": EventFragment;
+    "StartingMetadataIndexChanged(uint256,uint256)": EventFragment;
+    "Unpaused(address)": EventFragment;
+  };
 
-    getEvent(nameOrSignatureOrTopic: "AmountForSaleChanged"): EventFragment;
-    getEvent(nameOrSignatureOrTopic: "DomainsPurchased"): EventFragment;
-    getEvent(nameOrSignatureOrTopic: "FolderGroupIdChanged"): EventFragment;
-    getEvent(nameOrSignatureOrTopic: "GenSaleInit"): EventFragment;
-    getEvent(nameOrSignatureOrTopic: "LimitPerTransactionChanged"): EventFragment;
-    getEvent(nameOrSignatureOrTopic: "MintlistMerkleRootChanged"): EventFragment;
-    getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
-    getEvent(nameOrSignatureOrTopic: "ParentDomainIdChanged"): EventFragment;
-    getEvent(nameOrSignatureOrTopic: "PauseStatusChanged"): EventFragment;
-    getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
-    getEvent(nameOrSignatureOrTopic: "PriceChanged"): EventFragment;
-    getEvent(nameOrSignatureOrTopic: "RefundedEther"): EventFragment;
-    getEvent(nameOrSignatureOrTopic: "RegistrarChanged"): EventFragment;
-    getEvent(nameOrSignatureOrTopic: "SaleStarted"): EventFragment;
-    getEvent(nameOrSignatureOrTopic: "SaleStopped"): EventFragment;
-    getEvent(nameOrSignatureOrTopic: "SellerWalletChanged"): EventFragment;
-    getEvent(
-        nameOrSignatureOrTopic: "StartingMetadataIndexChanged"
-    ): EventFragment;
-    getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "AmountForSaleChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "DomainsPurchased"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "FolderGroupIdChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "GenSaleInit"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "LimitPerTransactionChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MintlistMerkleRootChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ParentDomainIdChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "PauseStatusChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "PriceChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RefundedEther"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RegistrarChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SaleStarted"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SaleStopped"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SellerWalletChanged"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "StartingMetadataIndexChanged"
+  ): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
 }
 
-export type AmountForSaleChangedEvent = TypedEvent<
-    [BigNumber, BigNumber] & { amountForSale: BigNumber; block: BigNumber }
->;
-
-export type DomainsPurchasedEvent = TypedEvent<
-    [string, string, BigNumber, BigNumber, BigNumber] & {
-        buyer: string;
-        seller: string;
-        salePrice: BigNumber;
-        quantity: BigNumber;
-        block: BigNumber;
-    }
->;
-
-export type FolderGroupIdChangedEvent = TypedEvent<
-    [BigNumber, BigNumber] & { folderGroupID: BigNumber; block: BigNumber }
->;
-
-export type GenSaleInitEvent = TypedEvent<
-    [
-        BigNumber,
-        BigNumber,
-        string,
-        string,
-        BigNumber,
-        BigNumber,
-        string,
-        BigNumber,
-        BigNumber,
-        BigNumber
-    ] & {
-        parentDomainId: BigNumber;
-        salePrice: BigNumber;
-        zNSRegistrar: string;
-        sellerWallet: string;
-        amountForSale: BigNumber;
-        limitPerTransaction: BigNumber;
-        mintlistMerkleRoot: string;
-        startingMetadataIndex: BigNumber;
-        folderGroupID: BigNumber;
-        block: BigNumber;
-    }
->;
-
-export type LimitPerTransactionChangedEvent = TypedEvent<
-    [BigNumber, BigNumber] & { limitPerTransaction: BigNumber; block: BigNumber }
->;
-
-export type MintlistMerkleRootChangedEvent = TypedEvent<
-    [string, BigNumber] & { mintlistMerkleRoot: string; block: BigNumber }
->;
-
-export type OwnershipTransferredEvent = TypedEvent<
-    [string, string] & { previousOwner: string; newOwner: string }
->;
-
-export type ParentDomainIdChangedEvent = TypedEvent<
-    [BigNumber, BigNumber] & { parentDomainId: BigNumber; block: BigNumber }
->;
-
-export type PauseStatusChangedEvent = TypedEvent<
-    [boolean, BigNumber] & { pauseStatus: boolean; block: BigNumber }
->;
-
-export type PausedEvent = TypedEvent<[string] & { account: string }>;
-
-export type PriceChangedEvent = TypedEvent<
-    [BigNumber, BigNumber] & { salePrice: BigNumber; block: BigNumber }
->;
-
-export type RefundedEtherEvent = TypedEvent<
-    [string, BigNumber, BigNumber] & {
-        buyer: string;
-        amount: BigNumber;
-        block: BigNumber;
-    }
->;
-
-export type RegistrarChangedEvent = TypedEvent<
-    [string, BigNumber] & { registrar: string; block: BigNumber }
->;
-
-export type SaleStartedEvent = TypedEvent<
-    [
-        BigNumber,
-        BigNumber,
-        string,
-        string,
-        BigNumber,
-        BigNumber,
-        string,
-        BigNumber,
-        BigNumber,
-        BigNumber
-    ] & {
-        parentDomainId: BigNumber;
-        salePrice: BigNumber;
-        zNSRegistrar: string;
-        sellerWallet: string;
-        amountForSale: BigNumber;
-        limitPerTransaction: BigNumber;
-        mintlistMerkleRoot: string;
-        startingMetadataIndex: BigNumber;
-        folderGroupID: BigNumber;
-        block: BigNumber;
-    }
->;
-
-export type SaleStoppedEvent = TypedEvent<[BigNumber] & { block: BigNumber }>;
-
-export type SellerWalletChangedEvent = TypedEvent<
-    [string, BigNumber] & { seller: string; block: BigNumber }
->;
-
-export type StartingMetadataIndexChangedEvent = TypedEvent<
-    [BigNumber, BigNumber] & {
-        startingMetadataIndex: BigNumber;
-        block: BigNumber;
-    }
->;
-
-export type UnpausedEvent = TypedEvent<[string] & { account: string }>;
-
 export class GenSale extends BaseContract {
-    connect(signerOrProvider: Signer | Provider | string): this;
-    attach(addressOrName: string): this;
-    deployed(): Promise<this>;
+  connect(signerOrProvider: Signer | Provider | string): this;
+  attach(addressOrName: string): this;
+  deployed(): Promise<this>;
 
-    listeners<EventArgsArray extends Array<any>, EventArgsObject>(
-        eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
-    ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
-    off<EventArgsArray extends Array<any>, EventArgsObject>(
-        eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-        listener: TypedListener<EventArgsArray, EventArgsObject>
-    ): this;
-    on<EventArgsArray extends Array<any>, EventArgsObject>(
-        eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-        listener: TypedListener<EventArgsArray, EventArgsObject>
-    ): this;
-    once<EventArgsArray extends Array<any>, EventArgsObject>(
-        eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-        listener: TypedListener<EventArgsArray, EventArgsObject>
-    ): this;
-    removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
-        eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-        listener: TypedListener<EventArgsArray, EventArgsObject>
-    ): this;
-    removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
-        eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
-    ): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
 
-    listeners(eventName?: string): Array<Listener>;
-    off(eventName: string, listener: Listener): this;
-    on(eventName: string, listener: Listener): this;
-    once(eventName: string, listener: Listener): this;
-    removeListener(eventName: string, listener: Listener): this;
-    removeAllListeners(eventName?: string): this;
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
 
-    queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
-        event: TypedEventFilter<EventArgsArray, EventArgsObject>,
-        fromBlockOrBlockhash?: string | number | undefined,
-        toBlock?: string | number | undefined
-    ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-    interface: GenSaleInterface;
+  interface: GenSaleInterface;
 
-    functions: {
-        __GenSale_init(
-            parentDomainId_: BigNumberish,
-            salePrice_: BigNumberish,
-            zNSRegistrar_: string,
-            sellerWallet_: string,
-            amountForSale_: BigNumberish,
-            limitPerTransaction_: BigNumberish,
-            merkleRoot_: BytesLike,
-            startingMetadataIndex_: BigNumberish,
-            folderGroupID_: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<ContractTransaction>;
-
-        amountForSale(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-        domainsPurchasedByAccount(
-            arg0: string,
-            overrides?: CallOverrides
-        ): Promise<[BigNumber]>;
-
-        domainsSold(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-        folderGroupID(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-        limitPerTransaction(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-        mintlistMerkleRoot(overrides?: CallOverrides): Promise<[string]>;
-
-        owner(overrides?: CallOverrides): Promise<[string]>;
-
-        parentDomainId(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-        paused(overrides?: CallOverrides): Promise<[boolean]>;
-
-        purchaseDomains(
-            count: BigNumberish,
-            index: BigNumberish,
-            purchaseLimit: BigNumberish,
-            merkleProof: BytesLike[],
-            overrides?: PayableOverrides & { from?: string | Promise<string> }
-        ): Promise<ContractTransaction>;
-
-        releaseDomain(
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<ContractTransaction>;
-
-        renounceOwnership(
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<ContractTransaction>;
-
-        salePrice(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-        saleStartBlock(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-        saleStarted(overrides?: CallOverrides): Promise<[boolean]>;
-
-        sellerWallet(overrides?: CallOverrides): Promise<[string]>;
-
-        setAmountForSale(
-            amountForSale_: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<ContractTransaction>;
-
-        setFolderGroupID(
-            folderGroupID_: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<ContractTransaction>;
-
-        setLimitPerTransaction(
-            limit: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<ContractTransaction>;
-
-        setMerkleRoot(
-            root: BytesLike,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<ContractTransaction>;
-
-        setParentDomainId(
-            parentId: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<ContractTransaction>;
-
-        setPauseStatus(
-            pauseStatus: boolean,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<ContractTransaction>;
-
-        setRegistrar(
-            zNSRegistrar_: string,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<ContractTransaction>;
-
-        setSalePrice(
-            price: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<ContractTransaction>;
-
-        setSellerWallet(
-            wallet: string,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<ContractTransaction>;
-
-        setStartIndex(
-            index: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<ContractTransaction>;
-
-        startSale(
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<ContractTransaction>;
-
-        startingMetadataIndex(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-        stopSale(
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<ContractTransaction>;
-
-        transferOwnership(
-            newOwner: string,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<ContractTransaction>;
-
-        zNSRegistrar(overrides?: CallOverrides): Promise<[string]>;
-    };
-
+  functions: {
     __GenSale_init(
-        parentDomainId_: BigNumberish,
-        salePrice_: BigNumberish,
-        zNSRegistrar_: string,
-        sellerWallet_: string,
-        amountForSale_: BigNumberish,
-        limitPerTransaction_: BigNumberish,
-        merkleRoot_: BytesLike,
-        startingMetadataIndex_: BigNumberish,
-        folderGroupID_: BigNumberish,
-        overrides?: Overrides & { from?: string | Promise<string> }
+      parentDomainId_: BigNumberish,
+      salePrice_: BigNumberish,
+      zNSRegistrar_: string,
+      sellerWallet_: string,
+      amountForSale_: BigNumberish,
+      limitPerTransaction_: BigNumberish,
+      merkleRoot_: BytesLike,
+      startingMetadataIndex_: BigNumberish,
+      folderGroupID_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    amountForSale(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    domainsPurchasedByAccount(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    domainsSold(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    folderGroupID(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    limitPerTransaction(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    mintlistMerkleRoot(overrides?: CallOverrides): Promise<[string]>;
+
+    owner(overrides?: CallOverrides): Promise<[string]>;
+
+    parentDomainId(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    paused(overrides?: CallOverrides): Promise<[boolean]>;
+
+    purchaseDomains(
+      count: BigNumberish,
+      index: BigNumberish,
+      purchaseLimit: BigNumberish,
+      merkleProof: BytesLike[],
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    releaseDomain(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    salePrice(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    saleStartBlock(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    saleStarted(overrides?: CallOverrides): Promise<[boolean]>;
+
+    sellerWallet(overrides?: CallOverrides): Promise<[string]>;
+
+    setAmountForSale(
+      amountForSale_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setFolderGroupID(
+      folderGroupID_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setLimitPerTransaction(
+      limit: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setMerkleRoot(
+      root: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setParentDomainId(
+      parentId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setPauseStatus(
+      pauseStatus: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setRegistrar(
+      zNSRegistrar_: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setSalePrice(
+      price: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setSellerWallet(
+      wallet: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setStartIndex(
+      index: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    startSale(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    startingMetadataIndex(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    stopSale(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    zNSRegistrar(overrides?: CallOverrides): Promise<[string]>;
+  };
+
+  __GenSale_init(
+    parentDomainId_: BigNumberish,
+    salePrice_: BigNumberish,
+    zNSRegistrar_: string,
+    sellerWallet_: string,
+    amountForSale_: BigNumberish,
+    limitPerTransaction_: BigNumberish,
+    merkleRoot_: BytesLike,
+    startingMetadataIndex_: BigNumberish,
+    folderGroupID_: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  amountForSale(overrides?: CallOverrides): Promise<BigNumber>;
+
+  domainsPurchasedByAccount(
+    arg0: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  domainsSold(overrides?: CallOverrides): Promise<BigNumber>;
+
+  folderGroupID(overrides?: CallOverrides): Promise<BigNumber>;
+
+  limitPerTransaction(overrides?: CallOverrides): Promise<BigNumber>;
+
+  mintlistMerkleRoot(overrides?: CallOverrides): Promise<string>;
+
+  owner(overrides?: CallOverrides): Promise<string>;
+
+  parentDomainId(overrides?: CallOverrides): Promise<BigNumber>;
+
+  paused(overrides?: CallOverrides): Promise<boolean>;
+
+  purchaseDomains(
+    count: BigNumberish,
+    index: BigNumberish,
+    purchaseLimit: BigNumberish,
+    merkleProof: BytesLike[],
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  releaseDomain(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  renounceOwnership(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  salePrice(overrides?: CallOverrides): Promise<BigNumber>;
+
+  saleStartBlock(overrides?: CallOverrides): Promise<BigNumber>;
+
+  saleStarted(overrides?: CallOverrides): Promise<boolean>;
+
+  sellerWallet(overrides?: CallOverrides): Promise<string>;
+
+  setAmountForSale(
+    amountForSale_: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setFolderGroupID(
+    folderGroupID_: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setLimitPerTransaction(
+    limit: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setMerkleRoot(
+    root: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setParentDomainId(
+    parentId: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setPauseStatus(
+    pauseStatus: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setRegistrar(
+    zNSRegistrar_: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setSalePrice(
+    price: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setSellerWallet(
+    wallet: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setStartIndex(
+    index: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  startSale(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  startingMetadataIndex(overrides?: CallOverrides): Promise<BigNumber>;
+
+  stopSale(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  transferOwnership(
+    newOwner: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  zNSRegistrar(overrides?: CallOverrides): Promise<string>;
+
+  callStatic: {
+    __GenSale_init(
+      parentDomainId_: BigNumberish,
+      salePrice_: BigNumberish,
+      zNSRegistrar_: string,
+      sellerWallet_: string,
+      amountForSale_: BigNumberish,
+      limitPerTransaction_: BigNumberish,
+      merkleRoot_: BytesLike,
+      startingMetadataIndex_: BigNumberish,
+      folderGroupID_: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     amountForSale(overrides?: CallOverrides): Promise<BigNumber>;
 
     domainsPurchasedByAccount(
-        arg0: string,
-        overrides?: CallOverrides
+      arg0: string,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     domainsSold(overrides?: CallOverrides): Promise<BigNumber>;
@@ -665,20 +668,16 @@ export class GenSale extends BaseContract {
     paused(overrides?: CallOverrides): Promise<boolean>;
 
     purchaseDomains(
-        count: BigNumberish,
-        index: BigNumberish,
-        purchaseLimit: BigNumberish,
-        merkleProof: BytesLike[],
-        overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+      count: BigNumberish,
+      index: BigNumberish,
+      purchaseLimit: BigNumberish,
+      merkleProof: BytesLike[],
+      overrides?: CallOverrides
+    ): Promise<void>;
 
-    releaseDomain(
-        overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    releaseDomain(overrides?: CallOverrides): Promise<void>;
 
-    renounceOwnership(
-        overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
     salePrice(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -689,841 +688,517 @@ export class GenSale extends BaseContract {
     sellerWallet(overrides?: CallOverrides): Promise<string>;
 
     setAmountForSale(
-        amountForSale_: BigNumberish,
-        overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+      amountForSale_: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     setFolderGroupID(
-        folderGroupID_: BigNumberish,
-        overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+      folderGroupID_: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     setLimitPerTransaction(
-        limit: BigNumberish,
-        overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+      limit: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
-    setMerkleRoot(
-        root: BytesLike,
-        overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    setMerkleRoot(root: BytesLike, overrides?: CallOverrides): Promise<void>;
 
     setParentDomainId(
-        parentId: BigNumberish,
-        overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+      parentId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     setPauseStatus(
-        pauseStatus: boolean,
-        overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+      pauseStatus: boolean,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     setRegistrar(
-        zNSRegistrar_: string,
-        overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+      zNSRegistrar_: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
-    setSalePrice(
-        price: BigNumberish,
-        overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    setSalePrice(price: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
-    setSellerWallet(
-        wallet: string,
-        overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    setSellerWallet(wallet: string, overrides?: CallOverrides): Promise<void>;
 
     setStartIndex(
-        index: BigNumberish,
-        overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    startSale(overrides?: CallOverrides): Promise<void>;
+
+    startingMetadataIndex(overrides?: CallOverrides): Promise<BigNumber>;
+
+    stopSale(overrides?: CallOverrides): Promise<void>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    zNSRegistrar(overrides?: CallOverrides): Promise<string>;
+  };
+
+  filters: {
+    AmountForSaleChanged(
+      amountForSale?: null,
+      block?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber],
+      { amountForSale: BigNumber; block: BigNumber }
+    >;
+
+    DomainsPurchased(
+      buyer?: string | null,
+      seller?: string | null,
+      salePrice?: null,
+      quantity?: null,
+      block?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber, BigNumber, BigNumber],
+      {
+        buyer: string;
+        seller: string;
+        salePrice: BigNumber;
+        quantity: BigNumber;
+        block: BigNumber;
+      }
+    >;
+
+    FolderGroupIdChanged(
+      folderGroupID?: null,
+      block?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber],
+      { folderGroupID: BigNumber; block: BigNumber }
+    >;
+
+    GenSaleInit(
+      parentDomainId?: null,
+      salePrice?: null,
+      zNSRegistrar?: null,
+      sellerWallet?: null,
+      amountForSale?: null,
+      limitPerTransaction?: null,
+      mintlistMerkleRoot?: null,
+      startingMetadataIndex?: null,
+      folderGroupID?: null,
+      block?: null
+    ): TypedEventFilter<
+      [
+        BigNumber,
+        BigNumber,
+        string,
+        string,
+        BigNumber,
+        BigNumber,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ],
+      {
+        parentDomainId: BigNumber;
+        salePrice: BigNumber;
+        zNSRegistrar: string;
+        sellerWallet: string;
+        amountForSale: BigNumber;
+        limitPerTransaction: BigNumber;
+        mintlistMerkleRoot: string;
+        startingMetadataIndex: BigNumber;
+        folderGroupID: BigNumber;
+        block: BigNumber;
+      }
+    >;
+
+    LimitPerTransactionChanged(
+      limitPerTransaction?: null,
+      block?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber],
+      { limitPerTransaction: BigNumber; block: BigNumber }
+    >;
+
+    MintlistMerkleRootChanged(
+      mintlistMerkleRoot?: null,
+      block?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { mintlistMerkleRoot: string; block: BigNumber }
+    >;
+
+    OwnershipTransferred(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
+    ParentDomainIdChanged(
+      parentDomainId?: null,
+      block?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber],
+      { parentDomainId: BigNumber; block: BigNumber }
+    >;
+
+    PauseStatusChanged(
+      pauseStatus?: null,
+      block?: null
+    ): TypedEventFilter<
+      [boolean, BigNumber],
+      { pauseStatus: boolean; block: BigNumber }
+    >;
+
+    Paused(account?: null): TypedEventFilter<[string], { account: string }>;
+
+    PriceChanged(
+      salePrice?: null,
+      block?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber],
+      { salePrice: BigNumber; block: BigNumber }
+    >;
+
+    RefundedEther(
+      buyer?: null,
+      amount?: null,
+      block?: null
+    ): TypedEventFilter<
+      [string, BigNumber, BigNumber],
+      { buyer: string; amount: BigNumber; block: BigNumber }
+    >;
+
+    RegistrarChanged(
+      registrar?: null,
+      block?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { registrar: string; block: BigNumber }
+    >;
+
+    SaleStarted(
+      parentDomainId?: null,
+      salePrice?: null,
+      zNSRegistrar?: null,
+      sellerWallet?: null,
+      amountForSale?: null,
+      limitPerTransaction?: null,
+      mintlistMerkleRoot?: null,
+      startingMetadataIndex?: null,
+      folderGroupID?: null,
+      block?: null
+    ): TypedEventFilter<
+      [
+        BigNumber,
+        BigNumber,
+        string,
+        string,
+        BigNumber,
+        BigNumber,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ],
+      {
+        parentDomainId: BigNumber;
+        salePrice: BigNumber;
+        zNSRegistrar: string;
+        sellerWallet: string;
+        amountForSale: BigNumber;
+        limitPerTransaction: BigNumber;
+        mintlistMerkleRoot: string;
+        startingMetadataIndex: BigNumber;
+        folderGroupID: BigNumber;
+        block: BigNumber;
+      }
+    >;
+
+    SaleStopped(
+      block?: null
+    ): TypedEventFilter<[BigNumber], { block: BigNumber }>;
+
+    SellerWalletChanged(
+      seller?: null,
+      block?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { seller: string; block: BigNumber }
+    >;
+
+    StartingMetadataIndexChanged(
+      startingMetadataIndex?: null,
+      block?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber],
+      { startingMetadataIndex: BigNumber; block: BigNumber }
+    >;
+
+    Unpaused(account?: null): TypedEventFilter<[string], { account: string }>;
+  };
+
+  estimateGas: {
+    __GenSale_init(
+      parentDomainId_: BigNumberish,
+      salePrice_: BigNumberish,
+      zNSRegistrar_: string,
+      sellerWallet_: string,
+      amountForSale_: BigNumberish,
+      limitPerTransaction_: BigNumberish,
+      merkleRoot_: BytesLike,
+      startingMetadataIndex_: BigNumberish,
+      folderGroupID_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    amountForSale(overrides?: CallOverrides): Promise<BigNumber>;
+
+    domainsPurchasedByAccount(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    domainsSold(overrides?: CallOverrides): Promise<BigNumber>;
+
+    folderGroupID(overrides?: CallOverrides): Promise<BigNumber>;
+
+    limitPerTransaction(overrides?: CallOverrides): Promise<BigNumber>;
+
+    mintlistMerkleRoot(overrides?: CallOverrides): Promise<BigNumber>;
+
+    owner(overrides?: CallOverrides): Promise<BigNumber>;
+
+    parentDomainId(overrides?: CallOverrides): Promise<BigNumber>;
+
+    paused(overrides?: CallOverrides): Promise<BigNumber>;
+
+    purchaseDomains(
+      count: BigNumberish,
+      index: BigNumberish,
+      purchaseLimit: BigNumberish,
+      merkleProof: BytesLike[],
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    releaseDomain(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    salePrice(overrides?: CallOverrides): Promise<BigNumber>;
+
+    saleStartBlock(overrides?: CallOverrides): Promise<BigNumber>;
+
+    saleStarted(overrides?: CallOverrides): Promise<BigNumber>;
+
+    sellerWallet(overrides?: CallOverrides): Promise<BigNumber>;
+
+    setAmountForSale(
+      amountForSale_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setFolderGroupID(
+      folderGroupID_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setLimitPerTransaction(
+      limit: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setMerkleRoot(
+      root: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setParentDomainId(
+      parentId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setPauseStatus(
+      pauseStatus: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setRegistrar(
+      zNSRegistrar_: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setSalePrice(
+      price: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setSellerWallet(
+      wallet: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setStartIndex(
+      index: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     startSale(
-        overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     startingMetadataIndex(overrides?: CallOverrides): Promise<BigNumber>;
 
     stopSale(
-        overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     transferOwnership(
-        newOwner: string,
-        overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    zNSRegistrar(overrides?: CallOverrides): Promise<string>;
-
-    callStatic: {
-        __GenSale_init(
-            parentDomainId_: BigNumberish,
-            salePrice_: BigNumberish,
-            zNSRegistrar_: string,
-            sellerWallet_: string,
-            amountForSale_: BigNumberish,
-            limitPerTransaction_: BigNumberish,
-            merkleRoot_: BytesLike,
-            startingMetadataIndex_: BigNumberish,
-            folderGroupID_: BigNumberish,
-            overrides?: CallOverrides
-        ): Promise<void>;
-
-        amountForSale(overrides?: CallOverrides): Promise<BigNumber>;
-
-        domainsPurchasedByAccount(
-            arg0: string,
-            overrides?: CallOverrides
-        ): Promise<BigNumber>;
-
-        domainsSold(overrides?: CallOverrides): Promise<BigNumber>;
-
-        folderGroupID(overrides?: CallOverrides): Promise<BigNumber>;
-
-        limitPerTransaction(overrides?: CallOverrides): Promise<BigNumber>;
-
-        mintlistMerkleRoot(overrides?: CallOverrides): Promise<string>;
-
-        owner(overrides?: CallOverrides): Promise<string>;
-
-        parentDomainId(overrides?: CallOverrides): Promise<BigNumber>;
-
-        paused(overrides?: CallOverrides): Promise<boolean>;
-
-        purchaseDomains(
-            count: BigNumberish,
-            index: BigNumberish,
-            purchaseLimit: BigNumberish,
-            merkleProof: BytesLike[],
-            overrides?: CallOverrides
-        ): Promise<void>;
-
-        releaseDomain(overrides?: CallOverrides): Promise<void>;
-
-        renounceOwnership(overrides?: CallOverrides): Promise<void>;
-
-        salePrice(overrides?: CallOverrides): Promise<BigNumber>;
-
-        saleStartBlock(overrides?: CallOverrides): Promise<BigNumber>;
-
-        saleStarted(overrides?: CallOverrides): Promise<boolean>;
-
-        sellerWallet(overrides?: CallOverrides): Promise<string>;
-
-        setAmountForSale(
-            amountForSale_: BigNumberish,
-            overrides?: CallOverrides
-        ): Promise<void>;
-
-        setFolderGroupID(
-            folderGroupID_: BigNumberish,
-            overrides?: CallOverrides
-        ): Promise<void>;
-
-        setLimitPerTransaction(
-            limit: BigNumberish,
-            overrides?: CallOverrides
-        ): Promise<void>;
-
-        setMerkleRoot(root: BytesLike, overrides?: CallOverrides): Promise<void>;
-
-        setParentDomainId(
-            parentId: BigNumberish,
-            overrides?: CallOverrides
-        ): Promise<void>;
-
-        setPauseStatus(
-            pauseStatus: boolean,
-            overrides?: CallOverrides
-        ): Promise<void>;
-
-        setRegistrar(
-            zNSRegistrar_: string,
-            overrides?: CallOverrides
-        ): Promise<void>;
-
-        setSalePrice(price: BigNumberish, overrides?: CallOverrides): Promise<void>;
-
-        setSellerWallet(wallet: string, overrides?: CallOverrides): Promise<void>;
-
-        setStartIndex(
-            index: BigNumberish,
-            overrides?: CallOverrides
-        ): Promise<void>;
-
-        startSale(overrides?: CallOverrides): Promise<void>;
-
-        startingMetadataIndex(overrides?: CallOverrides): Promise<BigNumber>;
-
-        stopSale(overrides?: CallOverrides): Promise<void>;
-
-        transferOwnership(
-            newOwner: string,
-            overrides?: CallOverrides
-        ): Promise<void>;
-
-        zNSRegistrar(overrides?: CallOverrides): Promise<string>;
-    };
-
-    filters: {
-        "AmountForSaleChanged(uint256,uint256)"(
-            amountForSale?: null,
-            block?: null
-        ): TypedEventFilter<
-            [BigNumber, BigNumber],
-            { amountForSale: BigNumber; block: BigNumber }
-        >;
-
-        AmountForSaleChanged(
-            amountForSale?: null,
-            block?: null
-        ): TypedEventFilter<
-            [BigNumber, BigNumber],
-            { amountForSale: BigNumber; block: BigNumber }
-        >;
-
-        "DomainsPurchased(address,address,uint256,uint256,uint256)"(
-            buyer?: string | null,
-            seller?: string | null,
-            salePrice?: null,
-            quantity?: null,
-            block?: null
-        ): TypedEventFilter<
-            [string, string, BigNumber, BigNumber, BigNumber],
-            {
-                buyer: string;
-                seller: string;
-                salePrice: BigNumber;
-                quantity: BigNumber;
-                block: BigNumber;
-            }
-        >;
-
-        DomainsPurchased(
-            buyer?: string | null,
-            seller?: string | null,
-            salePrice?: null,
-            quantity?: null,
-            block?: null
-        ): TypedEventFilter<
-            [string, string, BigNumber, BigNumber, BigNumber],
-            {
-                buyer: string;
-                seller: string;
-                salePrice: BigNumber;
-                quantity: BigNumber;
-                block: BigNumber;
-            }
-        >;
-
-        "FolderGroupIdChanged(uint256,uint256)"(
-            folderGroupID?: null,
-            block?: null
-        ): TypedEventFilter<
-            [BigNumber, BigNumber],
-            { folderGroupID: BigNumber; block: BigNumber }
-        >;
-
-        FolderGroupIdChanged(
-            folderGroupID?: null,
-            block?: null
-        ): TypedEventFilter<
-            [BigNumber, BigNumber],
-            { folderGroupID: BigNumber; block: BigNumber }
-        >;
-
-        "GenSaleInit(uint256,uint256,address,address,uint256,uint256,bytes32,uint256,uint256,uint256)"(
-            parentDomainId?: null,
-            salePrice?: null,
-            zNSRegistrar?: null,
-            sellerWallet?: null,
-            amountForSale?: null,
-            limitPerTransaction?: null,
-            mintlistMerkleRoot?: null,
-            startingMetadataIndex?: null,
-            folderGroupID?: null,
-            block?: null
-        ): TypedEventFilter<
-            [
-                BigNumber,
-                BigNumber,
-                string,
-                string,
-                BigNumber,
-                BigNumber,
-                string,
-                BigNumber,
-                BigNumber,
-                BigNumber
-            ],
-            {
-                parentDomainId: BigNumber;
-                salePrice: BigNumber;
-                zNSRegistrar: string;
-                sellerWallet: string;
-                amountForSale: BigNumber;
-                limitPerTransaction: BigNumber;
-                mintlistMerkleRoot: string;
-                startingMetadataIndex: BigNumber;
-                folderGroupID: BigNumber;
-                block: BigNumber;
-            }
-        >;
-
-        GenSaleInit(
-            parentDomainId?: null,
-            salePrice?: null,
-            zNSRegistrar?: null,
-            sellerWallet?: null,
-            amountForSale?: null,
-            limitPerTransaction?: null,
-            mintlistMerkleRoot?: null,
-            startingMetadataIndex?: null,
-            folderGroupID?: null,
-            block?: null
-        ): TypedEventFilter<
-            [
-                BigNumber,
-                BigNumber,
-                string,
-                string,
-                BigNumber,
-                BigNumber,
-                string,
-                BigNumber,
-                BigNumber,
-                BigNumber
-            ],
-            {
-                parentDomainId: BigNumber;
-                salePrice: BigNumber;
-                zNSRegistrar: string;
-                sellerWallet: string;
-                amountForSale: BigNumber;
-                limitPerTransaction: BigNumber;
-                mintlistMerkleRoot: string;
-                startingMetadataIndex: BigNumber;
-                folderGroupID: BigNumber;
-                block: BigNumber;
-            }
-        >;
-
-        "LimitPerTransactionChanged(uint256,uint256)"(
-            limitPerTransaction?: null,
-            block?: null
-        ): TypedEventFilter<
-            [BigNumber, BigNumber],
-            { limitPerTransaction: BigNumber; block: BigNumber }
-        >;
-
-        LimitPerTransactionChanged(
-            limitPerTransaction?: null,
-            block?: null
-        ): TypedEventFilter<
-            [BigNumber, BigNumber],
-            { limitPerTransaction: BigNumber; block: BigNumber }
-        >;
-
-        "MintlistMerkleRootChanged(bytes32,uint256)"(
-            mintlistMerkleRoot?: null,
-            block?: null
-        ): TypedEventFilter<
-            [string, BigNumber],
-            { mintlistMerkleRoot: string; block: BigNumber }
-        >;
-
-        MintlistMerkleRootChanged(
-            mintlistMerkleRoot?: null,
-            block?: null
-        ): TypedEventFilter<
-            [string, BigNumber],
-            { mintlistMerkleRoot: string; block: BigNumber }
-        >;
-
-        "OwnershipTransferred(address,address)"(
-            previousOwner?: string | null,
-            newOwner?: string | null
-        ): TypedEventFilter<
-            [string, string],
-            { previousOwner: string; newOwner: string }
-        >;
-
-        OwnershipTransferred(
-            previousOwner?: string | null,
-            newOwner?: string | null
-        ): TypedEventFilter<
-            [string, string],
-            { previousOwner: string; newOwner: string }
-        >;
-
-        "ParentDomainIdChanged(uint256,uint256)"(
-            parentDomainId?: null,
-            block?: null
-        ): TypedEventFilter<
-            [BigNumber, BigNumber],
-            { parentDomainId: BigNumber; block: BigNumber }
-        >;
-
-        ParentDomainIdChanged(
-            parentDomainId?: null,
-            block?: null
-        ): TypedEventFilter<
-            [BigNumber, BigNumber],
-            { parentDomainId: BigNumber; block: BigNumber }
-        >;
-
-        "PauseStatusChanged(bool,uint256)"(
-            pauseStatus?: null,
-            block?: null
-        ): TypedEventFilter<
-            [boolean, BigNumber],
-            { pauseStatus: boolean; block: BigNumber }
-        >;
-
-        PauseStatusChanged(
-            pauseStatus?: null,
-            block?: null
-        ): TypedEventFilter<
-            [boolean, BigNumber],
-            { pauseStatus: boolean; block: BigNumber }
-        >;
-
-        "Paused(address)"(
-            account?: null
-        ): TypedEventFilter<[string], { account: string }>;
-
-        Paused(account?: null): TypedEventFilter<[string], { account: string }>;
-
-        "PriceChanged(uint256,uint256)"(
-            salePrice?: null,
-            block?: null
-        ): TypedEventFilter<
-            [BigNumber, BigNumber],
-            { salePrice: BigNumber; block: BigNumber }
-        >;
-
-        PriceChanged(
-            salePrice?: null,
-            block?: null
-        ): TypedEventFilter<
-            [BigNumber, BigNumber],
-            { salePrice: BigNumber; block: BigNumber }
-        >;
-
-        "RefundedEther(address,uint256,uint256)"(
-            buyer?: null,
-            amount?: null,
-            block?: null
-        ): TypedEventFilter<
-            [string, BigNumber, BigNumber],
-            { buyer: string; amount: BigNumber; block: BigNumber }
-        >;
-
-        RefundedEther(
-            buyer?: null,
-            amount?: null,
-            block?: null
-        ): TypedEventFilter<
-            [string, BigNumber, BigNumber],
-            { buyer: string; amount: BigNumber; block: BigNumber }
-        >;
-
-        "RegistrarChanged(address,uint256)"(
-            registrar?: null,
-            block?: null
-        ): TypedEventFilter<
-            [string, BigNumber],
-            { registrar: string; block: BigNumber }
-        >;
-
-        RegistrarChanged(
-            registrar?: null,
-            block?: null
-        ): TypedEventFilter<
-            [string, BigNumber],
-            { registrar: string; block: BigNumber }
-        >;
-
-        "SaleStarted(uint256,uint256,address,address,uint256,uint256,bytes32,uint256,uint256,uint256)"(
-            parentDomainId?: null,
-            salePrice?: null,
-            zNSRegistrar?: null,
-            sellerWallet?: null,
-            amountForSale?: null,
-            limitPerTransaction?: null,
-            mintlistMerkleRoot?: null,
-            startingMetadataIndex?: null,
-            folderGroupID?: null,
-            block?: null
-        ): TypedEventFilter<
-            [
-                BigNumber,
-                BigNumber,
-                string,
-                string,
-                BigNumber,
-                BigNumber,
-                string,
-                BigNumber,
-                BigNumber,
-                BigNumber
-            ],
-            {
-                parentDomainId: BigNumber;
-                salePrice: BigNumber;
-                zNSRegistrar: string;
-                sellerWallet: string;
-                amountForSale: BigNumber;
-                limitPerTransaction: BigNumber;
-                mintlistMerkleRoot: string;
-                startingMetadataIndex: BigNumber;
-                folderGroupID: BigNumber;
-                block: BigNumber;
-            }
-        >;
-
-        SaleStarted(
-            parentDomainId?: null,
-            salePrice?: null,
-            zNSRegistrar?: null,
-            sellerWallet?: null,
-            amountForSale?: null,
-            limitPerTransaction?: null,
-            mintlistMerkleRoot?: null,
-            startingMetadataIndex?: null,
-            folderGroupID?: null,
-            block?: null
-        ): TypedEventFilter<
-            [
-                BigNumber,
-                BigNumber,
-                string,
-                string,
-                BigNumber,
-                BigNumber,
-                string,
-                BigNumber,
-                BigNumber,
-                BigNumber
-            ],
-            {
-                parentDomainId: BigNumber;
-                salePrice: BigNumber;
-                zNSRegistrar: string;
-                sellerWallet: string;
-                amountForSale: BigNumber;
-                limitPerTransaction: BigNumber;
-                mintlistMerkleRoot: string;
-                startingMetadataIndex: BigNumber;
-                folderGroupID: BigNumber;
-                block: BigNumber;
-            }
-        >;
-
-        "SaleStopped(uint256)"(
-            block?: null
-        ): TypedEventFilter<[BigNumber], { block: BigNumber }>;
-
-        SaleStopped(
-            block?: null
-        ): TypedEventFilter<[BigNumber], { block: BigNumber }>;
-
-        "SellerWalletChanged(address,uint256)"(
-            seller?: null,
-            block?: null
-        ): TypedEventFilter<
-            [string, BigNumber],
-            { seller: string; block: BigNumber }
-        >;
-
-        SellerWalletChanged(
-            seller?: null,
-            block?: null
-        ): TypedEventFilter<
-            [string, BigNumber],
-            { seller: string; block: BigNumber }
-        >;
-
-        "StartingMetadataIndexChanged(uint256,uint256)"(
-            startingMetadataIndex?: null,
-            block?: null
-        ): TypedEventFilter<
-            [BigNumber, BigNumber],
-            { startingMetadataIndex: BigNumber; block: BigNumber }
-        >;
-
-        StartingMetadataIndexChanged(
-            startingMetadataIndex?: null,
-            block?: null
-        ): TypedEventFilter<
-            [BigNumber, BigNumber],
-            { startingMetadataIndex: BigNumber; block: BigNumber }
-        >;
-
-        "Unpaused(address)"(
-            account?: null
-        ): TypedEventFilter<[string], { account: string }>;
-
-        Unpaused(account?: null): TypedEventFilter<[string], { account: string }>;
-    };
-
-    estimateGas: {
-        __GenSale_init(
-            parentDomainId_: BigNumberish,
-            salePrice_: BigNumberish,
-            zNSRegistrar_: string,
-            sellerWallet_: string,
-            amountForSale_: BigNumberish,
-            limitPerTransaction_: BigNumberish,
-            merkleRoot_: BytesLike,
-            startingMetadataIndex_: BigNumberish,
-            folderGroupID_: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<BigNumber>;
-
-        amountForSale(overrides?: CallOverrides): Promise<BigNumber>;
-
-        domainsPurchasedByAccount(
-            arg0: string,
-            overrides?: CallOverrides
-        ): Promise<BigNumber>;
-
-        domainsSold(overrides?: CallOverrides): Promise<BigNumber>;
-
-        folderGroupID(overrides?: CallOverrides): Promise<BigNumber>;
-
-        limitPerTransaction(overrides?: CallOverrides): Promise<BigNumber>;
-
-        mintlistMerkleRoot(overrides?: CallOverrides): Promise<BigNumber>;
-
-        owner(overrides?: CallOverrides): Promise<BigNumber>;
-
-        parentDomainId(overrides?: CallOverrides): Promise<BigNumber>;
-
-        paused(overrides?: CallOverrides): Promise<BigNumber>;
-
-        purchaseDomains(
-            count: BigNumberish,
-            index: BigNumberish,
-            purchaseLimit: BigNumberish,
-            merkleProof: BytesLike[],
-            overrides?: PayableOverrides & { from?: string | Promise<string> }
-        ): Promise<BigNumber>;
-
-        releaseDomain(
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<BigNumber>;
-
-        renounceOwnership(
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<BigNumber>;
-
-        salePrice(overrides?: CallOverrides): Promise<BigNumber>;
-
-        saleStartBlock(overrides?: CallOverrides): Promise<BigNumber>;
-
-        saleStarted(overrides?: CallOverrides): Promise<BigNumber>;
-
-        sellerWallet(overrides?: CallOverrides): Promise<BigNumber>;
-
-        setAmountForSale(
-            amountForSale_: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<BigNumber>;
-
-        setFolderGroupID(
-            folderGroupID_: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<BigNumber>;
-
-        setLimitPerTransaction(
-            limit: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<BigNumber>;
-
-        setMerkleRoot(
-            root: BytesLike,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<BigNumber>;
-
-        setParentDomainId(
-            parentId: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<BigNumber>;
-
-        setPauseStatus(
-            pauseStatus: boolean,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<BigNumber>;
-
-        setRegistrar(
-            zNSRegistrar_: string,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<BigNumber>;
-
-        setSalePrice(
-            price: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<BigNumber>;
-
-        setSellerWallet(
-            wallet: string,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<BigNumber>;
-
-        setStartIndex(
-            index: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<BigNumber>;
-
-        startSale(
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<BigNumber>;
-
-        startingMetadataIndex(overrides?: CallOverrides): Promise<BigNumber>;
-
-        stopSale(
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<BigNumber>;
-
-        transferOwnership(
-            newOwner: string,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<BigNumber>;
-
-        zNSRegistrar(overrides?: CallOverrides): Promise<BigNumber>;
-    };
-
-    populateTransaction: {
-        __GenSale_init(
-            parentDomainId_: BigNumberish,
-            salePrice_: BigNumberish,
-            zNSRegistrar_: string,
-            sellerWallet_: string,
-            amountForSale_: BigNumberish,
-            limitPerTransaction_: BigNumberish,
-            merkleRoot_: BytesLike,
-            startingMetadataIndex_: BigNumberish,
-            folderGroupID_: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<PopulatedTransaction>;
-
-        amountForSale(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-        domainsPurchasedByAccount(
-            arg0: string,
-            overrides?: CallOverrides
-        ): Promise<PopulatedTransaction>;
-
-        domainsSold(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-        folderGroupID(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-        limitPerTransaction(
-            overrides?: CallOverrides
-        ): Promise<PopulatedTransaction>;
-
-        mintlistMerkleRoot(
-            overrides?: CallOverrides
-        ): Promise<PopulatedTransaction>;
-
-        owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-        parentDomainId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-        paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-        purchaseDomains(
-            count: BigNumberish,
-            index: BigNumberish,
-            purchaseLimit: BigNumberish,
-            merkleProof: BytesLike[],
-            overrides?: PayableOverrides & { from?: string | Promise<string> }
-        ): Promise<PopulatedTransaction>;
-
-        releaseDomain(
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<PopulatedTransaction>;
-
-        renounceOwnership(
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<PopulatedTransaction>;
-
-        salePrice(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-        saleStartBlock(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-        saleStarted(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-        sellerWallet(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-        setAmountForSale(
-            amountForSale_: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<PopulatedTransaction>;
-
-        setFolderGroupID(
-            folderGroupID_: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<PopulatedTransaction>;
-
-        setLimitPerTransaction(
-            limit: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<PopulatedTransaction>;
-
-        setMerkleRoot(
-            root: BytesLike,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<PopulatedTransaction>;
-
-        setParentDomainId(
-            parentId: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<PopulatedTransaction>;
-
-        setPauseStatus(
-            pauseStatus: boolean,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<PopulatedTransaction>;
-
-        setRegistrar(
-            zNSRegistrar_: string,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<PopulatedTransaction>;
-
-        setSalePrice(
-            price: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<PopulatedTransaction>;
-
-        setSellerWallet(
-            wallet: string,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<PopulatedTransaction>;
-
-        setStartIndex(
-            index: BigNumberish,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<PopulatedTransaction>;
-
-        startSale(
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<PopulatedTransaction>;
-
-        startingMetadataIndex(
-            overrides?: CallOverrides
-        ): Promise<PopulatedTransaction>;
-
-        stopSale(
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<PopulatedTransaction>;
-
-        transferOwnership(
-            newOwner: string,
-            overrides?: Overrides & { from?: string | Promise<string> }
-        ): Promise<PopulatedTransaction>;
-
-        zNSRegistrar(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-    };
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    zNSRegistrar(overrides?: CallOverrides): Promise<BigNumber>;
+  };
+
+  populateTransaction: {
+    __GenSale_init(
+      parentDomainId_: BigNumberish,
+      salePrice_: BigNumberish,
+      zNSRegistrar_: string,
+      sellerWallet_: string,
+      amountForSale_: BigNumberish,
+      limitPerTransaction_: BigNumberish,
+      merkleRoot_: BytesLike,
+      startingMetadataIndex_: BigNumberish,
+      folderGroupID_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    amountForSale(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    domainsPurchasedByAccount(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    domainsSold(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    folderGroupID(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    limitPerTransaction(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    mintlistMerkleRoot(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    parentDomainId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    purchaseDomains(
+      count: BigNumberish,
+      index: BigNumberish,
+      purchaseLimit: BigNumberish,
+      merkleProof: BytesLike[],
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    releaseDomain(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    salePrice(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    saleStartBlock(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    saleStarted(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    sellerWallet(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    setAmountForSale(
+      amountForSale_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setFolderGroupID(
+      folderGroupID_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setLimitPerTransaction(
+      limit: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setMerkleRoot(
+      root: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setParentDomainId(
+      parentId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setPauseStatus(
+      pauseStatus: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setRegistrar(
+      zNSRegistrar_: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setSalePrice(
+      price: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setSellerWallet(
+      wallet: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setStartIndex(
+      index: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    startSale(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    startingMetadataIndex(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    stopSale(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    zNSRegistrar(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+  };
 }
