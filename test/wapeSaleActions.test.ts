@@ -2,11 +2,11 @@ import * as chai from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import * as dotenv from "dotenv";
 import { ethers } from "ethers";
+import { createWapeSaleInstance } from "../src";
 import {
   getWapeSaleContract,
   WapeSale,
 } from "../src/contracts";
-import { createWapeSaleInstance } from "../src";
 import {
   Claim,
   WapeSaleConfig,
@@ -25,7 +25,9 @@ describe("Test Custom SDK Logic", () => {
     5
   );
 
-  const pk = process.env["TESTNET_PRIVATE_KEY"]; if (!pk) throw Error("No private key");
+  const pk = process.env["TESTNET_PRIVATE_KEY"];
+  if (!pk) throw Error("No private key");
+
   const signer = new ethers.Wallet(pk, provider);
 
   const voidSignerAddress = "0x8ba1f109551bD432803012645Ac136ddd64DBA72";
