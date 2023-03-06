@@ -25,7 +25,7 @@ export const getSaleStatus = async (contract: GenSale) => {
         return GenSaleStatus.Ended;
     }
 
-    if (price.gt(BigNumber.from(0))) {
+    if (price.gt(0)) {
         if (saleStarted) {
             return GenSaleStatus.PrivateSale;
         }
