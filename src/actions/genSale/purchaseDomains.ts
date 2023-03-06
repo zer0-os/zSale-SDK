@@ -1,13 +1,8 @@
 import * as ethers from "ethers";
 import { getSaleStatus } from ".";
 import { GenSale } from "../../contracts/types";
+import { errorCheck } from "../../helpers";
 import { Claim, Mintlist, Maybe, GenSaleStatus } from "../../types";
-
-const errorCheck = (condition: boolean, errorMessage: string) => {
-    if (condition) {
-        throw new Error(errorMessage);
-    }
-};
 
 export const purchaseDomains = async (
     count: ethers.BigNumber,
