@@ -1,7 +1,7 @@
 import * as ethers from "ethers";
 import { getSaleStatus } from ".";
 import { GenSale } from "../../contracts/types";
-import { Claim, SaleStatus, Mintlist, Maybe, GenSaleStatus } from "../../types";
+import { Claim, Mintlist, Maybe, GenSaleStatus } from "../../types";
 
 const abi = ["function masterCopy() external view returns (address)"];
 
@@ -9,31 +9,6 @@ const errorCheck = (condition: boolean, errorMessage: string) => {
     if (condition) {
         throw new Error(errorMessage);
     }
-};
-
-const generateAccessList = (
-    userAddress: string,
-    gnosisSafeProxyAddress: string,
-    gnosisSafeImplAddress: string
-) => {
-    return [
-        {
-            address: gnosisSafeProxyAddress,
-            storageKeys: [
-                "0x0000000000000000000000000000000000000000000000000000000000000000",
-            ],
-        },
-        {
-            address: gnosisSafeImplAddress,
-            storageKeys: [
-                "0x0000000000000000000000000000000000000000000000000000000000000000",
-            ],
-        },
-        {
-            address: userAddress,
-            storageKeys: [],
-        },
-    ];
 };
 
 export const purchaseDomains = async (
@@ -56,14 +31,6 @@ export const purchaseDomains = async (
     const paused = await contract.paused();
     errorCheck(paused, "Sale contract is paused");
 
-    const domainsSold = await contract.domainsSold();
-    const numberForSale = await contract.amountForSale();
-    const newSoldNumber = domainsSold.add(count);
-    errorCheck(
-        newSoldNumber.gt(numberForSale),
-        "Purchasing more domains than remaining in sale"
-    );
-
     const address = await signer.getAddress();
     const balance = await signer.getBalance();
     const price = await contract.salePrice();
@@ -78,7 +45,7 @@ export const purchaseDomains = async (
     let userClaim: Maybe<Claim> = mintlist.claims[address];
 
     // To purchase in private sale a user must be on the mintlist
-    errorCheck(userClaim === undefined, "User is not part of claim sale");
+    errorCheck(!userClaim, "User is not part of claim sale");
     userClaim = userClaim!;
 
     if (status === GenSaleStatus.ClaimSale) {  //Claim Sale, not yet private sale
@@ -101,8 +68,8 @@ export const purchaseDomains = async (
         // Private sale
         const transactionLimit = await contract.limitPerTransaction();
         errorCheck(
-            purchased.add(count).gt(transactionLimit),
-            `The given number of ${count.toString()}, and combined with previously purchased ${purchased.toString()} exceeds the purchase limit per transaction in the Private Sale: ${transactionLimit.toString()}.`
+            count.gt(transactionLimit),
+            `The given number of ${count.toString()} exceeds the purchase limit per transaction in the Private Sale: ${transactionLimit.toString()}.`
         );
 
         tx = await contract

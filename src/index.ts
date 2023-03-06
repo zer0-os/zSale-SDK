@@ -438,27 +438,27 @@ export const createGenSaleInstance = (
       const userClaim: Maybe<Claim> = mintlist.claims[address];
       if (!userClaim) {
         throw Error(
-          `No claim could be found for user ${address} because they are not on the whitelist`
+          `No claim could be found for user ${address} because they are not on the mintlist`
         );
       }
       return userClaim;
     },
-    getTotalForSale: async (): Promise<ethers.BigNumber> => {
+    getTotalForSale: async (): Promise<number> => {
       const contract = await getGenSaleContract(
         config.web3Provider,
         config.contractAddress
       );
       const total = await contract.amountForSale();
 
-      return total;
+      return total.toNumber();
     },
-    getNumberOfDomainsSold: async (): Promise<ethers.BigNumber> => {
+    getNumberOfDomainsSold: async (): Promise<number> => {
       const contract = await getGenSaleContract(
         config.web3Provider,
         config.contractAddress
       );
       const domainsSold = await contract.domainsSold();
-      return domainsSold;
+      return domainsSold.toNumber();
     },
     getBlockNumber: async (): Promise<number> => {
       const blockNum = await config.web3Provider.getBlockNumber();

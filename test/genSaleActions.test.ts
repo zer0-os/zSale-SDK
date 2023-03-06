@@ -300,23 +300,6 @@ describe("Sale SDK tests", async () => {
             ).to.be.rejectedWith("Sale contract is paused");
         });
 
-        it("Should fail if purchasing more domains than remaining in sale", async () => {
-            mocks.currentSaleStarted = true;
-            mocks.currentSalePrice = salePriceValue;
-            mocks.currentDomainsSold = BigNumber.from(49);
-
-            await expect(
-                purchaseDomains(
-                    BigNumber.from(2),
-                    signer,
-                    mocks.genSale as unknown as GenSale,
-                    mintlist
-                )
-            ).to.be.rejectedWith(
-                "Purchasing more domains than remaining in sale"
-            );
-        });
-
         it("Should fail if purchasing more domains than claimable in claim sale", async () => {
             mocks.currentSaleStarted = true;
             mocks.currentSalePrice = BigNumber.from(0)
@@ -345,7 +328,7 @@ describe("Sale SDK tests", async () => {
                     mintlist
                 )
             ).to.be.rejectedWith(
-                `The given number of ${11}, and combined with previously purchased ${0} exceeds the purchase limit per transaction in the Private Sale: ${mocks.currentTransactionLimit}.`
+                `The given number of ${11} exceeds the purchase limit per transaction in the Private Sale: ${mocks.currentTransactionLimit}.`
             );
         });
 

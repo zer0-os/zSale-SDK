@@ -128,11 +128,6 @@ export interface GenSaleConfig {
   web3Provider: ethers.providers.Provider;
 
   /**
-   * amount the SDK should return for the maximum amount purchasable in a single transaction in private sale
-   */
-  privateSaleTransactionLimit?: number;
-
-  /**
    * Advanced settings / properties
    */
   advanced?: {
@@ -414,10 +409,10 @@ export interface GenSaleInstance {
   getMintlistedUserClaim(address: string): Promise<Claim>;
 
   /** Get how many domains for for sale (in the current phase) */
-  getTotalForSale(): Promise<ethers.BigNumber>;
+  getTotalForSale(): Promise<number>;
 
   /** Get the number of domains that have been sold */
-  getNumberOfDomainsSold(): Promise<ethers.BigNumber>;
+  getNumberOfDomainsSold(): Promise<number>;
 
   /** Get the current block number */
   getBlockNumber(): Promise<number>;
