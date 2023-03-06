@@ -3,8 +3,6 @@ import { getSaleStatus } from ".";
 import { GenSale } from "../../contracts/types";
 import { Claim, Mintlist, Maybe, GenSaleStatus } from "../../types";
 
-const abi = ["function masterCopy() external view returns (address)"];
-
 const errorCheck = (condition: boolean, errorMessage: string) => {
     if (condition) {
         throw new Error(errorMessage);
