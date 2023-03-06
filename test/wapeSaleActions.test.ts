@@ -1,8 +1,11 @@
-require("dotenv").config();
 import * as chai from "chai";
 import * as chaiAsPromised from "chai-as-promised";
+import * as dotenv from "dotenv";
 import { ethers } from "ethers";
-
+import {
+  getWapeSaleContract,
+  WapeSale,
+} from "../src/contracts";
 import { createWapeSaleInstance } from "../src";
 import {
   Claim,
@@ -14,7 +17,7 @@ import {
 
 const expect = chai.expect;
 chai.use(chaiAsPromised.default);
-require("dotenv").config();
+dotenv.config();
 
 describe("Test Custom SDK Logic", () => {
   const provider = new ethers.providers.JsonRpcProvider(
@@ -22,9 +25,7 @@ describe("Test Custom SDK Logic", () => {
     5
   );
 
-  const pk = process.env.TESTNET_PRIVATE_KEY;
-  if (!pk) throw Error("No private key");
-
+  const pk = process.env["TESTNET_PRIVATE_KEY"]; if (!pk) throw Error("No private key");
   const signer = new ethers.Wallet(pk, provider);
 
   const voidSignerAddress = "0x8ba1f109551bD432803012645Ac136ddd64DBA72";
@@ -42,6 +43,8 @@ describe("Test Custom SDK Logic", () => {
     },
   };
 
+  const abi = ["function masterCopy() external view returns (address)"];
+
   describe("e2e", () => {
     let sdk: WapeSaleInstance;
     before(async () => {
@@ -58,6 +61,19 @@ describe("Test Custom SDK Logic", () => {
     let sdk: WapeSaleInstance;
     before(async () => {
       sdk = createWapeSaleInstance(config);
+    });
+    it("Can get the seller wallet implementation copy", async () => {
+      const wapeSaleContract: WapeSale = await getWapeSaleContract(
+        signer,
+        config.contractAddress
+      );
+      const sellerWalletAddress = await wapeSaleContract.sellerWallet();
+
+      const contract = new ethers.Contract(sellerWalletAddress, abi, provider);
+      // If seller wallet is EOA, this will fail
+      const implAddress = await contract.masterCopy();
+
+      expect(implAddress).to.not.be.undefined;
     });
   });
 
