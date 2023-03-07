@@ -529,20 +529,6 @@ export const createGenSaleInstance = (
       );
 
       return amount;
-    },
-    setSalePrice: async function (price: ethers.BigNumber, signer: ethers.Signer): Promise<ethers.ContractTransaction> {
-      const contract = await getGenSaleContract(
-        signer,
-        config.contractAddress
-      );
-
-
-      const tx = await genSaleActions.setSalePrice(
-        price,
-        contract,
-        signer
-      );
-      return tx;
     }
   };
 

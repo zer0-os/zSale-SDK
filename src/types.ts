@@ -402,9 +402,6 @@ export interface GenSaleInstance {
   /** Get the mint list */
   getMintlist(): Promise<Mintlist>;
 
-  /** Sets the price of the sale */
-  setSalePrice(price: ethers.BigNumber, signer: ethers.Signer): Promise<ethers.ContractTransaction>;
-
   /** Get a users claim from the mintlist */
   getMintlistedUserClaim(address: string): Promise<Claim>;
 

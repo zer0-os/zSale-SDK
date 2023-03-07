@@ -4,4 +4,3 @@ export * from "./getMintlist";
 export * from "./purchaseDomains";
 export * from "./setPauseStatus";
 export * from "./numberPurchasableByAccount";
-export * from "./setSalePrice";
