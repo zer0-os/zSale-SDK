@@ -2,7 +2,6 @@ import * as chai from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import * as dotenv from "dotenv";
 import { ethers } from "ethers";
-
 import { createWapeSaleInstance } from "../src";
 import {
   getWapeSaleContract,
@@ -79,6 +78,7 @@ describe("Test Custom SDK Logic", () => {
       expect(implAddress).to.not.be.undefined;
     });
   });
+
   describe("Test the merkle tree behaviour", () => {
     let sdk: WapeSaleInstance;
     before(async () => {

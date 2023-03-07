@@ -28,6 +28,7 @@ describe("Test Claim Logic", () => {
   const config: ClaimSaleConfig = {
     web3Provider: provider,
     contractAddress: "0x0cDa74723A9945977df45268394DFf7989E0265b",
+    claimingRegistrarAddress: ""
   };
 
   const abi = ["function masterCopy() external view returns (address)"];

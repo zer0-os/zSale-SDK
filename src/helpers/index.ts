@@ -38,3 +38,9 @@ export function padZeros(hex: string) {
   const rehexed = ethers.utils.hexlify(paddedArray);
   return rehexed;
 }
+
+export function errorCheck(condition: boolean, errorMessage: string) {
+  if (condition) {
+    throw new Error(errorMessage);
+  }
+};

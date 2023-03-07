@@ -4,7 +4,9 @@ import { AirWild2Sale, AirWild2Sale__factory } from "./types";
 import { WapeSale, WapeSale__factory } from "./types";
 import { ClaimWithChildSale } from "./types/ClaimWithChildSale";
 import { ClaimWithChildSale__factory } from "./types/factories/ClaimWithChildSale__factory";
+import { GenSale__factory } from "./types/factories/GenSale__factory";
 import { IERC721EnumerableUpgradeable__factory } from "./types/factories/IERC721EnumerableUpgradeable__factory";
+import { GenSale } from "./types/GenSale";
 import { IERC721EnumerableUpgradeable } from "./types/IERC721EnumerableUpgradeable";
 
 export * from "./types";
@@ -22,6 +24,14 @@ export const getWapeSaleContract = async (
   address: string
 ): Promise<WapeSale> => {
   const contract = WapeSale__factory.connect(address, provider);
+  return contract;
+};
+
+export const getGenSaleContract = async (
+  provider: ethers.providers.Provider | ethers.Signer,
+  address: string
+): Promise<GenSale> => {
+  const contract = GenSale__factory.connect(address, provider);
   return contract;
 };
 

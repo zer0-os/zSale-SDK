@@ -4,11 +4,13 @@ import {
   getAirWild2SaleContract,
   getClaimContract,
   getClaimingToken as getClaimingToken,
+  getGenSaleContract,
   getWapeSaleContract,
 } from "./contracts";
 import * as airWildS2Actions from "./actions/airWildS2Sale";
 import * as claimWithChildSaleActions from "./actions/claimWithChildSale";
 import * as wapeSaleActions from "./actions/wapeSale";
+import * as genSaleActions from "./actions/genSale";
 import {
   Claim,
   ClaimSaleConfig,
@@ -24,6 +26,10 @@ import {
   WapeSaleConfig,
   WapeSaleInstance,
   WapeSaleData,
+  GenSaleConfig,
+  GenSaleInstance,
+  GenSaleData,
+  GenSaleStatus,
 } from "./types";
 import { chunkedPromiseAll, padZeros } from "./helpers";
 import { ZNSHub__factory } from "./contracts/types/factories/ZNSHub__factory";
@@ -366,6 +372,164 @@ export const createWapeSaleInstance = (
 
       return amount;
     },
+  };
+
+  return instance;
+};
+
+export const createGenSaleInstance = (
+  config: GenSaleConfig
+): GenSaleInstance => {
+  let cachedMintlist: Maybe<Mintlist>;
+
+  const getMintlist = async () => {
+    if (cachedMintlist) {
+      return cachedMintlist;
+    }
+    const mintlist = await genSaleActions.getMintlist(config);
+    cachedMintlist = mintlist;
+
+    return mintlist;
+  };
+
+  const instance: GenSaleInstance = {
+    getSalePrice: async (): Promise<string> => {
+      const contract = await getGenSaleContract(
+        config.web3Provider,
+        config.contractAddress
+      );
+      const price = await contract.salePrice();
+      return ethers.utils.formatEther(price).toString();
+    },
+    getSaleData: async (): Promise<GenSaleData> => {
+      const contract = await getGenSaleContract(
+        config.web3Provider,
+        config.contractAddress
+      );
+
+      // always eth sales currently
+      const saleData: GenSaleData = await genSaleActions.getSaleData(
+        contract
+      );
+      return saleData;
+    },
+    getSaleStartBlock: async (): Promise<string> => {
+      const contract = await getGenSaleContract(
+        config.web3Provider,
+        config.contractAddress
+      );
+      const startBlock = await contract.saleStartBlock();
+      return startBlock.toString();
+    },
+    getSaleStatus: async (): Promise<GenSaleStatus> => {
+      const contract = await getGenSaleContract(
+        config.web3Provider,
+        config.contractAddress
+      );
+      const status: GenSaleStatus = await genSaleActions.getSaleStatus(contract);
+      return status;
+    },
+    getMintlist: async (): Promise<Mintlist> => {
+      const whitelist = await getMintlist();
+      return whitelist;
+    },
+    getMintlistedUserClaim: async (address: string): Promise<Claim> => {
+      const mintlist = await getMintlist();
+      const userClaim: Maybe<Claim> = mintlist.claims[address];
+      if (!userClaim) {
+        throw Error(
+          `No claim could be found for user ${address} because they are not on the mintlist`
+        );
+      }
+      return userClaim;
+    },
+    getTotalForSale: async (): Promise<number> => {
+      const contract = await getGenSaleContract(
+        config.web3Provider,
+        config.contractAddress
+      );
+      const total = await contract.amountForSale();
+
+      return total.toNumber();
+    },
+    getNumberOfDomainsSold: async (): Promise<number> => {
+      const contract = await getGenSaleContract(
+        config.web3Provider,
+        config.contractAddress
+      );
+      const domainsSold = await contract.domainsSold();
+      return domainsSold.toNumber();
+    },
+    getBlockNumber: async (): Promise<number> => {
+      const blockNum = await config.web3Provider.getBlockNumber();
+      return blockNum;
+    },
+    getEthBalance: async (address: string): Promise<string> => {
+      const balance = await config.web3Provider.getBalance(address);
+      return ethers.utils.formatEther(balance);
+    },
+    isUserOnMintlist: async (address: string): Promise<boolean> => {
+      const mintlist = await getMintlist();
+      const isOnWhitelist = mintlist.claims[address] ? true : false;
+      return isOnWhitelist;
+    },
+    getDomainsPurchasedByAccount: async (address: string): Promise<number> => {
+      const contract = await getGenSaleContract(
+        config.web3Provider,
+        config.contractAddress
+      );
+      const domains = await contract.domainsPurchasedByAccount(address);
+      return domains.toNumber();
+    },
+    purchaseDomains: async (
+      count: ethers.BigNumber,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
+      const contract = await getGenSaleContract(
+        signer,
+        config.contractAddress
+      );
+
+      const mintlist = await getMintlist();
+
+      const tx = await genSaleActions.purchaseDomains(
+        count,
+        signer,
+        contract,
+        mintlist
+      );
+      return tx;
+    },
+    setPauseStatus: async (
+      pauseStatus: boolean,
+      signer: ethers.Signer
+    ): Promise<ethers.ContractTransaction> => {
+      const contract = await getGenSaleContract(
+        signer,
+        config.contractAddress
+      );
+      const tx = await genSaleActions.setPauseStatus(
+        pauseStatus,
+        contract,
+        signer
+      );
+      return tx;
+    },
+    numberPurchasableByAccount: async (address: string): Promise<number> => {
+      const mintlist = await getMintlist();
+      const contract = await getGenSaleContract(
+        config.web3Provider,
+        config.contractAddress
+      );
+
+      const amount = await genSaleActions.numberPurchasableByAccount(
+        mintlist,
+        contract,
+        address
+      );
+
+      return amount;
+    }
   };
 
   return instance;
