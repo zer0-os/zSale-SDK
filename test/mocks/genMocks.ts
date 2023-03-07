@@ -14,25 +14,7 @@ export const feb24TsSeconds = 1677264314;
 export type GenMocks = {
     signer: Partial<Signer>;
     genSale: Partial<GenSale>;
-    currentSaleConfiguration: [
-        string,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        string,
-        BigNumber,
-        BigNumber,
-        BigNumber
-    ] & {
-        sellerWallet: string;
-        parentDomainId: BigNumber;
-        salePrice: BigNumber;
-        amountForSale: BigNumber;
-        mintlistMerkleRoot: string;
-        startingMetadataIndex: BigNumber;
-        folderGroupID: BigNumber;
-        transactionLimit: BigNumber;
-    };
+    currentSaleConfiguration: SaleConfig;
     currentSaleStarted: boolean;
     currentAmountForSale: BigNumber;
     currentTransactionLimit: BigNumber;
@@ -48,43 +30,32 @@ export type GenMocks = {
     reset: () => void;
 };
 
-export function getDefaultMockGenSaleConfiguration():
-    [
-        string,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        string,
-        BigNumber,
-        BigNumber,
-        BigNumber
-    ] & {
-        sellerWallet: string;
-        parentDomainId: BigNumber;
-        salePrice: BigNumber;
-        amountForSale: BigNumber;
-        mintlistMerkleRoot: string;
-        startingMetadataIndex: BigNumber;
-        folderGroupID: BigNumber;
-        transactionLimit: BigNumber;
-    } {
-    return {
-        sellerWallet: "0x1234567890123456789012345678901234567890",
-        parentDomainId: BigNumber.from(123),
-        salePrice: ethers.utils.parseEther("1.0"), // 1 ^ 18th
-        mintlistSaleDuration: BigNumber.from(3600), // ~ 1hr (seconds)
-        amountForSale: BigNumber.from(50),
-        mintlistMerkleRoot: "0xabcdef1234567890abcdef1234567890abcdef12",
-        startingMetadataIndex: BigNumber.from(1),
-        folderGroupID: BigNumber.from(2),
-        transactionLimit: BigNumber.from(10),
-    } as any;
+export interface SaleConfig {
+    sellerWallet: string;
+    parentDomainId: BigNumber;
+    salePrice: BigNumber;
+    amountForSale: BigNumber;
+    mintlistMerkleRoot: string;
+    startingMetadataIndex: BigNumber;
+    folderGroupID: BigNumber;
+    transactionLimit: BigNumber;
+};
+
+export const genSaleConfig: SaleConfig = {
+    sellerWallet: "0x1234567890123456789012345678901234567890",
+    parentDomainId: BigNumber.from(123),
+    salePrice: ethers.utils.parseEther("1.0"), // 1 ^ 18th
+    amountForSale: BigNumber.from(50),
+    mintlistMerkleRoot: "0xabcdef1234567890abcdef1234567890abcdef12",
+    startingMetadataIndex: BigNumber.from(1),
+    folderGroupID: BigNumber.from(2),
+    transactionLimit: BigNumber.from(10),
 }
 
 export let mocks: GenMocks = {
     currentSaleStarted: false,
     currentSalePrice: BigNumber.from(0),
-    currentSaleConfiguration: getDefaultMockGenSaleConfiguration(),
+    currentSaleConfiguration: genSaleConfig,
     currentDomainsSold: BigNumber.from(0),
     currentSaleStartTimestamp: BigNumber.from(feb23TsSeconds), // ~2/23/2023
     currentLatestBlock: { timestamp: feb24TsSeconds }, // ~2/24/2023
@@ -142,7 +113,7 @@ export let mocks: GenMocks = {
     },
     async reset() {
         // reset any modifications made to contract state
-        mocks.currentSaleConfiguration = await getDefaultMockGenSaleConfiguration();
+        mocks.currentSaleConfiguration = genSaleConfig;
         mocks.currentTransactionLimit = BigNumber.from(10);
         mocks.currentDomainsSold = BigNumber.from(5);
         mocks.currentSaleStartTimestamp = BigNumber.from(feb23TsSeconds); // ~2/23/2023

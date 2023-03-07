@@ -5,7 +5,7 @@ import nock from "nock";
 import { GenSaleConfig, GenSaleStatus, Mintlist } from '../src';
 import { getMintlist, getSaleData, getSaleStatus, numberPurchasableByAccount, purchaseDomains, setPauseStatus } from '../src/actions/genSale';
 import { GenSale } from '../src/contracts';
-import { getDefaultMockGenSaleConfiguration, mocks } from './mocks/genMocks';
+import { genSaleConfig, mocks } from './mocks/genMocks';
 import * as chaiAsPromised from "chai-as-promised";
 import { expect } from 'chai';
 chai.use(chaiAsPromised.default);
@@ -205,7 +205,7 @@ describe("Sale SDK tests", async () => {
             const amountSold = 5;
             const amountForSale = 50;
             const transactionLimit = 10;
-            const saleConfigurationRaw = await getDefaultMockGenSaleConfiguration();
+            const saleConfigurationRaw = genSaleConfig;
 
             mocks.currentSaleConfiguration = saleConfigurationRaw;
             mocks.currentDomainsSold = BigNumber.from(amountSold);
