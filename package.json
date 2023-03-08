@@ -1,6 +1,6 @@
 {
   "name": "@zero-tech/zsale-sdk",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": "git@github.com:zer0-os/zSale-SDK.git",
@@ -41,7 +41,6 @@
     "typechain": "5.1.2",
     "typescript": "4.4.2",
     "nock": "13.3.0"
-
   },
   "dependencies": {
     "@apollo/client": "3.4.10",
