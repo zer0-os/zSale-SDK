@@ -3,20 +3,25 @@ import { GenSaleStatus, Mintlist } from "../../types";
 import { getSaleStatus } from "./getSaleStatus";
 
 export const numberPurchasableByAccount = async (
-    mintlist: Mintlist,
-    contract: GenSale,
-    account: string
+  mintlist: Mintlist,
+  contract: GenSale,
+  account: string
 ): Promise<number> => {
-    const status = await getSaleStatus(contract);
-    const transactonLimit = await contract.limitPerTransaction();
-    const userClaim = mintlist.claims[account];
-    if (userClaim) {
-        if (status == GenSaleStatus.PrivateSale) {
-            return transactonLimit.toNumber();
-        } else if (status === GenSaleStatus.NotStarted || status === GenSaleStatus.ClaimSale) {
-            return userClaim.quantity;
-        }
-    }
+  const userClaim = mintlist.claims[account];
 
-    return 0;
+  if (!userClaim) return 0;
+
+  const status = await getSaleStatus(contract);
+
+  if (status == GenSaleStatus.PrivateSale) {
+    const transactonLimit = await contract.limitPerTransaction();
+
+    return transactonLimit.toNumber();
+  } else if (status === GenSaleStatus.NotStarted || status === GenSaleStatus.ClaimSale) {
+    const amountPurchased = await contract.domainsPurchasedByAccount(account)
+
+    const diff = userClaim.quantity - amountPurchased.toNumber()
+    return diff;
+  }
+  return 0;
 };
