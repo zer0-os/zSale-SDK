@@ -25,6 +25,12 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run:
+          name: Setup Email
+          command: git config user.email "username@mydomain.com"
+      - run:
+          name: Setup Name
+          command: git config user.name "My Name"
+      - run:
           name: Bump Version
           command: npm version patch -m "Upgrading to %s"
   publish:
