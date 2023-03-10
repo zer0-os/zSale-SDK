@@ -41,6 +41,10 @@ workflows:
           filters:
             branches:
               ignore: main
+      - bump-version:
+          filters:
+            branches:
+              ignore: main
   production:
     jobs:
       - test:
