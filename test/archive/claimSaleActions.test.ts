@@ -3,11 +3,11 @@ import * as chaiAsPromised from "chai-as-promised";
 import * as dotenv from "dotenv";
 import { ethers } from "ethers";
 
-import { createClaimWithChildInstance } from "../src";
-import * as claimActions from "../src/actions/claimWithChildSale";
-import { getClaimContract } from "../src/contracts";
-import { ClaimWithChildSale } from "../src/contracts/types/ClaimWithChildSale";
-import { SaleStatus, ClaimSaleConfig } from "../src/types";
+import { createClaimWithChildInstance } from "../../src";
+import * as claimActions from "../../src/actions/claimWithChildSale";
+import { getClaimContract } from "../../src/contracts";
+import { ClaimWithChildSale } from "../../src/contracts/types/ClaimWithChildSale";
+import { SaleStatus, ClaimSaleConfig } from "../../src/types";
 
 const expect = chai.expect;
 chai.use(chaiAsPromised.default);

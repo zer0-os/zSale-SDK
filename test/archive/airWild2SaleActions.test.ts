@@ -3,16 +3,16 @@ import * as chaiAsPromised from "chai-as-promised";
 import * as dotenv from "dotenv";
 import { ethers } from "ethers";
 
-import { createAirWild2SaleInstance } from "../src";
-import * as airWildS2Actions from "../src/actions/airWildS2Sale";
-import { getAirWild2SaleContract, AirWild2Sale } from "../src/contracts";
+import { createAirWild2SaleInstance } from "../../src";
+import * as airWildS2Actions from "../../src/actions/airWildS2Sale";
+import { getAirWild2SaleContract, AirWild2Sale } from "../../src/contracts";
 import {
   Claim,
   AirWildS2Config,
   AirWildS2Instance,
   Maybe,
   SaleStatus,
-} from "../src/types";
+} from "../../src/types";
 
 const expect = chai.expect;
 chai.use(chaiAsPromised.default);

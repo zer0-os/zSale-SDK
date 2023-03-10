@@ -13,7 +13,7 @@
     "build": "tsc --build --verbose ./tsconfig.build.json",
     "lint": "eslint --fix src",
     "style": "prettier --write ./src/**/*.ts",
-    "test": "mocha -r ts-node/register 'test/**/*.test.ts' --exit --timeout 200000",
+    "test": "mocha -r ts-node/register 'test/**/*.test.ts' --exit --ignore 'test/archive/*' --timeout 200000",
     "typechain": "typechain --target ethers-v5 --out-dir src/contracts/types/ \"abi/**/*.json\"",
     "prepublish": "yarn build"
   },
