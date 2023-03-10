@@ -26,7 +26,7 @@ jobs:
           at: ~/repo
       - run:
           name: Bump Version
-          command: npm version patch -m "Upgrading to %s" --no-git-tag-version
+          command: npm version patch -m "Upgrading to %s"
   publish:
     <<: *defaults
     steps:
