@@ -19,6 +19,12 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths: .
+  bump-version: 
+    <<: *defaults
+    steps:
+      - run:
+          name: Bump Version
+          command: npm version patch -m "Upgrading to %s" --no-git-tag-version
   publish:
     <<: *defaults
     steps:
@@ -27,7 +33,6 @@ jobs:
       - run:
           name: Publish to NPM
           command: yarn publish --access public --non-interactive
-
 workflows:
   version: 2
   build:
