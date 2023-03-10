@@ -34,8 +34,11 @@ jobs:
           name: Bump Version
           command: npm version patch -m "Upgrading to %s"
       - run:
+          name: Add github.com to known hosts
+          command: ssh-keyscan github.com >> ~/.ssh/known_hosts
+      - run:
           name: Push Change
-          command: git push origin $CIRCLE_BRANCH -q
+          command: git push origin $CIRCLE_BRANCH
   publish:
     <<: *defaults
     steps:
