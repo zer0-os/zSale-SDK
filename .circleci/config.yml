@@ -6,7 +6,7 @@ orbs:
 defaults: &defaults
   working_directory: ~/repo
   docker:
-    - image: cimg/node:14.17.5
+    - image: cimg/node:18.15.0
 
 jobs:
   test:
