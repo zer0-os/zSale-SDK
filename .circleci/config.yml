@@ -35,10 +35,7 @@ jobs:
           command: npm version patch -m "Upgrading to %s"
       - run:
           name: Push Change
-          command: git push origin $CIRCLE_BRANCH
-      - run:
-          name: Fingerprint yes
-          command: echo yes
+          command: git push origin $CIRCLE_BRANCH -q
   publish:
     <<: *defaults
     steps:
