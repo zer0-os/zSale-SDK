@@ -44,6 +44,8 @@ workflows:
             branches:
               ignore: main
       - bump-version:
+          requires:
+            - test
           filters:
             branches:
               ignore: main
