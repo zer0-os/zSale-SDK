@@ -36,6 +36,9 @@ jobs:
       - run:
           name: Push Change
           command: git push origin $CIRCLE_BRANCH
+      - run:
+          name: Fingerprint yes
+          command: echo yes
   publish:
     <<: *defaults
     steps:
