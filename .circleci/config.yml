@@ -33,6 +33,9 @@ jobs:
       - run:
           name: Bump Version
           command: npm version patch -m "Upgrading to %s"
+      - run:
+          name: Push Change
+          command: git push origin $CIRCLE_BRANCH
   publish:
     <<: *defaults
     steps:
