@@ -35,7 +35,7 @@ jobs:
           command: npm version patch -m "Upgrading to %s"
       - run:
           name: Add github.com to known hosts
-          command: ssh-keyscan github.com >> ~/.ssh/known_hosts
+          command: ssh -o StrictHostKeyChecking=no git@github.com
       - run:
           name: Push Change
           command: git push origin $CIRCLE_BRANCH
