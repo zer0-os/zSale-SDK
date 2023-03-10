@@ -35,7 +35,7 @@ jobs:
           command: npm version patch -m "Upgrading to %s"
       - run:
           name: Push Change
-          command: git push origin $CIRCLE_BRANCH
+          command: git push origin {$CIRCLE_BRANCH}
   publish:
     <<: *defaults
     steps:
