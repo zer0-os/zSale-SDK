@@ -74,8 +74,6 @@ Below is a list of all functions exposed through the zSale SDK.
   
 ## Release
 Release tagging and publishing is now done through a CircleCi integration.
--By including "fix" as the title of your pull request or commit message it will trigger a patch/fix release
--By including "feat" as the title of your pull request or commit message it will trigger a feature/minor release
+-By including "fix(<subject>)" as the title of your pull request or commit message it will trigger a patch/fix release
+-By including "feat(<subject>)" as the title of your pull request or commit message it will trigger a feature/minor release
 -By including "BREAKING CHANGE" as the title of your pull request or commit message it will trigger a major release
-
--
