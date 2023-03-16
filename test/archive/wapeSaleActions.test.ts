@@ -2,18 +2,18 @@ import * as chai from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import * as dotenv from "dotenv";
 import { ethers } from "ethers";
-import { createWapeSaleInstance } from "../src";
+import { createWapeSaleInstance } from "../../src";
 import {
   getWapeSaleContract,
   WapeSale,
-} from "../src/contracts";
+} from "../../src/contracts";
 import {
   Claim,
   WapeSaleConfig,
   WapeSaleInstance,
   Maybe,
   SaleStatus,
-} from "../src/types";
+} from "../../src/types";
 
 const expect = chai.expect;
 chai.use(chaiAsPromised.default);
