@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "repository": "git@github.com:zer0-os/zSale-SDK.git",
+  "repository": "https://github.com/zer0-os/zSale-SDK.git",
   "author": "zero-tech",
   "license": "MIT",
   "files": [
