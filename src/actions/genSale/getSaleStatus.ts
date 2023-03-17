@@ -3,32 +3,32 @@ import { GenSale } from "../../contracts/types";
 import { GenSaleStatus } from "../../types";
 
 export const getSaleStatus = async (contract: GenSale) => {
-    const saleStarted = await contract.saleStarted();
+  const saleStarted = await contract.saleStarted();
 
-    if (!saleStarted) {
-        return GenSaleStatus.NotStarted;
+  if (!saleStarted) {
+    return GenSaleStatus.NotStarted;
+  }
+
+  const saleDataPromises = [
+    contract.domainsSold(),
+    contract.amountForSale(),
+    contract.salePrice(),
+  ];
+
+  const [
+    numSold,
+    totalForSale,
+    price
+  ] = await Promise.all(saleDataPromises)
+
+  if (numSold.gte(totalForSale)) {
+    return GenSaleStatus.Ended;
+  }
+
+  if (price.gt(0)) {
+    if (saleStarted) {
+      return GenSaleStatus.PrivateSale;
     }
-
-    const saleDataPromises = [
-        contract.domainsSold(),
-        contract.amountForSale(),
-        contract.salePrice(),
-    ];
-
-    const [
-        numSold,
-        totalForSale,
-        price
-    ] = await Promise.all(saleDataPromises)
-
-    if (numSold.gte(totalForSale)) {
-        return GenSaleStatus.Ended;
-    }
-
-    if (price.gt(0)) {
-        if (saleStarted) {
-            return GenSaleStatus.PrivateSale;
-        }
-    }
-    return GenSaleStatus.ClaimSale;
+  }
+  return GenSaleStatus.ClaimSale;
 };
