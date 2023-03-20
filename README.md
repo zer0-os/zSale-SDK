@@ -81,4 +81,4 @@ Release tagging and publishing is now done through a CircleCi integration.
 
 - By including "BREAKING CHANGE" as the title of your pull request or commit message it will trigger a major release
 
-- You may skip a release by including [skip ci] in the commit message
+- You may skip a release by including [skip ci] in the commit message, if done this way then the current commit will not create a new tag and will not publish changes to the NPM package
