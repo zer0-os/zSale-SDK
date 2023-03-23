@@ -77,11 +77,11 @@ Release tagging and publishing is now done through a CircleCi integration.
 
 - When adding one of the release triggers, make sure to use the correct capitalization
 
-- By including "fix(<subject>)" as the title of your pull request or commit message it will trigger a patch/fix release
+- By including "fix(<subject>)" as the title of your pull request or commit message it will trigger a patch/fix release.
 
-- By including "feat(<subject>)" as the title of your pull request or commit message it will trigger a feature/minor release
+- By including "feat(<subject>)" as the title of your pull request or commit message it will trigger a feature/minor release.
 
-- By including "BREAKING CHANGE" as the title of your pull request or commit message it will trigger a major release
+- By including "BREAKING CHANGE" as the title of your pull request or commit message it will trigger a major release.
 
 - You may skip a release by including [skip ci] in the commit message, if done this way then the current commit will not create a new tag and will not publish changes to the NPM package
 
